@@ -1,6 +1,11 @@
 **** Multi country projections of coverage at different retention times and ITN strategies
 
-cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021"
+cd "/Users/hannahkoenker/Dropbox/R Directory/Quantification"
+
+grstyle init
+grstyle set plain, hor compact
+grstyle set legend, nobox
+grstyle set color Set2
 
 * load and tidy the retention times. Our dataset has a row for each country and we will build out years from there (wide format) 
 
@@ -105,7 +110,7 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 		
 		sort iso3 year // this is crucial
 		
-		run "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021/2. Internal crop and access calcs.do"
+		run "02_Internal_crop_access_calcs.do"
 		
 		gen scenario=100+`X'
 		local tag = 100+`X'
@@ -113,7 +118,6 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 		
 	** GRAPH **
 
-	cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021"
 
 	gen geo=""
 	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -144,7 +148,7 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 	putpdf paragraph, font(,20) halign(center)
 	putpdf text ("2. Projected ITN access from large-scale annual distributions")
 	
-	foreach x of numlist .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25  {
+	foreach x of numlist .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25 .26 .27 .28 .29 .30 {
 		
 		preserve 
 		
@@ -166,7 +170,7 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 		
 		sort iso3 year // this is crucial
 		
-		run "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021/2. Internal crop and access calcs.do"
+		run "02_Internal_crop_access_calcs.do"
 		
 		gen scenario=200+`X'
 		local tag = 200+`X'
@@ -174,7 +178,6 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 
 	** GRAPH **
 
-	cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021"
 
 	gen geo=""
 	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -207,7 +210,7 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 	
 	local y=0.06 // assume 6% RCH 
 	
-	foreach x of numlist .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25 {
+	foreach x of numlist .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25 .26 .27 .28 .29 .30 {
 		preserve 
 		
 		** distribute nets = MRC in 2022 2025 2028 2031
@@ -223,7 +226,7 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 		
 		sort iso3 year // this is crucial
 		
-		run "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021/2. Internal crop and access calcs.do"
+		run "02_Internal_crop_access_calcs.do"
 		
 		gen scenario=300+`X'
 		local tag = 300+`X'
@@ -231,7 +234,6 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 		
 	** GRAPH **
 
-	cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021"
 	
 	gen geo=""
 	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -281,7 +283,7 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 		
 		sort iso3 year // this is crucial
 		
-		run "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021/2. Internal crop and access calcs.do"
+		run "02_Internal_crop_access_calcs.do"
 		
 		gen scenario=400+(`x'*10)
 		local tag = 400+(`x'*10)
@@ -289,7 +291,6 @@ cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021
 		
 	** GRAPH **
 
-	cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021"
 
 	gen geo=""
 tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -350,7 +351,7 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 		
 		sort iso3 year // this is crucial
 		
-		run "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021/2. Internal crop and access calcs.do"
+		run "02_Internal_crop_access_calcs.do"
 		
 		gen scenario=500+(`x'*10)
 		local tag = 500+(`x'*10)
@@ -358,7 +359,6 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 		
 	** GRAPH **
 
-	cd "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021"
 
 	gen geo=""
 tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"

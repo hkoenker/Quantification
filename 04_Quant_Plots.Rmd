@@ -1,14 +1,14 @@
 ---
-title: "01_Quant_plots"
+title: "04_Quant_plots"
 author: "Hannah Koenker"
-date: "12/3/2021"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 editor_options: 
   chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 library(haven)
 library(tidyverse)
 library(maptools)
@@ -22,69 +22,225 @@ library(sf)
 ```
 
 ```{r read}
-npp <- read_csv("data/mean_npp.csv") %>% 
+s2min <- read_dta("data/s2_min_npp.dta") %>% 
   clean_names()
+s2mean <- read_dta("data/s2_mean_npp.dta") %>% 
+  clean_names()
+
+s3min <- read_dta("data/s3_min_npp.dta") %>% 
+  clean_names()
+s3mean <- read_dta("data/s3_mean_npp.dta") %>% 
+  clean_names()
+
+s2max <- read_dta("data/s2_max_acc.dta") %>% 
+  mutate(maxacc = round_half_up(maxacc, digits=0))
 ```
 
-```{r map}
+```{r africa_map}
 africa = world %>%
-  filter(continent == "Africa",!is.na(iso_a2)) %>%
-  left_join(worldbank_df, by = "iso_a2") %>%
-  left_join(npp, by = "iso_a2") %>%
-  st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25") %>%
-  mutate(
-    npp = percpop - 6,
-    npp = ceiling(npp)
-  )
-# plot(africa)
-
-  # cut_width(npp, width = 1, center = 0.5))
-# round_half_up(npp),
-#     npp = cut(npp, breaks = c(0, 16, 17, 18, 19, 20, 21, 22, 23))
+  filter(continent == "Africa",!is.na(iso_a2)) 
 ```
 
+```{r max_map}
 
-``` {r MapQuant1}
-ggplot() +
-  geom_sf(data = africa,
-          aes(fill = as.factor(npp)),
-          color = "white",
-          size = 0.5) +
-  theme_void() +
-  scale_fill_brewer(
-    palette = "Spectral",
-    na.value = "WhiteSmoke",
-    direction = -1
-  ) +
-  coord_sf() +
-  labs(fill = "Population multiplier (percent)",
-       title = "Recommended population-based quantifier for annual continuous distribution; \nindependent of ANC/EPI ITN distribution") +
-  theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
+## Remember that the max is dictated by the options in the Quantification Stata files - if Liberia can't get there with 25%, expand the range of quantifiers so we can see what it would take to get to 80 or 90.
 
-ggsave("quant_scen2_map.png")
+maxdta <-  africa %>%
+    left_join(s2max, by = "iso_a2") %>%
+    st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25")
 
-# ,    guide = guide_legend(reverse = TRUE) -- reverses the legend order, but not the colors
-```
-
-``` {r MapQuant2}
-ggplot() +
+maxplot <- ggplot() +
   geom_sf(
-    data = africa,
-    aes(fill = percpop),
+    data = maxdta,
+    aes(fill = as.factor(maxacc)),
     color = "white",
     size = 0.5
   ) +
   theme_void() +
-  scale_fill_gradient(low = "#56B1F7", high = "#132B43",na.value = "WhiteSmoke") +
+  scale_fill_viridis_d(na.value = "WhiteSmoke", direction = -1) +
+  #scale_fill_brewer(palette = "Spectral",
+  #                  na.value = "WhiteSmoke",
+  #                  direction = -1) +
   coord_sf() +
-  labs(fill = "Population multiplier (percent)",
-       title = "Recommended quantifier for annual continuous distribution") +
+  labs(fill = "Population ITN access",
+       title = "Maximum ITN access that can be reached with annual continuous distribution \ncombined with ANC/EPI ITN distribution") +
   theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
 
-ggsave("quant_scen2_map.png")
+  print(maxplot)
+```
 
-```{r make_sf}
+
+```{r sfunction}
+
+qplotfun <- function(fn, targ) {
+  qdata <- fn %>% 
+    filter(target==targ)
+  
+  # if else to help with titling
+  fnstr <- deparse(substitute(fn))
+  fnstr2 <- substr(fnstr, start=1, stop=2)
+  btw <- if_else(fnstr2=="s3"," between campaigns","")
+    
+ qpdta <-  africa %>%
+    left_join(qdata, by = "iso_a2") %>%
+    st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25") 
+  
+ qplot <- ggplot() +
+   geom_sf(
+     data = qpdta,
+     aes(fill = as.factor(q)),
+     color = "white",
+     size = 0.5
+   ) +
+   theme_void() +
+   scale_fill_viridis_d(na.value = "WhiteSmoke", direction = -1) +
+   #scale_fill_brewer(palette = "Spectral",
+    #                 na.value = "WhiteSmoke",
+   #                  direction = -1) +
+   coord_sf() +
+   labs(
+     fill = "Population multiplier (percent)",
+     title = paste(
+       "Recommended population-based quantifier for annual continuous distribution; \nin addition to 6% ANC/EPI ITN distribution - \nmaintaining at least ",
+       targ,
+       "% ITN access",btw, sep=""
+     )
+   ) +
+   theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
+ 
+ Y <- targ
+
+  print(qplot)
+  plotname <- paste("figs/map_",fnstr,Y,".pdf", sep = "")
+  ggsave(plotname)
+}
+
+
+```
+
+We'll plot means and minimum quantifier needed, but clearly means are less useful here so we won't include those in the paper. 
+
+## Scenario 2 - min quant achieving 70%
+```{r s2min70}
+qplotfun(fn = s2min, targ = 70)
+```
+
+(No mean plot for target=70, as band is wider - 70-100, and the mean overestimates the quantifier)
+
+## Scenario 2 - min quant achieving 80%
+```{r s2min80}
+qplotfun(fn = s2min, targ = 80)
+```
+
+## Scenario 2 - mean quant achieving 80% (rounded down)
+
+```{r s2mean80}
+qplotfun(fn = s2mean, targ = 80)
+```
+
+## Scenario 2 - min quant achieving 90% 
+
+```{r s2min90}
+qplotfun(fn = s2min, targ = 90)
+
+```
+
+## Scenario 2 - mean quant achieving 90% (rounded down)
+
+```{r s2mean90}
+qplotfun(fn = s2mean, targ = 90)
+
+```
+
+
+## Scenario 3 - min quant achieving 70%
+```{r s3min70}
+qplotfun(fn = s3min, targ = 70)
+```
+
+(No mean quant for 70-100 band as it overestimates the need, due to the wider band.)
+
+## Scenario 3 - min quant achieving 80%
+```{r s3min80}
+qplotfun(fn = s3min, targ = 80)
+```
+
+## Scenario 3 - mean quant achieving 80% (rounded down)
+
+```{r s3mean80}
+qplotfun(fn = s3mean, targ = 80)
+```
+
+## Scenario 3 - min quant achieving 90% 
+
+```{r s3min90}
+qplotfun(fn = s3min, targ = 90)
+
+```
+
+## Scenario 3 - mean quant achieving 90% (rounded down)
+
+```{r s3mean90}
+qplotfun(fn = s3mean, targ = 90)
+
+```
+
+
+
+
+
+
+
+``` {r MapQuant1}
+# ggplot() +
+#   geom_sf(data = africa,
+#           aes(fill = as.factor(npp)),
+#           color = "white",
+#           size = 0.5) +
+#   theme_void() +
+#   scale_fill_brewer(
+#     palette = "Spectral",
+#     na.value = "WhiteSmoke",
+#     direction = -1
+#   ) +
+#   coord_sf() +
+#   labs(fill = "Population multiplier (percent)",
+#        title = "Recommended population-based quantifier for annual continuous distribution; \nindependent of ANC/EPI ITN distribution") +
+#   theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
+# 
+# ggsave("quant_scen2_map.png")
+
+```
+
+``` {r MapQuant2}
+# ggplot() +
+#   geom_sf(
+#     data = africa,
+#     aes(fill = percpop),
+#     color = "white",
+#     size = 0.5
+#   ) +
+#   theme_void() +
+#   scale_fill_gradient(low = "#56B1F7", high = "#132B43",na.value = "WhiteSmoke") +
+#   coord_sf() +
+#   labs(fill = "Population multiplier (percent)",
+#        title = "Recommended quantifier for annual continuous distribution") +
+#   theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
+# 
+# ggsave("quant_scen2_map.png")
+
+```
+
+```{r extrastuff}
 # crs_africa <-  st_crs(africa)
+
+# plot(africa)
+
+# ,    guide = guide_legend(reverse = TRUE) -- reverses the legend order, but not the colors
+
+  # cut_width(npp, width = 1, center = 0.5))
+# round_half_up(npp),
+#     npp = cut(npp, breaks = c(0, 16, 17, 18, 19, 20, 21, 22, 23))
 
  #   labels = c(
   #     "0-1",
@@ -97,5 +253,3 @@ ggsave("quant_scen2_map.png")
   #   )
   # ) +
 ```
-```
-
