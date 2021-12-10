@@ -20,6 +20,8 @@ library(countrycode)
 library(data.table)
 ```
 
+![](images/TH_logo.jpg){width=1.0"}
+
 ```{r grid}
 geofacet_fname <- "data/geofacet_ssa.csv"
 ssa_grid <- fread(geofacet_fname)

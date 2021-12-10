@@ -53,24 +53,24 @@
 	* bysort iso_a2: su percpop if group==2 & accrk>70 & year>2021
 	
 	** We want to identify which NPP are associated with targeted access of 80-85%, and 90-95% (to obtain 80% use)
-	bysort iso_a2: su percpop if group==2 & accrk>=80 & accrk<=85
-	
-	bysort iso_a2: su percpop if group==2 & accrk>=90 & accrk<=95
-
-	/*
-			bysort iso_a2: egen mymode=mode(percpop) if group==2 & year>2021 & accrk>60 & accrk<99, minmode
-			bysort iso_a2: egen maxmode=mode(percpop) if group==2 & year>2021 & accrk>60 & accrk<99, maxmode
-
-			bysort iso_a2: egen med2 = median(percpop) if group==2 & year>2021 & accrk>60 & accrk<99 
-			bysort iso_a2: egen mean2 = mean(percpop) if group==2 & year>2021 & accrk>60 & accrk<99
+		bysort iso_a2: su percpop if group==2 & accrk>=80 & accrk<=85
 		
-			twoway scatter med2 mean2 
-				
-				twoway scatter percpop cty, xlabel(1(1)40, angle(45) labsize(tiny) valuelabel)
+		bysort iso_a2: su percpop if group==2 & accrk>=90 & accrk<=95
 
-	*/	
-	** they are similar, let's use the mean
-	* collapse (median) percpop if group==2 & accrk>60 & year>2021, by(iso_a2)
+			/*
+					bysort iso_a2: egen mymode=mode(percpop) if group==2 & year>2021 & accrk>60 & accrk<99, minmode
+					bysort iso_a2: egen maxmode=mode(percpop) if group==2 & year>2021 & accrk>60 & accrk<99, maxmode
+
+					bysort iso_a2: egen med2 = median(percpop) if group==2 & year>2021 & accrk>60 & accrk<99 
+					bysort iso_a2: egen mean2 = mean(percpop) if group==2 & year>2021 & accrk>60 & accrk<99
+				
+					twoway scatter med2 mean2 
+						
+						twoway scatter percpop cty, xlabel(1(1)40, angle(45) labsize(tiny) valuelabel)
+
+			*/	
+			** they are similar, let's use the mean
+			* collapse (median) percpop if group==2 & accrk>60 & year>2021, by(iso_a2)
 	
 	*** SCENARIO 2 RECOMMENDED QUANTIFIERS
 	
@@ -262,3 +262,37 @@
 			export delimited using data/s3_mean_npp.csv, replace 
 
 			restore
+			
+			
+			
+	*** SCENARIO 4 - 3y UCC - how far should ITN access drop between campaigns?
+	
+		* what's the lowest that ITN access drops to between campaigns?
+		
+			
+				preserve 
+					collapse (min) accrk if group==4 & year>2021, by(iso_a2 scenario)
+					reshape wide accrk, i(i) j(scenario)
+					save data/s4_min_acc, replace
+				restore 
+		
+		/* 
+			preserve 
+				collapse (count) group  if group==4 & accrk>=70 & accrk<100 & percpop<61, by(iso_a2 scenario)
+				sort iso_a2 scenario
+				gen target=70
+				bysort iso_a2: egen max = max(group)
+				bysort iso_a2: egen q = min(scenario) if group==max
+		*/
+		
+		*** SCENARIO 5 - 2y UCC - how far should ITN access drop between campaigns?
+	
+		* what's the lowest that ITN access drops to between campaigns?
+		
+			
+				preserve 
+					collapse (min) accrk if group==5 & year>2021, by(iso_a2 scenario)
+					reshape wide accrk, i(i) j(scenario)
+					save data/s5_min_acc, replace
+				restore 
+		
