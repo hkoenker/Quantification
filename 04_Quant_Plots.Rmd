@@ -294,38 +294,39 @@ s4min %>%
   ) %>% 
   cols_align(columns = 2:12,
              align = "center") %>% 
-  # data_color(
-  #   columns = 2:12,
-  #   colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "Redmonder::dPBIRdGn") %>% as.character(),
-  #                                domain = NULL)) %>% 
-   tab_style(
-    style = list(
-      cell_borders(
-        sides = "left",
-        color = "black",
-        weight = px(3)
-      )
-    ),
-    locations = list(
-      cells_body(
-        columns = c(accrk418)
-      )
-    )
-  ) %>% 
-  tab_style(
-    style = list(
-      cell_borders(
-        sides = "right",
-        color = "black",
-        weight = px(3)
-      )
-    ),
-    locations = list(
-      cells_body(
-        columns = c(accrk418)
-      )
-    )
-  ) 
+  data_color(
+    columns = 10,
+    colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "Redmonder::dPBIRdGn") %>% as.character(),
+                                 domain = NULL)) 
+# %>%
+  #  tab_style(
+  #   style = list(
+  #     cell_borders(
+  #       sides = "left",
+  #       color = "black",
+  #       weight = px(3)
+  #     )
+  #   ),
+  #   locations = list(
+  #     cells_body(
+  #       columns = c(accrk418)
+  #     )
+  #   )
+  # ) %>% 
+  # tab_style(
+  #   style = list(
+  #     cell_borders(
+  #       sides = "right",
+  #       color = "black",
+  #       weight = px(3)
+  #     )
+  #   ),
+  #   locations = list(
+  #     cells_body(
+  #       columns = c(accrk418)
+  #     )
+  #   )
+  # ) 
   
   
 ```
@@ -356,37 +357,38 @@ s5min %>%
   cols_align(columns = 2:12,
              align = "center") %>% 
   data_color(
-    columns = 2:12,
+    columns = 10,
     colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "Redmonder::dPBIRdGn") %>% as.character(),
-                                 domain = NULL)) %>% 
-    tab_style(
-    style = list(
-      cell_borders(
-        sides = "left",
-        color = "black",
-        weight = px(3)
-      )
-    ),
-    locations = list(
-      cells_body(
-        columns = c(accrk518)
-      )
-    )
-  ) %>% 
-  tab_style(
-    style = list(
-      cell_borders(
-        sides = "right",
-        color = "black",
-        weight = px(3)
-      )
-    ),
-    locations = list(
-      cells_body(
-        columns = c(accrk518)
-      )
-    )
-  ) 
+                                 domain = NULL))
+# %>% 
+#     tab_style(
+#     style = list(
+#       cell_borders(
+#         sides = "left",
+#         color = "black",
+#         weight = px(3)
+#       )
+#     ),
+#     locations = list(
+#       cells_body(
+#         columns = c(accrk518)
+#       )
+#     )
+#   ) %>% 
+#   tab_style(
+#     style = list(
+#       cell_borders(
+#         sides = "right",
+#         color = "black",
+#         weight = px(3)
+#       )
+#     ),
+#     locations = list(
+#       cells_body(
+#         columns = c(accrk518)
+#       )
+#     )
+#   ) 
   
   
 ```
@@ -454,3 +456,12 @@ s5min %>%
   #   )
   # ) +
 ```
+
+```{r}
+
+# got out of sync somehow with the web version, needed to reupload/replace all the web files with my local files:
+
+# git push --set-upstream origin master --force 
+
+```
+
