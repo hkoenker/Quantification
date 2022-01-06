@@ -3,7 +3,6 @@
 .RData
 .Ruserdata
 docs/
-figs/*.png
 *.html
 *.pdf
 *cache*
