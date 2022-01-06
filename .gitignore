@@ -7,3 +7,4 @@ output/*
 *.html
 *.pdf
 figs/*
+*.dta
