@@ -2,13 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
-docs/*
-output/*
+docs/
+output/
+figs/
 *.html
 *.pdf
-figs/*
 *.dta
 *cache*
 *.png
-output/*.png
-figs/*.png
