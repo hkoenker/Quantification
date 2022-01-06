@@ -86,7 +86,8 @@ geofun <- function(scen, title) {
     facet_geo( ~ code, grid = ssa_grid, label = "code") +
     labs(title = paste(title, X, "% of the population"),
          x = "",
-         y = "ITN access or nets-as-percent-of-population") +
+         y = "Percent",
+         color = "") +
     theme(
       # legend.position="none",
       # axis.text.x = element_text(angle=45, hjust=1)
