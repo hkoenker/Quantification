@@ -3,11 +3,9 @@
 .RData
 .Ruserdata
 docs/
-output/
 figs/
 *.html
 *.pdf
-*.dta
 *cache*
 *.png
 04_Quant_Plots_files/
