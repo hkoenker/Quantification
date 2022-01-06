@@ -8,3 +8,5 @@ output/*
 *.pdf
 figs/*
 *.dta
+*cache*
+*.png
