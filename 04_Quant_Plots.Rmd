@@ -244,6 +244,9 @@ table_q_s2s3 <- t2 %>%
   left_join(t3, by = "iso_a2") %>% 
   arrange(iso_a2)
 
+# export table to csv for use in file 06 School Suitability:
+write.csv(table_q_s2s3, "output/s2s3table.csv", row.names = FALSE)
+
 Table_Quant_S2_S3 <- table_q_s2s3 %>% 
   gt() %>% 
   cols_label(iso_a2 = "Country Code",
