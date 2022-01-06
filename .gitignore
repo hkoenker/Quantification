@@ -10,3 +10,4 @@ figs/
 *.png
 04_Quant_Plots_files/
 05_Scenarios_files/
+output/*.pdf
