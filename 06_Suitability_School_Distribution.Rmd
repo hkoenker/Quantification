@@ -1,0 +1,163 @@
+---
+title: "Suitable for school distribution"
+author: "Hannah Koenker"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+    fig_width: 7
+    fig_height: 6
+    fig_caption: yes
+    df_print: kable
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(haven)
+library(tidyverse)
+library(geofacet)
+library(broom)
+library(readxl)
+library(janitor)
+library(countrycode)
+library(data.table)
+library(spData)
+library(sf)
+library(cowplot)
+library(gt)
+```
+
+![](images/TH_logo.jpg){width=1.0"}
+
+```{r}
+sch <- read_xlsx("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/School Quant/schoolquant_v2.xlsx") %>% 
+  clean_names() %>% 
+   # mutate(name = countrycode(iso3, origin = "iso3c", destination = "country.name")) %>%
+  mutate(name_long = case_when(country == "DRC" ~ "Democratic Republic of the Congo",
+                          country == "Congo" ~ "Republic of the Congo",
+                          country == "Cote" ~ "Côte d'Ivoire",
+                          country == "Sierra" ~ "Sierra Leone",
+                          country == "Sao" ~ "Sao Tome",
+                          country == "Gambia" ~ "The Gambia",
+                          country == "Swaziland" ~ "eSwatini",
+                          country == "Burkina" ~ "Burkina Faso",
+                          TRUE ~ as.character(country))) %>% 
+  rename(feasible17 = full_scale_school_is_feasible,
+         for17 = number_of_classes_needed_annually_for_full_scale_school_distribution_pop_5_8_or_17_percent_of_pop,
+         percattending = percent_hh_with_child_attending_primary_school,
+         currentprim = percent_population_that_are_current_primary_students,
+         classes = number_classes_needed_for_between_campaign_school_distribution
+  )
+  
+
+```
+
+```{r africa_map}
+africa = world %>%
+  filter(continent == "Africa",!is.na(iso_a2)) 
+```
+
+```{r join}
+sch <-  africa %>%
+    left_join(sch, by = "name_long") %>%
+    st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25")
+```
+
+```{r mapschoolfun}
+schfun <- function(column) {
+  column <- sym(column) 
+  
+  ggplot(sch) +
+  geom_sf(
+    data = sch,
+    aes(fill = as.factor(!!column)),
+    color = "white",
+    size = 0.5
+  ) +
+  theme_void() +
+  scale_fill_brewer(palette = "Set2",
+                   na.value = "WhiteSmoke",
+                   direction = -1) +
+  coord_sf() +
+  labs(fill = "",
+       title = "") +
+  theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
+}
+```
+
+```{r, include = FALSE}
+schfun("feasible17") +
+   labs(fill = "",
+       title = "Feasibility of Annual Primary School Distribution \nto reach 17% of population")
+```
+
+```{r}
+# now need to compare the % current primary students to the percent quantifier needed to maintain 80% ITN access.
+qt <- read.csv("output/s2s3table.csv")
+
+# then join with school dataset on iso_a2
+sch <- sch %>% 
+  left_join(qt, by = "iso_a2") %>% 
+  mutate(feasible80 = if_else(currentprim > s280,"yes","no"),
+         feasible70 = if_else(currentprim > s270, "yes","no"))
+```
+
+```{r}
+sch1 <- schfun("feasible70") +
+labs(fill = "",
+       title = "Feasibility of Annual Primary School Distribution \nto achieve 70% ITN access in Scenario 2") 
+```
+
+```{r}
+sch2 <- schfun("feasible80") +
+labs(fill = "",
+       title = "Feasibility of Annual Primary School Distribution \nto achieve 80% ITN access in Scenario 2") 
+```
+
+```{r}
+plot_grid(sch1, sch2, labels = c("A","B"))
+ggsave("figs/sch_feas_s2.png")
+```
+
+```{r}
+sumtable <- read_xlsx("data/summary_target80.xlsx") %>% 
+  clean_names() %>% 
+  left_join(qt, by = "iso_a2") %>% 
+  mutate(name = countrycode(iso_a2, origin = "iso2c", destination = "country.name"))
+
+table80 <- sumtable %>% 
+  select(name, scenario_1, scenario_4, scenario_5,s280, s380) %>% 
+  rename(scenario_2 = s280,
+         scenario_3 = s380) %>% 
+  select(name, scenario_1, scenario_2, scenario_3, scenario_4, scenario_5)
+
+gtable80 <- gt(table80) %>% 
+  tab_header(
+    title = "Recommended quantifiers",
+    subtitle = "To maintain 80% population ITN access") %>% 
+   tab_spanner(
+    label = "Continuous Distribution",
+    columns = c(scenario_2, scenario_3)
+  ) %>%
+  tab_spanner(
+    label = "Mass Campaign",
+    columns = c(scenario_4, scenario_5)
+  ) %>% 
+   cols_label(
+    scenario_1 = html("Campaign + routine"),
+    scenario_2 = html("Full-scale continuous + routine"),
+    scenario_3 = html("Campaign + routine + continuous between campaigns"),
+    scenario_4 = html("3-yearly campaigns"),
+     scenario_5 = html("2-yearly campaigns")
+  ) %>% 
+  fmt_missing(
+    columns = everything(),
+    missing_text = ""
+  )
+gtable80
+```
+
