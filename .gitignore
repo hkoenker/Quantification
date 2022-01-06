@@ -10,3 +10,4 @@ figs/*
 *.dta
 *cache*
 *.png
+output/*.png
