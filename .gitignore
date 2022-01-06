@@ -11,3 +11,4 @@ figs/*
 *cache*
 *.png
 output/*.png
+figs/*.png
