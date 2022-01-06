@@ -3,9 +3,6 @@ title: "05 ITN Strategy Scenarios"
 author: "Hannah Koenker"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
   html_document:
     toc: yes
     toc_depth: 2
@@ -53,7 +50,7 @@ s4title <- "3-year mass campaigns with ANC/EPI, at population / "
 s5title <- "2-year mass campaigns with ANC/EPI, at population / "
 ```
 
-```{r read}
+```{r read, warning = FALSE}
 df <-  read_dta("output/runs/105.dta") %>%
   select(percpop, year, accrk, iso3, acclb_npclb, accub_npcub) %>%
   mutate(name = countrycode(iso3, origin = "iso3c", destination = "country.name")) %>%
