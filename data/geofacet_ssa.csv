@@ -1,0 +1,41 @@
+﻿name,code,row,col
+Mauritania,MRT,1,2
+Eritrea,ERI,1,8
+Gambia,GMB,2,1
+Senegal,SEN,2,2
+Guinea-Bissau,GNB,2,3
+Mali,MLI,2,4
+Niger,NER,2,5
+Chad,TCD,2,6
+Sudan,SDN,2,7
+Djibouti,DJI,2,8
+Sierra Leone,SLE,3,1
+Guinea,GIN,3,2
+Ghana,GHA,3,3
+Burkina Faso,BFA,3,4
+Benin,BEN,3,5
+Centr. Afr. Rep.,CAF,3,6
+South Sudan,SSD,3,7
+Ethiopia,ETH,3,8
+Somalia,SOM,3,9
+Liberia,LBR,4,2
+Cote d'Ivoire,CIV,4,3
+Togo,TGO,4,4
+Nigeria,NGA,4,5
+Cameroon,CMR,4,6
+Rwanda,RWA,4,7
+Kenya,KEN,4,8
+Gabon,GAB,5,4
+Rep. of Congo,COG,5,5
+Eq. Guinea,GNQ,5,6
+Burundi,BDI,5,7
+Uganda,UGA,5,8
+Angola,AGO,6,5
+DRC,COD,6,6
+Zambia,ZMB,6,7
+Tanzania,TZA,6,8
+Comoros,COM,5,10
+Zimbabwe,ZWE,7,5
+Malawi,MWI,7,6
+Mozambique,MOZ,7,7
+Madagascar,MDG,7,10
