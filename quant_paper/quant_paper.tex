@@ -33,6 +33,7 @@
 \usepackage[]{natbib}
 \bibliographystyle{model6-num-names}
 
+\usepackage{graphicx}
 \ifxetex
   \usepackage[setpagesize=false, % page size defined by xetex
               unicode=false, % unicode breaks when used with xetex
@@ -76,6 +77,22 @@
 \floatplacement{figure}{H}
 \usepackage{setspace}\doublespacing
 \biboptions{sort&compress}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{caption}
 
 
 
@@ -161,13 +178,24 @@ require specific population estimates.
 ITNs were distributed in the model for each scenario as shown in Table
 1.
 
-Table : Distribution Scenarios and their ITN inputs
-
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1391}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3435}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2087}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.3087}}@{}}
+\caption{Distribution Scenarios and their ITN inputs}\tabularnewline
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+Scenario
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mass Campaign
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+ANC/EPI (routine)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Annual school/ community
+\end{minipage} \\
+\midrule
+\endfirsthead
 \toprule
 \begin{minipage}[b]{\linewidth}\raggedright
 Scenario
@@ -205,6 +233,20 @@ Bhatt et al
 \citep{Koenker:2013ed, Bhatt:2015gn, 10.1186/s12936-022-04272-w}, and
 are shown in Fig. \ref{ret_decay_fig}.
 
+\begin{verbatim}
+## pdf 
+##   2
+\end{verbatim}
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.8\linewidth]{quant_paper_files/figure-latex/ret_decay_fig-1} 
+
+}
+
+\caption{\label{ret_decay_fig}A) ITN retention times and median lifespans estimated from durability monitoring studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC}\label{fig:ret_decay_fig}
+\end{figure}
+
 The total net crop (consisting of all surviving nets from various
 channels to date) was summed for each year and country. This was then
 divided by the population projected to calculate nets-per-capita (NPC)
@@ -229,7 +271,12 @@ population'' (NPP).
 
 To inform recommendations for quantification of ITNs, the above process
 was used to model ITN distributions under five typical ITN distribution
-scenarios, varying quantification approaches within each scenario:
+scenarios, varying quantification approaches within each scenario. The
+majority of malaria-endemic countries currently implement Scenario 1;
+Tanzania is an example of Scenario 2, while Ghana exemplifies Scenario
+3. While countries aim to deliver mass campaigns every three years, some
+have recently argued for campaign every two years to offset shorter
+median net lifespans.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -277,8 +324,8 @@ prior to switching over to a fully continuous ITN strategy.
 To assess feasibility of large-scale school distribution in relation to
 optimal quantification factors, the proportion of the population that
 are primary school students currently attending school was calculated
-from available Demographic and Health Surveys, obtained with permission
-from dhsprogram.com.
+from the most recent Demographic and Health Surveys for each country,
+obtained with permission from dhsprogram.com.
 
 \hypertarget{results}{%
 \section{Results}\label{results}}
@@ -314,6 +361,61 @@ Several countries were able to maintain ITN access at 90\% with only
 limited inputs from the continuous channel, at 7\% of the population,
 including Cameroon, Mali, Niger, and Zimbabwe.
 
+\captionsetup[table]{labelformat=empty,skip=1pt}
+\begin{longtable}{lrrrrrr}
+\caption*{
+{\large Minimum quantifier to sustain ITN access at target level}
+} \\ 
+\toprule
+ & \multicolumn{3}{c}{Scenario 2 (full continuous strategy)} & \multicolumn{3}{c}{Scenario 3 (continuous between mass campaigns)} \\ 
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+ & \multicolumn{6}{c}{Targeted ITN access} \\ 
+\cmidrule(lr){2-7}
+Country Code & 70\% & 80\% & 90\% & 70\% & 80\% & 90\% \\ 
+\midrule
+AO & 25 & 30 &  & 23 & 29 &  \\ 
+BF & 19 & 25 &  & 11 & 17 & 28 \\ 
+BI & 23 & 29 &  & 17 & 23 & 26 \\ 
+BJ & 26 &  &  & 23 & 30 &  \\ 
+CD & 22 & 28 &  & 15 & 21 & 28 \\ 
+CF & 15 & 24 & 28 & 7 & 10 & 22 \\ 
+CG & 9 & 12 & 20 & 7 & 7 & 11 \\ 
+CI & 19 & 29 & 30 & 9 & 14 & 26 \\ 
+CM & 7 & 10 & 17 & 7 & 7 & 7 \\ 
+DJ & 26 &  &  & 24 & 21 &  \\ 
+ER & 9 & 12 & 20 & 7 & 7 & 10 \\ 
+ET & 23 & 29 &  & 17 & 23 & 30 \\ 
+GA & 7 & 10 & 17 & 7 & 7 & 8 \\ 
+GH & 17 & 27 & 29 & 8 & 7 & 24 \\ 
+GM & 21 & 25 &  & 11 & 16 & 27 \\ 
+GN & 20 & 26 &  & 13 & 19 & 30 \\ 
+GQ & 7 & 10 & 16 & 7 &  & 7 \\ 
+GW & 22 & 28 &  & 16 & 22 & 29 \\ 
+KE & 12 & 17 & 27 & 7 & 7 & 15 \\ 
+KM & 13 & 19 & 28 & 7 & 8 & 16 \\ 
+LR & 26 &  &  & 25 & 22 &  \\ 
+MG & 20 & 24 & 30 & 10 & 15 & 27 \\ 
+ML & 9 & 12 & 21 & 7 & 7 & 7 \\ 
+MR & 26 &  &  & 23 & 30 &  \\ 
+MW & 23 & 29 &  & 17 & 23 & 30 \\ 
+MZ & 22 & 28 &  & 17 & 23 & 30 \\ 
+NE & 7 & 10 & 17 & 7 & 7 & 7 \\ 
+NG & 12 & 18 & 27 & 7 & 7 & 15 \\ 
+RW & 21 & 25 &  & 11 & 17 & 28 \\ 
+SD & 9 & 12 & 20 & 7 & 7 & 11 \\ 
+SL & 21 & 27 &  & 14 & 20 & 30 \\ 
+SN & 22 & 28 &  & 16 & 22 & 30 \\ 
+SO & 12 & 16 & 26 & 7 & 7 & 14 \\ 
+SS & 27 &  &  & 25 & 22 &  \\ 
+TD & 26 &  &  & 25 & 22 &  \\ 
+TG & 11 & 15 & 25 & 7 & 7 & 13 \\ 
+TZ & 13 & 19 & 28 & 7 & 8 & 16 \\ 
+UG & 20 & 24 & 30 & 10 & 15 & 26 \\ 
+ZM & 23 & 29 &  & 17 & 23 & 30 \\ 
+ZW & 9 & 12 & 21 & 7 & 7 & 7 \\ 
+\bottomrule
+\end{longtable}
+
 For Scenario 4, the quantifier used for 3-year mass campaigns (in
 combination with routine ITN distribution at ANC/EPI clinics) was varied
 from 1.0 to 2.0. The lowest level of ITN access between campaigns is
@@ -336,6 +438,12 @@ ITN access estimate is shown in green. The typical rise and fall of ITN
 access is apparent in Figures 2 and 4, while ITN access is maintained at
 a steady rate in Figure 3 where distributions are annual through
 continuous channels.
+
+\includegraphics{../figs/scen_106.pdf}
+
+\includegraphics{../figs/scen_217.pdf}
+
+\includegraphics{../figs/scen_310.pdf}
 
 The complete set of graphs for all scenarios is included as Supplemental
 File 1.
