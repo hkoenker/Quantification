@@ -244,7 +244,7 @@ table_q_s2s3 <- t2 %>%
   left_join(t3, by = "iso_a2") %>% 
   arrange(iso_a2)
 
-# export table to csv for use in file 06 School Suitability:
+# export table to csv for use in file 06 School Suitability and for pulling into quant_paper.Rmd:
 write.csv(table_q_s2s3, "output/s2s3table.csv", row.names = FALSE)
 
 Table_Quant_S2_S3 <- table_q_s2s3 %>% 
@@ -262,8 +262,8 @@ Table_Quant_S2_S3 <- table_q_s2s3 %>%
     missing_text = ""
   ) %>%
    tab_spanner(columns = 2:7, label = "Targeted ITN access") %>%
-  tab_spanner(columns = 2:4, label = "Scenario 2") %>% 
-  tab_spanner(columns = 5:7, label = "Scenario 3") %>% 
+  tab_spanner(columns = 2:4, label = "Scenario 2 (full continuous strategy)") %>% 
+  tab_spanner(columns = 5:7, label = "Scenario 3 (continuous between mass campaigns)") %>% 
   tab_header(
     title = "Minimum quantifier to sustain ITN access at target level"
   ) 
