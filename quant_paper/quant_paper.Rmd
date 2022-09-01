@@ -1,0 +1,217 @@
+---
+title: How many nets are needed to reach universal coverage - an update
+author:
+  - name: Hannah Koenker
+    email: hannah@trophealth.com
+    affiliation: Tropical Health LLP
+    correspondingauthor: true
+    # footnote: 1
+  - name: Marcy Erskine
+    email: marcy.erskine@ifrc.org
+    affiliation: International Federation of the Red Cross and Red Crescent Societies
+  - name: Robert Opoku
+    email: robert.opoku@ifrc.org
+    affiliation: International Federation of the Red Cross and Red Crescent Societies
+  - name: Eleanore Sternberg
+    email: eleanore@trophealth.com
+    affiliation: Tropical Health LLP
+address:
+  - code: Tropical Health LLP
+    address: Baltimore, USA
+# footnote:
+#   - code: 1
+#     text: ""
+abstract: |
+   [350 words max]
+keywords: 
+  - insecticide-treated nets
+  - long-lasting insecticidal nets
+journal: "Malaria Journal"
+date: "`r Sys.Date()`"
+classoption: review, 3p
+bibliography: quantbibfile.bib
+biblio-style: model6-num-names
+# natbiboptions: longnamesfirst,angle,semicolon
+linenumbers: false
+numbersections: false
+preprint: false
+csl: https://www.zotero.org/styles/biomed-central
+header-includes:
+  - \usepackage{floatrow}
+  - \floatsetup[figure]{capposition=top}
+  - \floatplacement{figure}{H}
+  - \usepackage{setspace}\doublespacing
+  - \biboptions{sort&compress}
+output: 
+  rticles::elsevier_article:
+    latex_engine: xelatex
+    keep_tex: true
+    citation_package: natbib
+editor_options: 
+  chunk_output_type: console
+---
+
+# Background
+
+Insecticide treated nets (ITNs) have served as the cornerstone of malaria vector control in sub-Saharan Africa for the past two decades. Over 2.5 billion ITNs have been delivered to countries [@Milliner:2016um], primarily through periodic mass distribution campaigns scheduled at approximately three-year intervals, aligning with the expected lifespan of nets. Recent work has shown significant variation in ITN durability across geographic zones, and while some studies support a three-year median lifespan, multi-country analyses of ITN retention times indicate half of countries can expect two years or less of useful life for the majority of nets they distribute [@10.1038/s41467-021-23707-7]. The implications of shorter-than-expected retention times have important implications for the way countries quantify ITN commodity need for mass campaigns, and raise several key questions. First, what is the projected impact of the mismatch in campaign cycle and ITN retention in terms of overall ITN coverage? Second, if mass campaigns every three years are insufficient due to ITNs lasting only 1-2 years, is switching to a two-year campaign cycle indicated, or are there alternative or supplemental ways to distribute ITNs to ensure high rates of ITN access are maintained over time? Third, with what we know now about ITN retention and ITN distribution modalities, is population divided by 1.8 (as currently recommended [@WorldHealthOrganization:2019ws]) the correct quantification approach for mass campaigns for all countries? Finally, what would optimum ITN quantification look like for countries given their particular ITN retention times, aiming to sustain high levels of ITN access (the necessary, but not sufficient, precursor to ITN use)?
+
+This paper explores these questions using an existing stock and flow model [@10.1186/s12936-022-04272-w] to project population ITN access for countries in sub-Saharan Africa over five different distribution scenarios, using estimated ITN retention times from Bertozzi-Villa et al [@10.1038/s41467-021-23707-7] and varying quantification approaches within each distribution scenario. 
+
+# Methods
+
+## Projections of future coverage
+
+Each country was assigned an indicative population of 10 million people in the database, starting in 2020, and an annual population growth rate of 3%, as the model outputs are adjusted for population and thus do not require specific population estimates.
+
+ITNs were distributed in the model for each scenario as shown in Table 1.
+
+Table: Distribution Scenarios and their ITN inputs
+
+| Scenario                       | Mass Campaign                                                                 | ANC/EPI (routine)                              | Annual school/ community                                              |
+|--------------------------------|-------------------------------------------------------------------------------|------------------------------------------------|-----------------------------------------------------------------------|
+| 1.     “Status Quo”            | In 2022, 2025, 2028, 2031, 2034 at population / 1.8                           | 2020-2035, varying from 5-7% of the population | none                                                                  |
+| 2.     “Full-scale continuous” | In 2020, to establish high coverage at population / 1.8                       | 2021-2035 at 6% of the population              | 2022-2032 varying from 1-20% of the population                        |
+| 3.     “Mass plus continuous”  | In 2022, 2025, 2028, 2031, 2034 at population / 1.8                           | 2020-2035 at 6% of the population              | Only in years between campaigns, varying from 1-20% of the population |
+| 4.     “Varying 3-year mass”   | In 2022, 2025, 2028, 2031, 2034, varying from population / 1.0-2.0            | 2020-2035 at 6% of the population              | none                                                                  |
+| 5.     “Varying 2-year mass”   | In 2022, 2024, 2026, 2028, 2030, 2032, 2034 varying from population / 1.0-2.0 | 2020-2035 at 6% of the population              | none                                                                  |
+
+For each year, the stock and flow model used a country-specific estimated median lifespan from Bertozzi-Villa et al [@10.1038/s41467-021-23707-7] to decay each crop of distributed nets annually. The net decay functions rely on smooth-compact loss function developed by Nakul Chitnis and described in Koenker et al and Bhatt et al [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w], and are shown in Fig. \ref{ret_decay_fig}.
+
+```{r ret_decay_fig, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{ret_decay_fig}A) ITN retention times B) Smooth-compact loss function with Tanzania as an example C) Access-NPC relationship 2020 from Bertozzi-Villa et al D) nonparametric conditional quartile function for ITN access as a bunfction of NPC"}
+
+
+```
+
+The total net crop (consisting of all surviving nets from various channels to date) was summed for each year and country. This was then divided by the population projected to calculate nets-per-capita (NPC) in each year and council.
+
+To estimate ITN access from NPC, a nonparametric conditional quartile function for ITN access as a function of NPC was estimated from 124 demographic health survey data and malaria indicator surveys (MIS). A grid of 100 points was produced and used to predict ITN access from NPC (Fig. \ref{ret_decay_fig}). Confidence intervals for both estimated median lifespan and the function of ITN access vs NPC were used to generate an overall confidence interval around the estimate of ITN access.
+
+To further understand the relative sizes of ITN distributions through various channels, total ITNs delivered per channel were divided by the population and expressed as “nets issued as a percentage of the population” (NPP). 
+
+## Scenarios
+
+To inform recommendations for quantification of ITNs, the above process was used to model ITN distributions under five typical ITN distribution scenarios, varying quantification approaches within each scenario:
+
+1.	“Status Quo”: Mass campaigns every three years with routine distribution of ITNs to pregnant women and infants through antenatal clinics (ANC) and immunization visits (EPI). Quantification of the mass campaigns was fixed at population / 1.8 while quantification of routine distribution varied from population x 5%-7%.
+2.	“Full-scale continuous”: Full-scale annual school distribution of ITNs with routine distribution of ANC and EPI ITNs, fixing the routine distribution at population x 6% and varying the quantification of school distributions from population x 1-20%
+3.	“Mass plus continuous”: Mass campaign every three years with routine distribution of ANC and EPI ITNs and with annual school distribution in a limited number of classes, or limited community distribution in the years between campaigns. Quantification of the mass campaigns was fixed at population / 1.8 and routine distribution at population x 6%, varying the annual school/community distribution between population x 7-25%.
+4.	“Varying 3-year mass”: Mass campaigns every three years with routine distribution of ITNs to pregnant women and infants through antenatal clinics (ANC) and immunization visits (EPI). Quantification of routine distribution was fixed at 6%, and quantification of the mass campaigns was varied from population / 1.0 to population / 2.0 in increments of 0.1.
+5.	“Varying 2-year mass”: Mass campaigns every two years with routine distribution of ITNs to pregnant women and infants through antenatal clinics (ANC) and immunization visits (EPI). Quantification of routine distribution was fixed at 6%, and quantification of the mass campaigns was varied from population / 1.0 to population / 2.0 in increments of 0.1.
+
+All scenarios with mass campaigns began with a mass campaign in 2022 and ended in 2035. The “full scale continuous” scenario assumed a mass campaign (quantified with population / 1.8) in 2020 to scale up coverage prior to switching over to a fully continuous ITN strategy. 
+
+To assess feasibility of large-scale school distribution in relation to optimal quantification factors, the proportion of the population that are primary school students currently attending school was calculated from available Demographic and Health Surveys, obtained with permission from dhsprogram.com. 
+
+# Results
+
+Given a target of 80% ITN access, the recommended quantification approaches for each scenario varied considerably across countries, driven primarily by the median retention time. Recommended quantification approaches are summarized for the scenarios that include continuous distribution in Table 2, for 3-year mass campaigns in Table 3, and for 2-year mass campaigns in Table 4.
+
+For Scenario 2, which relies on full-scale annual continuous distribution in combination with routine ANC/EPI ITN delivery to maintain access, the annual quantifier needed to maintain ITN access at 70% ranged from 7% of the population in Cameroon and The Gambia, to 26% of the population in Benin, Djibouti, Liberia, Mauritania, South Sudan, and Chad. Similarly, to maintain ITN access at 80%, the quantifier ranged from 10% for Cameroon and Gabon, to 30% for Angola. In only a few countries was ITN access able to reach 90% - from 17% of the population in Cameroon, to 30% in Angola, Cote d’Ivoire, Madagascar, and Uganda. 
+
+For Scenario 3, where mass campaigns are conducted every three years, routine ITNs through ANC/EPI are conducted consistently, and continuous distribution supplements ITN access in the years between campaigns, there was also a range of quantifiers for the annual continuous distribution channels. At the 70% target, many countries required ITNs equivalent to 7% of the population, but this rose to 25% for Liberia, South Sudan, and Chad. At the 80% target, some countries still achieved this with 7% of the population in ITNs between campaigns, while Benin and Mauritania are estimated to need 30% of the population in ITNs. Several countries were able to maintain ITN access at 90% with only limited inputs from the continuous channel, at 7% of the population, including Cameroon, Mali, Niger, and Zimbabwe.
+
+```{r table_min_quantifier, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_min_quantifier}Recommended annual quantifiers for scenarios involving continuous distribution. For example, Angola would need to distribution ITNs equivalent to 25% of the population on an annual basis in order maintain ITN access at a 70% target. To maintain ITN access at an 80% target, ITN quantification for continuous distribution would need to be population x 30% on an annual basis. Given Angola’s estimated net decay rate, it is not feasible to maintain ITN access at 90%, assuming quantification rates for annual continuous distribution are capped at 30% of the population"}
+
+
+
+```
+
+For Scenario 4, the quantifier used for 3-year mass campaigns (in combination with routine ITN distribution at ANC/EPI clinics) was varied from 1.0 to 2.0. The lowest level of ITN access between campaigns is shown in Table 3. Under the current recommended quantifier of 1.8, only Cameroon, Eritrea, Gabon, and Niger were estimated to maintain ITN access at or above 80% between campaigns. 
+
+```{r table_ucc_quantifier, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_ucc_quantifier}Lowest level of ITN access between 3-year campaigns at different population quantifiers. For example, with the standard quantifier of population / 1.8, Burkina Faso reaches a low point of 45% ITN access between campaigns. Using population / 1.1 would result in an estimated low point of 61% population ITN access between campaigns. Routine ITN delivery to pregnant women and infants is assumed."}
+
+
+
+```
+
+Table 4 provides a similar picture but for campaigns conducted every 2 years. Under a population / 1.8 quantifier, CAR, Congo, Cote d’Ivoire, Cameroon, Eritrea, Gabon, Ghana, the Gambia, Kenya, Madagascar, Mali, Niger, Nigeria, Sudan, Togo, Tanzania, Uganda, and Zimbabwe would all maintain ITN access at or above 80% between campaigns. In other countries, 2-yearly campaigns closer to one ITN per person in order to maintain ITN access at the 80% target.
+
+```{r table_2ucc_quantifier, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_2ucc_quantifier}Lowest level of ITN access between 2-year campaigns at different population quantifiers. For example, with the standard quantifier of population / 1.8, Burkina Faso reaches a low point of 79% ITN access in the year between campaigns. Using population / 1.2 would result in an estimated low point of 91% population ITN access between campaigns. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed."}
+
+
+
+```
+
+Figures 2-4 illustrate scenario results for each country, for scenarios 1 (Figure 2), scenario 2 (Figure 3), and scenario 3 (Figure 4). Inputs of ITNs are indicated in orange for each year; the resulting population ITN access estimate is shown in green. The typical rise and fall of ITN access is apparent in Figures 2 and 4, while ITN access is maintained at a steady rate in Figure 3 where distributions are annual through continuous channels.
+
+```{r geo_facets_3ucc, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_3ucc}ITN access estimated for 3-year mass campaign strategy, with ANC/EPI distribution at 6% of the population annually"}
+
+```
+
+```{r geo_facets_cd, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cd}Estimated ITN access with annual ANC/EPI at 6% and full continuous distribution strategy at 17% of the population in nets each year. Shaded areas indicate 95% confidence intervals accounting for both net retention times and ITN access as a function of nets-per-capita (NPC)"}
+
+```
+
+
+```{r geo_facets_cducc, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cducc}Scenario 3 - three-year mass campaigns with ANC/EPI distribution at 6%, and between-campaign continuous distribution at 10%"}
+
+```
+
+The complete set of graphs for all scenarios is included as Supplemental File 1.
+
+Table 5 summarizes the recommended quantifiers under each scenario, given a target of maintaining 80% population ITN access. 
+
+```{r table_reccs, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_reccs}Summary of recommended quantifiers for scenarios, to maintain ITN access at or above 80%"}
+
+```
+
+Adjustments in quantification for ANC-EPI distribution did not lead to large differences in ITN access in Scenario 1. The key factors driving variation across countries within a given scenario were the estimated retention times for each country. 
+
+Using the most recent Demographic and Health Survey, the proportion of the population that were primary school students currently attending school was calculated and compared to the population quantifiers needed to achieve 70% and 80% ITN access targets in Scenario 2. Countries where the proportion of primary school students attending school met or exceeded the population quantifier are shown in Figure 5, as an indication of where annual school distribution would be feasible. This assumes that only one ITN is given per pupil; for the orange countries in Figure 5, giving more than 1 ITN per pupil could provide a solution.
+
+```{r fig_school, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{fig_school}Feasibility of large-scale annual school distribution to achieve ITN access targets"}
+
+```
+
+# Discussion
+
+-	Mass campaigns + ANC-EPI (7%) produces low access for most countries
+-	Approach 80% access when Cameroon at 15%; TZA requires 22%; Liberia at 25% is still only 60%
+-	X% of countries won’t reach 80% even at 25%....
+-	Ghana needs X and is only doing Y
+-	What is the lowest access we are willing to tolerate between campaigns, or at any time…?
+-	2-year campaigns….?????
+-	Link back to 4 questions from the Intro
+-	No wonder no one is meeting 80% targets
+-	If we want 80% ITN use we would need 90% access as the target
+-	Based on projections across multiple countries using varying ITN retention times from Bertozzi-Villa, overall recommendations for CD and campaign quantification for other countries
+-	Providing greater and greater numbers of nets/more frequently disincentivizes retention times (?)
+-	Limitation of the methods 
+    - Parameter assumptions - decay rates, some countries with limited data; rates expected to vary within the country;  (behaviors; nets)
+    - Relationship between Nets-as-proportion-of-population and ITN access may be different under a Scenario 1 vs a Scenario 2, depending on the degree of oversaturation inherent in the distribution channel (schools; etc).
+
+# Conclusion
+
+Given variation in ITN retention times across countries, tailored quantification approaches for mass campaigns and continuous distribution strategies are warranted. To reach target levels of ITN use of 80% of the population, ITN access must be maintained near 90% in most settings. The quantity of ITNs required to meet these goals are substantially larger than current plans. National programmes and their funding partners should work to increase the number of ITNs distributed to those vulnerable to malaria, while at the same time working to extend the useful life of these critical commodities.
+
+# Declarations
+
+## Ethics approval and consent to participate
+
+Not applicable
+
+## Consent for publication
+
+Not applicable
+
+## Availability of data and materials
+
+Code is available at https://github.com/hkoenker/
+
+## Competing interests
+
+The authors declare that they have no competing interests.
+
+## Funding
+
+HK was supported through a grant from The Bill & Melinda Gates Foundation.
+
+## Authors' contributions
+
+## Acknowledgements
+
+## Authors' information (optional)
+
+# Supplementary information
+
+# References
