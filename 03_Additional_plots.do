@@ -296,3 +296,313 @@
 					save data/s5_min_acc, replace
 				restore 
 		
+		
+*** Total nets needed - 80% minimum + status quo
+
+cd output/runs
+	
+	use 219, clear
+	keep if iso3=="TZA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop. MORE nets than 3y campaigns...
+	
+	use 307, clear
+	keep if iso3=="TZA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+
+	use 412, clear
+	keep if iso3=="TZA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+
+
+	use 418, clear
+	keep if iso3=="TZA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+
+*** Total nets needed for same scenario at different targets
+	* for a few different countries: Liberia, Mali, Nigeria - except they all have same pop, so same total nets for a given scenario
+	
+	* need total nets for 70, for 80, for 90 for each scenario 2, 3, and 4/5
+	* so 3 x 3 x 3 countries 
+
+	cd output/runs
+
+	* set year to keep records from:
+	local y=2021
+	
+	putexcel set quant_totalnets_MLNGLB.xlsx, replace
+	putexcel A1="country" B1="cd70" C1="cd80" D1="cd90" E1="ucc70" F1="ucc80" G1="ucc90" H1="combo70" I1="combo80" J1="combo90" K1="statusquo" L1="accstatusquo" A2="1.03 yrs - Liberia" A3="2.81 yrs - Mali" A4="2.22 yrs - Nigeria"
+	
+	
+	
+	use 418, clear // status quo - lowest is 20
+		keep if iso3=="LBR" 
+		bysort iso3: egen grandtot=total(totalnets)
+		replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop. MORE nets than 3y campaigns...
+		collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		mean accrk 
+		scalar pacc=r(table)[1,1]
+		putexcel K2=pp L2=pacc
+	
+	/*
+	use 325, clear // cd70 Liberia -- can use either 226 or 325 to maintain at 70 but lets' use 226
+	keep if iso3=="LBR"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>2021, by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		mean accrk 
+		scalar pacc=r(table)[1,1]
+		putexcel B2=pp 
+	*/
+	
+	use 324, clear // cd70 Liberia
+	keep if iso3=="LBR"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		mean accrk 
+		scalar pacc=r(table)[1,1]
+		putexcel H2=pp 
+		
+		use 330, clear // cd80 Liberia
+	keep if iso3=="LBR"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		mean accrk 
+		scalar pacc=r(table)[1,1]
+		putexcel I2=pp 
+		
+		
+	use 510, clear // lowest is 81; 2 yr campaign at 1.0, OMG UCC80
+	keep if iso3=="LBR"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel F2=pp 
+		
+	use 513, clear // UCC70
+	keep if iso3=="LBR"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel E2=pp 	
+
+	/*
+	use 230, clear // 230 only gives y ou 63% minimum , so no cd70 for scen 2 Liberia
+	keep if iso3=="LBR"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel B2=pp 
+	*/ 
+	
+	
+*** Mali scenarios	
+	* status quo - 1.8
+	use 418, clear // lowest is 78
+	keep if iso3=="MLI" 
+	bysort iso3: egen grandtot=total(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop. MORE nets than 3y campaigns...
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+	mean grandtot 
+		scalar pp=r(table)[1,1]
+		mean accrk 
+		scalar pacc=r(table)[1,1]
+		putexcel K3=pp L3=pacc
+		
+		
+	* 70% for CD
+	use 209, clear
+	keep if iso3=="MLI"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel B3=pp 	
+		
+	* 80% for CD
+	use 212, clear // lowest is 80
+	keep if iso3=="MLI"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel C3=pp
+		
+	* 90% for CD
+	use 221, clear
+	keep if iso3=="MLI"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel D3=pp 	
+	
+	* UCC 80
+	use 417, clear
+	keep if iso3=="MLI"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel F3=pp 	
+		
+	* UCC 90
+	use 411, clear
+	keep if iso3=="MLI"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel G3=pp 	
+		
+	* Combo 90
+	use 307, clear
+	keep if iso3=="MLI"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel J3=pp 	
+
+*** Nigeria scenarios	
+	* status quo - 1.8
+	use 418, clear // lowest is 78
+	keep if iso3=="NGA" 
+	bysort iso3: egen grandtot=total(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop. MORE nets than 3y campaigns...
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+	mean grandtot 
+		scalar pp=r(table)[1,1]
+		mean accrk 
+		scalar pacc=r(table)[1,1]
+		putexcel K4=pp L4=pacc
+		
+		
+	* 70% for CD
+	use 212, clear
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel B4=pp 	
+		
+	* 80% for CD
+	use 218, clear // lowest is 80
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel C4=pp
+		
+	* 90% for CD
+	use 227, clear
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel D4=pp 	
+	
+	* UCC 70
+	use 417, clear
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel E4=pp 	
+		
+	* UCC 80
+	use 413, clear
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel F4=pp 	
+		
+	* UCC 90
+	use 518, clear
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel G4=pp 	
+		
+	* Combo 80
+	use 307, clear
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel I4=pp 
+		
+	* Combo 90
+	use 315, clear
+	keep if iso3=="NGA"
+	bysort iso3: egen grandtot=sum(totalnets)
+	replace grandtot=grandtot/1000000 // remember this is still in a 10m population, not real pop.
+	collapse grandtot scenario (min) accrk if year>`y', by(iso3)
+		mean grandtot 
+		scalar pp=r(table)[1,1]
+		putexcel J4=pp 	
+
+	
+	import excel quant_totalnets_MLNGLB.xlsx, firstrow case(l) clear 
+	
+	grstyle set plain, hor compact
+	grstyle set legend, nobox
+	grstyle set color ptol, n(9)
+
+	*graph bar statusquo cd70 cd80 cd90 ucc70 ucc80 ucc90 combo70 combo80 combo90, by(country, row(1))
+	
+	
+	** replace with percent diff from status quo
+	 
+	 
+		foreach var of varlist cd70 cd80 cd90 ucc70 ucc80 ucc90 combo70 combo80 combo90 statusquo {
+			replace `var'=(`var'/47.559505*100)-100
+			format `var' %9.2f
+		}
+		
+		graph bar cd70 cd80 cd90 ucc70 ucc80 ucc90 combo70 combo80 combo90, by(country, row(1) note("") ) blabel(total, format(%9.0f) size(vsmall)) legend(col(3) label(1 "CD 70%") label(2 "CD 80%") label(3 "CD 90%") label(4 "Campaigns 70%") label(5 "Campaigns 80%") label (6 "Campaigns 90%") label(7 "Both 70%") label(8 "Both 80%") label(9 "Both 90%"))  bar(1, color(eltblue)) bar(2, color(ebblue)) bar(3, color(edkblue)) bar(4, color(eltgreen)) bar(5, color(teal)) bar(6, color(dkgreen)) bar(7, color(gs13)) bar(8, color(gs10)) bar(9, color(gs6)) ytitle("Percent difference from 3-year campaigns using pop/1.8", size(small)) bargap(25) // title("% difference in nets needed compared to 3-year mass campaigns using population/1.8")
+		
+	 *	graph bar cd70 cd80 cd90 ucc70 ucc80 ucc90 combo70 combo80 combo90 accstatusquo, by(country, row(1) note("") ) blabel(total, format(%9.0f) size(vsmall)) legend(col(3) label(1 "CD 70%") label(2 "CD 80%") label(3 "CD 90%") label(4 "Campaigns 70%") label(5 "Campaigns 80%") label (6 "Campaigns 90%") label(7 "Both 70%") label(8 "Both 80%") label(9 "Both 90%") label(10 "Lowest ITN access between campaigns for status quo"))  bar(1, color(eltblue)) bar(2, color(ebblue)) bar(3, color(edkblue)) bar(4, color(eltgreen)) bar(5, color(forest_green)) bar(6, color(dkgreen)) bar(7, color(gs13)) bar(8, color(gs10)) bar(9, color(gs6)) bar(10, color(red)) // title("% difference in nets needed compared to 3-year mass campaigns using population/1.8")
+		
+	 
