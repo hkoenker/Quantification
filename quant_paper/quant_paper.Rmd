@@ -51,6 +51,82 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r setup, echo=FALSE, include=FALSE}
+######################
+# Load Libraries
+######################
+# Load reading and basic libraries
+library(rticles)
+library(tidyverse)
+library(haven)
+library(readxl)
+library(janitor)
+library(viridis)
+library(broom)
+library(english)
+library(magrittr)
+library(lubridate)
+library(countrycode)
+library(data.table)
+
+# Load map related libraries
+library(sf)
+library(tmap)
+library(maptools)
+library(maps)
+library(spData)
+library(distill)
+library(geofacet)
+
+# Load tables and plot libraries
+library(flextable)
+library(gtsummary)
+library(gt)
+library(jtools)
+library(kableExtra)
+library(float)
+library(ggstance)
+library(knitr)
+library(stringr)
+library(ggpubr) # includes ggarrange and cowplot 
+
+# Load QR libraries
+library(quantreg)
+library(splines)
+
+##### Might need to reinstall pandoc, if so, run this from Terminal. Takes a few minutes:
+# brew install pandoc
+# brew install pandoc-citeproc
+# brew install pandoc-crossref
+######
+
+######################
+# Set figure theme and colors
+######################
+
+theme_set(theme_classic())
+# scale_colour_continuous <- function(...) scale_color_brewer(palette = "RdBu") 
+# scale_colour_discrete   <- function(...) scale_color_brewer(palette = "Set2") # 
+# scale_colour_binned     <- function(...) scale_color_fermenter(palette = "Set3")
+# scale_fill_continuous <- function(...) scale_fill_brewer(palette = "RdBu") #
+# scale_fill_discrete   <- function(...) scale_fill_brewer(palette = "Set3") # 
+# scale_fill_binned     <- function(...) scale_fill_fermenter(palette = "Set3")
+
+######################
+# Knitr options
+######################
+
+knitr::opts_chunk$set(
+  echo = FALSE, message=FALSE, warning=FALSE) ## , dev="cairo_pdf")
+
+# setwd("data")
+# knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
+# knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, dev="cairo_pdf", fig.width=7, fig.height=3.5)
+
+# reason_palette <- c("net used"=rgb(102,194,165, maxColorValue=255), "objective" = rgb(141,160,203, maxColorValue=255), "subjective" = rgb(252,141,98, maxColorValue=255),  "risk perception" = rgb(231,138,195, maxColorValue=255),  "net attributes" = rgb(229,196,148, maxColorValue=255), "extra" = rgb(166,216,84, maxColorValue=255), "fears" = rgb(255,217,47, maxColorValue=255), "other"="lightgray")
+
+```
+
 # Background
 
 Insecticide treated nets (ITNs) have served as the cornerstone of malaria vector control in sub-Saharan Africa for the past two decades. Over 2.5 billion ITNs have been delivered to countries [@Milliner:2016um], primarily through periodic mass distribution campaigns scheduled at approximately three-year intervals, aligning with the expected lifespan of nets. Recent work has shown significant variation in ITN durability across geographic zones, and while some studies support a three-year median lifespan, multi-country analyses of ITN retention times indicate half of countries can expect two years or less of useful life for the majority of nets they distribute [@10.1038/s41467-021-23707-7]. The implications of shorter-than-expected retention times have important implications for the way countries quantify ITN commodity need for mass campaigns, and raise several key questions. First, what is the projected impact of the mismatch in campaign cycle and ITN retention in terms of overall ITN coverage? Second, if mass campaigns every three years are insufficient due to ITNs lasting only 1-2 years, is switching to a two-year campaign cycle indicated, or are there alternative or supplemental ways to distribute ITNs to ensure high rates of ITN access are maintained over time? Third, with what we know now about ITN retention and ITN distribution modalities, is population divided by 1.8 (as currently recommended [@WorldHealthOrganization:2019ws]) the correct quantification approach for mass campaigns for all countries? Finally, what would optimum ITN quantification look like for countries given their particular ITN retention times, aiming to sustain high levels of ITN access (the necessary, but not sufficient, precursor to ITN use)?
@@ -77,9 +153,202 @@ Table: Distribution Scenarios and their ITN inputs
 
 For each year, the stock and flow model used a country-specific estimated median lifespan from Bertozzi-Villa et al [@10.1038/s41467-021-23707-7] to decay each crop of distributed nets annually. The net decay functions rely on smooth-compact loss function developed by Nakul Chitnis and described in Koenker et al and Bhatt et al [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w], and are shown in Fig. \ref{ret_decay_fig}.
 
-```{r ret_decay_fig, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{ret_decay_fig}A) ITN retention times B) Smooth-compact loss function with Tanzania as an example C) Access-NPC relationship 2020 from Bertozzi-Villa et al D) nonparametric conditional quartile function for ITN access as a bunfction of NPC"}
+```{r dmmap}
+ls <- read_excel("../data/Copy of MAP ITN retention data.xlsx", sheet="Sheet1") %>%
+  clean_names() %>%
+  drop_na(country) %>%
+  rename(lifespan=median_retention_years) %>%
+  separate(x95_percent_ci, into = c("lb", "ub"),
+           sep = "\\s*(–|-)\\s*", convert = TRUE)
 
 
+levels <- ls$country[ls$type=='MAP'][rev(order(ls$lifespan[ls$type=='MAP']))]
+ls$country_ord <- factor(ls$country, levels = levels)
+
+
+dmmap <- ls %>%
+  ggplot() +
+  geom_point(aes(
+    y = lifespan,
+    x = country_ord,
+    color = type,
+    alpha = both,
+    shape = type
+  )) +
+  geom_linerange(aes(
+    x = country_ord,
+    ymin = lb,
+    ymax = ub,
+    color = type,
+    alpha = both
+  )) +
+  theme_classic() +
+  scale_alpha_continuous(range = c(0.25, 1), guide = "none") +
+  scale_color_hue(name = "Study Type", labels = c("DM", "MAP")) +
+  scale_shape_manual(
+    name = "Study Type",
+    labels = c("DM", "MAP"),
+    values = c(19, 17)
+  ) + # if guide=="none" here, shape won't appear correctly in legend
+  theme(legend.position="right",
+        text = element_text(size = 9),
+        axis.text.x = element_text(
+    angle = 45,
+    vjust = 0.9,
+    hjust = 1,
+    size = 7
+  )) +
+  labs(x = "",
+       y = "Retention / median lifespan",
+       size=4)
+
+# dmmap
+# ggsave("MAP_vs_DM_lifespans.png")
+
+```
+
+```{r dmcurves}
+### Graphing Stata Decay Curves in GGPLOT ####
+
+# tz <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Decay Curves/tz_decay_only.dta")
+curves <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Decay Curves/curves_only.dta") %>% 
+  filter(lifespan<5.5)
+
+decay <- ggplot() +
+  geom_line(
+    data = curves,
+    aes(
+      x = tdist,
+      y = percsurv,
+      color = as.factor(lifespan),
+      linetype = as.factor(lifespan)
+    ),
+    alpha = 0.4
+  ) +
+  # geom_ribbon(
+  #   data = tz,
+  #   aes(x = tdist, ymin = lower, ymax = upper, fill="95% CI"),
+  #   # fill = "lightgrey",
+  #   alpha = 0.7
+  # ) +
+  # geom_line(data = tz, aes(x = tdist, y = percsurv), color = "orange") +
+  theme_minimal() +
+  theme(
+    panel.grid.minor = element_blank()
+  ) +
+  # scale_fill_manual(name="Tanzania \n estimate", values="lightgrey") +
+  scale_color_manual(
+    name = "Median \nLifespan \n(years)",
+    values = c(
+      "dodgerblue",
+      "dodgerblue",
+      "red",
+      "red",
+      "seagreen",
+      "seagreen",
+      "darkorchid",
+      "darkorchid",
+      "pink"
+    )
+  ) +
+  scale_linetype_manual(name = "Median \nLifespan \n(years)", values = c(1, 2, 1, 2, 1, 2, 1, 2, 1)) +
+  scale_x_continuous(breaks=seq(0,9,1)) +
+  theme(legend.position="right",
+        text = element_text(size = 9)) +
+  labs(
+    y = "Percent of nets surviving",
+    x = "Years since distribution",
+    # title = "Net decay curves for \n varying median lifespans",
+    color = "",
+    fill=""
+  )
+
+# decay
+
+# ggsave("decay_npc.png", width=8, height=5, units="in")
+
+```
+
+```{r npcaccess}
+Ddta <- read_dta("/Users/hannahkoenker/Dropbox/R Directory/TZ_access/01_ITN_Access_from_NPC/regional_ITN_indicators_access.dta")
+D <- with(Ddta, data.frame(y = access_merg, x = itnpers, z = meanhh))
+
+A <- as.matrix(D)
+B <- as.data.frame(A)
+
+# First plot the dots:
+
+pdf(
+  "Access_NPC.pdf",
+  height = 6,
+  width = 6,
+  )
+with(B,
+     plot(
+       x,
+       y,
+       cex = .5,
+       col = "grey",
+       ylim = c(0, 105),
+       xlab = "ITNs per capita",
+       ylab = "Population ITN Access (percent)")
+     )
+# title(main = "Title")
+
+taus <- 1:3/4
+
+xx <- 1:99/100
+colors <- c(2,1,2)
+
+G <- matrix(0,99,length(taus))
+for(i in 1:length(taus)){
+    f <- rqss(y ~ qss(x, constraint = "I", lambda = .5), tau = taus[i], data = B)
+    G[,i] <- predict(f, newdata = list(x = xx))
+    lines(xx,G[,i], col = colors[i], lwd = 2)
+}
+dev.off()
+
+### Make G into a dataframe and rename the variables for ggplot later: 
+gg <- as.data.frame(G) %>% 
+  mutate(access=V2,
+         lb=V1,
+         ub=V3) %>% 
+  arrange(access) %>% 
+  mutate(npc=1:n()/100) # make a new variable which is the row count and also NPC because Dad did not include this!
+
+npc <- ggplot() +
+  geom_point(data=B, aes(x,y), alpha=0.1, shape=1, size=0.5) +
+  geom_line(data=gg, aes(npc, access)) +
+  geom_line(data=gg, aes(npc, lb, color="50% confidence bounds")) +
+  geom_line(data=gg, aes(npc, ub, color="50% confidence bounds")) +
+  theme_minimal() +
+  theme(legend.position="bottom",
+        text = element_text(size = 9)) +
+  labs(x="ITNs per capita (NPC)",
+       y="% ITN Access",
+       color="")
+       # title="ITN Access as a function \n of nets per capita")
+
+
+```
+
+```{r ret_decay_fig, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{ret_decay_fig}A) ITN retention times and median lifespans estimated from durability monitoring studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC"}
+
+ggarrange(dmmap,
+          ggarrange(decay, npc, ncol=2, labels=c("B","C")),
+          nrow=2,
+          labels="A")
+```
+
+```{r}
+## Produces almost exactly identical graph combination:
+
+# ggdraw() +
+#   draw_plot(dmmap, x = 0, y = .5, width = 1, height = .5) +
+#   draw_plot(decay, x = 0, y = 0, width = .5, height = .5) +
+#   draw_plot(npc, x = .5, y = 0, width = .5, height = 0.5) +
+#   draw_plot_label(label = c("A", "B", "C"), size = 15,
+#                   x = c(0, 0, .5), y = c(1, .5, 0.5))
 ```
 
 The total net crop (consisting of all surviving nets from various channels to date) was summed for each year and country. This was then divided by the population projected to calculate nets-per-capita (NPC) in each year and council.
@@ -90,7 +359,7 @@ To further understand the relative sizes of ITN distributions through various ch
 
 ## Scenarios
 
-To inform recommendations for quantification of ITNs, the above process was used to model ITN distributions under five typical ITN distribution scenarios, varying quantification approaches within each scenario:
+To inform recommendations for quantification of ITNs, the above process was used to model ITN distributions under five typical ITN distribution scenarios, varying quantification approaches within each scenario. The majority of malaria-endemic countries currently implement Scenario 1; Tanzania is an example of Scenario 2, while Ghana exemplifies Scenario 3. While countries aim to deliver mass campaigns every three years, some have recently argued for campaign every two years to offset shorter median net lifespans.
 
 1.	“Status Quo”: Mass campaigns every three years with routine distribution of ITNs to pregnant women and infants through antenatal clinics (ANC) and immunization visits (EPI). Quantification of the mass campaigns was fixed at population / 1.8 while quantification of routine distribution varied from population x 5%-7%.
 2.	“Full-scale continuous”: Full-scale annual school distribution of ITNs with routine distribution of ANC and EPI ITNs, fixing the routine distribution at population x 6% and varying the quantification of school distributions from population x 1-20%
@@ -100,7 +369,7 @@ To inform recommendations for quantification of ITNs, the above process was used
 
 All scenarios with mass campaigns began with a mass campaign in 2022 and ended in 2035. The “full scale continuous” scenario assumed a mass campaign (quantified with population / 1.8) in 2020 to scale up coverage prior to switching over to a fully continuous ITN strategy. 
 
-To assess feasibility of large-scale school distribution in relation to optimal quantification factors, the proportion of the population that are primary school students currently attending school was calculated from available Demographic and Health Surveys, obtained with permission from dhsprogram.com. 
+To assess feasibility of large-scale school distribution in relation to optimal quantification factors, the proportion of the population that are primary school students currently attending school was calculated from the most recent Demographic and Health Surveys for each country, obtained with permission from dhsprogram.com. 
 
 # Results
 
@@ -110,9 +379,31 @@ For Scenario 2, which relies on full-scale annual continuous distribution in com
 
 For Scenario 3, where mass campaigns are conducted every three years, routine ITNs through ANC/EPI are conducted consistently, and continuous distribution supplements ITN access in the years between campaigns, there was also a range of quantifiers for the annual continuous distribution channels. At the 70% target, many countries required ITNs equivalent to 7% of the population, but this rose to 25% for Liberia, South Sudan, and Chad. At the 80% target, some countries still achieved this with 7% of the population in ITNs between campaigns, while Benin and Mauritania are estimated to need 30% of the population in ITNs. Several countries were able to maintain ITN access at 90% with only limited inputs from the continuous channel, at 7% of the population, including Cameroon, Mali, Niger, and Zimbabwe.
 
-```{r table_min_quantifier, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_min_quantifier}Recommended annual quantifiers for scenarios involving continuous distribution. For example, Angola would need to distribution ITNs equivalent to 25% of the population on an annual basis in order maintain ITN access at a 70% target. To maintain ITN access at an 80% target, ITN quantification for continuous distribution would need to be population x 30% on an annual basis. Given Angola’s estimated net decay rate, it is not feasible to maintain ITN access at 90%, assuming quantification rates for annual continuous distribution are capped at 30% of the population"}
+```{r table_min_quantifier, table.width = 7, table.height = 6, table.align='center', table.topcaption=TRUE, out.width="80%", table.cap = "\\label{table_min_quantifier}Recommended annual quantifiers for scenarios involving continuous distribution. For example, Angola would need to distribution ITNs equivalent to 25% of the population on an annual basis in order maintain ITN access at a 70% target. To maintain ITN access at an 80% target, ITN quantification for continuous distribution would need to be population x 30% on an annual basis. Given Angola’s estimated net decay rate, it is not feasible to maintain ITN access at 90%, assuming quantification rates for annual continuous distribution are capped at 30% of the population"}
 
-
+table_q_s2s3 <- read_csv("../output/s2s3table.csv")
+Table_Quant_S2_S3 <- table_q_s2s3 %>% 
+  gt() %>% 
+  tab_options(.,     container.width = 500, container.height =     500) %>% 
+  cols_label(iso_a2 = "Country Code",
+             s270 = "70%",
+             s280 = "80%",
+             s290 = "90%",
+             s370 = "70%",
+             s380 = "80%",
+             s390 = "90%",
+  ) %>% 
+   fmt_missing(
+    columns = everything(),
+    missing_text = ""
+  ) %>%
+   tab_spanner(columns = 2:7, label = "Targeted ITN access") %>%
+  tab_spanner(columns = 2:4, label = "Scenario 2 (full continuous strategy)") %>% 
+  tab_spanner(columns = 5:7, label = "Scenario 3 (continuous between mass campaigns)") %>% 
+  tab_header(
+    title = "Minimum quantifier to sustain ITN access at target level"
+  ) 
+Table_Quant_S2_S3
 
 ```
 
@@ -137,15 +428,19 @@ Figures 2-4 illustrate scenario results for each country, for scenarios 1 (Figur
 ```{r geo_facets_3ucc, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_3ucc}ITN access estimated for 3-year mass campaign strategy, with ANC/EPI distribution at 6% of the population annually"}
 
 ```
+![](../figs/scen_106.pdf)
 
 ```{r geo_facets_cd, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cd}Estimated ITN access with annual ANC/EPI at 6% and full continuous distribution strategy at 17% of the population in nets each year. Shaded areas indicate 95% confidence intervals accounting for both net retention times and ITN access as a function of nets-per-capita (NPC)"}
 
 ```
 
+![](../figs/scen_217.pdf)
 
 ```{r geo_facets_cducc, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cducc}Scenario 3 - three-year mass campaigns with ANC/EPI distribution at 6%, and between-campaign continuous distribution at 10%"}
 
 ```
+
+![](../figs/scen_310.pdf)
 
 The complete set of graphs for all scenarios is included as Supplemental File 1.
 
