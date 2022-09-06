@@ -43,10 +43,12 @@ header-includes:
   - \usepackage{setspace}\doublespacing
   - \biboptions{sort&compress}
 output: 
-  rticles::elsevier_article:
-    latex_engine: xelatex
-    keep_tex: true
-    citation_package: natbib
+  word_document: 
+    reference_docx: "../doc/Malaria Journal Article Template.docx"
+  # rticles::elsevier_article:
+    # latex_engine: xelatex
+    # keep_tex: true
+    # citation_package: natbib
 editor_options: 
   chunk_output_type: console
 ---
@@ -119,7 +121,8 @@ theme_set(theme_classic())
 knitr::opts_chunk$set(
   echo = FALSE, message=FALSE, warning=FALSE) ## , dev="cairo_pdf")
 
-# setwd("data")
+options(knitr.kable.NA = "")
+
 # knitr::opts_chunk$set(fig.pos = "!H", out.extra = "")
 # knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE, dev="cairo_pdf", fig.width=7, fig.height=3.5)
 
@@ -332,7 +335,7 @@ npc <- ggplot() +
 
 ```
 
-```{r ret_decay_fig, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{ret_decay_fig}A) ITN retention times and median lifespans estimated from durability monitoring studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC"}
+```{r ret_decay_fig, fig.width = 7, fig.height = 6, fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{ret_decay_fig}A) ITN retention times and median lifespans estimated from durability monitoring studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC"}
 
 ggarrange(dmmap,
           ggarrange(decay, npc, ncol=2, labels=c("B","C")),
@@ -409,7 +412,7 @@ Table_Quant_S2_S3
 
 For Scenario 4, the quantifier used for 3-year mass campaigns (in combination with routine ITN distribution at ANC/EPI clinics) was varied from 1.0 to 2.0. The lowest level of ITN access between campaigns is shown in Table 3. Under the current recommended quantifier of 1.8, only Cameroon, Eritrea, Gabon, and Niger were estimated to maintain ITN access at or above 80% between campaigns. 
 
-```{r table_ucc_quantifier, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_ucc_quantifier}Lowest level of ITN access between 3-year campaigns at different population quantifiers. For example, with the standard quantifier of population / 1.8, Burkina Faso reaches a low point of 45% ITN access between campaigns. Using population / 1.1 would result in an estimated low point of 61% population ITN access between campaigns. Routine ITN delivery to pregnant women and infants is assumed."}
+```{r table_ucc_quantifier, fig.width = 7, fig.height = 6, fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_ucc_quantifier}Lowest level of ITN access between 3-year campaigns at different population quantifiers. For example, with the standard quantifier of population / 1.8, Burkina Faso reaches a low point of 45% ITN access between campaigns. Using population / 1.1 would result in an estimated low point of 61% population ITN access between campaigns. Routine ITN delivery to pregnant women and infants is assumed."}
 
 
 
@@ -417,7 +420,7 @@ For Scenario 4, the quantifier used for 3-year mass campaigns (in combination wi
 
 Table 4 provides a similar picture but for campaigns conducted every 2 years. Under a population / 1.8 quantifier, CAR, Congo, Cote d’Ivoire, Cameroon, Eritrea, Gabon, Ghana, the Gambia, Kenya, Madagascar, Mali, Niger, Nigeria, Sudan, Togo, Tanzania, Uganda, and Zimbabwe would all maintain ITN access at or above 80% between campaigns. In other countries, 2-yearly campaigns closer to one ITN per person in order to maintain ITN access at the 80% target.
 
-```{r table_2ucc_quantifier, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_2ucc_quantifier}Lowest level of ITN access between 2-year campaigns at different population quantifiers. For example, with the standard quantifier of population / 1.8, Burkina Faso reaches a low point of 79% ITN access in the year between campaigns. Using population / 1.2 would result in an estimated low point of 91% population ITN access between campaigns. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed."}
+```{r table_2ucc_quantifier, fig.width = 7, fig.height = 6, fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_2ucc_quantifier}Lowest level of ITN access between 2-year campaigns at different population quantifiers. For example, with the standard quantifier of population / 1.8, Burkina Faso reaches a low point of 79% ITN access in the year between campaigns. Using population / 1.2 would result in an estimated low point of 91% population ITN access between campaigns. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed."}
 
 
 
@@ -436,10 +439,13 @@ s4title <- "3-year mass campaigns with ANC/EPI, at population / "
 s5title <- "2-year mass campaigns with ANC/EPI, at population / "
 ```
 
-```{r plot_function}
+test stuff 
+
+```{r geofacet_function}
 # read data in and plot
 geofun <- function(scen, title) {
-  splot <- read_dta(filename) %>%
+  # splot <- 
+    read_dta(filename) %>%
     select(percpop, year, accrk, iso3, acclb_npclb, accub_npcub) %>%
     mutate(name = countrycode(iso3, origin = "iso3c", destination = "country.name")) %>%
     mutate(code = iso3) %>%
@@ -475,48 +481,57 @@ geofun <- function(scen, title) {
     ) +
     scale_alpha(guide = 'none') +
     scale_size(guide = 'none')
-  print(splot)
+  # print(splot)
   # plotname <- paste("figs/scen_",scen,".pdf", sep = "")
   # ggsave(plotname)
 }
 ```
 
-```{r geo_facets_3ucc, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_3ucc}ITN access estimated for 3-year mass campaign strategy, with ANC/EPI distribution at 6% of the population annually"}
+more test stuff 
+
+```{r geo_facets_3ucc, warning = FALSE, message=FALSE, fig.width = 7, fig.height = 6, fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_3ucc}ITN access estimated for 3-year mass campaign strategy, with ANC/EPI distribution at 6% of the population annually"}
+
 s1 <- 106 ## set the scenario selected for inclusion in the paper
 
- # create the path and filename from the scenario number
-  filename = paste("../output/runs/", s1, ".dta", sep = "")
+# create the path and filename from the scenario number
+filename = paste("../output/runs/", s1, ".dta", sep = "")
   
-  # extract the quantifier from scenario number (last two digits) to put into the titles
-  X <- s1-round(s1,digits=-2)
+# extract the quantifier from scenario number (last two digits) to put into the titles
+X <- s1-round(s1,digits=-2)
   
-  geofun(scen = s1, title = s1title)
+geofun(scen = s1, title = s1title)
 ```
 
+additional test stuff 
 
-```{r geo_facets_cd, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cd}Estimated ITN access with annual ANC/EPI at 6% and full continuous distribution strategy at 17% of the population in nets each year. Shaded areas indicate 95% confidence intervals accounting for both net retention times and ITN access as a function of nets-per-capita (NPC)"}
+```{r geo_facets_cd, warning = FALSE, message=FALSE, fig.width = 7, fig.height = 6, fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cd}Estimated ITN access with annual ANC/EPI at 6% and full continuous distribution strategy at 17% of the population in nets each year. Shaded areas indicate 95% confidence intervals accounting for both net retention times and ITN access as a function of nets-per-capita (NPC)"}
+
 s2 <- 217 ## set the scenario selected for inclusion in the paper
 
- # create the path and filename from the scenario number
-  filename = paste("../output/runs/", s2, ".dta", sep = "")
+# create the path and filename from the scenario number
+filename = paste("../output/runs/", s2, ".dta", sep = "")
   
-  # extract the quantifier from scenario number (last two digits) to put into the titles
-  X <- s2-round(s2,digits=-2)
+# extract the quantifier from scenario number (last two digits) to put into the titles
+X <- s2-round(s2,digits=-2)
   
-  geofun(scen = s2, title = s2title)
+geofun(scen = s2, title = s2title)
+
 ```
 
+even more test stuff 
 
-```{r geo_facets_cducc, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cducc}Scenario 3 - three-year mass campaigns with ANC/EPI distribution at 6%, and between-campaign continuous distribution at 10%"}
+```{r geo_facets_cducc, warning = FALSE, message=FALSE, fig.width = 7, fig.height = 6, fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{geo_facets_cducc}Scenario 3 - three-year mass campaigns with ANC/EPI distribution at 6%, and between-campaign continuous distribution at 10%"}
+
 s3 <- 310 ## set the scenario selected for inclusion in the paper
 
- # create the path and filename from the scenario number
-  filename = paste("../output/runs/", s3, ".dta", sep = "")
+# create the path and filename from the scenario number
+filename = paste("../output/runs/", s3, ".dta", sep = "")
   
-  # extract the quantifier from scenario number (last two digits) to put into the titles
-  X <- s3-round(s3,digits=-2)
+# extract the quantifier from scenario number (last two digits) to put into the titles
+X <- s3-round(s3,digits=-2)
   
-  geofun(scen = s3, title = s3title)
+geofun(scen = s3, title = s3title)
+
 ```
 
 
@@ -524,7 +539,8 @@ The complete set of graphs for all scenarios is included as Supplemental File 1.
 
 Table 5 summarizes the recommended quantifiers under each scenario, given a target of maintaining 80% population ITN access. 
 
-```{r table_reccs, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{table_reccs}Summary of recommended quantifiers for scenarios, to maintain ITN access at or above 80%"}
+```{r table_reccs}
+
 # now need to compare the % current primary students to the percent quantifier needed to maintain 80% ITN access.
 schv2 <- read_xlsx("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/School Quant/schoolquant_v2.xlsx") %>% 
   clean_names() %>% 
@@ -594,19 +610,24 @@ gtable80 <- gt(table80) %>%
     columns = everything(),
     missing_text = ""
   )
-gtable80
+# gtable80
 ```
 
 
-```{r kable_table80}
-kable(table80, col.names = c("Country","Campaign + routine","Full-scale continuous + routine","Campaign + routine + continuous between campaigns","3-yearly campaigns","2-yearly campaigns"), caption="(Kable) Summary of recommended quantifiers for scenarios, to maintain ITN access at or above 80%") %>% kableExtra::kable_styling()
+```{r kable_table80, include=FALSE}
+table80 %>% 
+  select(-scenario_1) %>% 
+  kbl(format = "latex", col.names = c("Country","Full-scale continuous + routine","Campaign + routine + continuous between campaigns","3-yearly campaigns","2-yearly campaigns"), 
+      caption="Summary of recommended quantifiers for scenarios, to maintain ITN access at or above 80%") %>%
+  kable_paper(full_width = F) %>% 
+  add_header_above(c(" " = 1, "Continuous Distribution" = 2, "Mass Campaign" = 2))
 ```
 
 Adjustments in quantification for ANC-EPI distribution did not lead to large differences in ITN access in Scenario 1. The key factors driving variation across countries within a given scenario were the estimated retention times for each country. 
 
 Using the most recent Demographic and Health Survey, the proportion of the population that were primary school students currently attending school was calculated and compared to the population quantifiers needed to achieve 70% and 80% ITN access targets in Scenario 2. Countries where the proportion of primary school students attending school met or exceeded the population quantifier are shown in Figure 5, as an indication of where annual school distribution would be feasible. This assumes that only one ITN is given per pupil; for the orange countries in Figure 5, giving more than 1 ITN per pupil could provide a solution.
 
-```{r fig_school, fig.width = 7, fig.height = 6, fig.align='center', fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{fig_school}Feasibility of large-scale annual school distribution to achieve ITN access targets"}
+```{r fig_school, fig.width = 7, fig.height = 6, fig.topcaption=TRUE, out.width="80%", fig.cap = "\\label{fig_school}Feasibility of large-scale annual school distribution to achieve ITN access targets"}
 
 ```
 
