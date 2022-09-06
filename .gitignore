@@ -13,3 +13,4 @@ docs/
 output/*.pdf
 *DS_Store
 .DS_Store
+*test
