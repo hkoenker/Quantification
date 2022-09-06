@@ -18,7 +18,7 @@ output:
 #   - insecticide-treated nets
 #   - long-lasting insecticidal nets
 # journal: "Malaria Journal"
-date: "`r Sys.Date()`"
+date: Draft of `r format(Sys.time(), '%d %B, %Y')`; do not circulate
 classoption: review, 3p
 bibliography: quant_paper/quantbibfile.bib
 biblio-style: quant_paper/model6-num-names
@@ -36,6 +36,7 @@ header-includes:
   - \floatplacement{figure}{H}
   - \usepackage{setspace}\doublespacing
   - \biboptions{sort&compress}
+  # - \usepackage{draftwatermark}
   # rticles::elsevier_article:
     # latex_engine: xelatex
     # keep_tex: true
@@ -61,6 +62,7 @@ library(magrittr)
 library(lubridate)
 library(countrycode)
 library(data.table)
+library(todor)
 
 # Load map related libraries
 library(sf)
@@ -352,6 +354,8 @@ npc <- ggplot() +
 
 ## Checking fits for different hh sizes (regional data)
 
+# TODO: update quantification calculations if we change the fit for hhsize 
+
 # Ddta %>%
 #   mutate(hhsize = factor(cut(meanhh, breaks=c(2,4,5,6,8,10,14)))) %>%
 #   ggplot(aes(x = itnpers, y = access_merg, color=hhsize)) +
@@ -470,32 +474,11 @@ s45colnames <- c("Cty","1.0","1.1","1.2","1.3","1.4","1.5","1.6","1.7","1.8","1.
 
 ```{r tabscen4, tab.cap = "Lowest level of ITN access between 3-year campaigns at different population quantifiers. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns.  Routine ITN delivery to pregnant women and infants is assumed."}
 
-# s4min %>% 
-#  gt() %>% 
-#   fmt_number(columns = 2:12,
-#              decimals = 0) %>% 
-#   cols_label(iso_a2 = "Cty",
-#              accrk410 = "1.0",
-#              accrk411 = "1.1",
-#              accrk412 = "1.2",
-#              accrk413 = "1.3",
-#              accrk414 = "1.4",
-#              accrk415 = "1.5",
-#              accrk416 = "1.6",
-#              accrk417 = "1.7",
-#              accrk418 = "1.8",
-#              accrk419 = "1.9",
-#              accrk420 = "2.0") %>% 
-#   tab_spanner(columns = 2:12, label = "Population divided by") %>% 
-#   tab_header(
-#     title = "Lowest ITN access between 3-year campaigns for each quantifier"
-#   ) %>% 
-#   cols_align(columns = 2:12,
-#              align = "center") %>% 
-#   data_color(
-#     columns = 10,
-#     colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "Redmonder::dPBIRdGn") %>% as.character(),
-#                                  domain = NULL)) 
+s4minrt <- s4min %>% 
+  left_join(rettimes) %>% 
+  select(-name) %>% 
+  mutate(lifespan=round(lifespan, digits=1)) %>% 
+  select(iso_a2, lifespan, everything())
 
 colourer <- col_numeric(
   palette = scales::col_numeric(palette = paletteer::paletteer_d(palette = "Redmonder::dPBIRdGn") %>% as.character(),
@@ -504,9 +487,10 @@ colourer <- col_numeric(
 
 white_border= fp_border(color="white", width=2) ## set the color of the border needed later down
 
-s4 <- flextable(s4min) %>%
+s4 <- flextable(s4minrt) %>%
   set_header_labels(
     iso_a2 = "Cty",
+    lifespan = "Retention time",
     accrk410 = "1.0",
     accrk411 = "1.1",
     accrk412 = "1.2",
@@ -519,25 +503,26 @@ s4 <- flextable(s4min) %>%
     accrk419 = "1.9",
     accrk420 = "2.0"
   ) %>%
-  add_header_row(colwidths = c(1, 11),
+  add_header_row(colwidths = c(2, 11),
                  values = c("", "Population divided by:")) %>%
   add_header_row(
-    colwidths = c(12),
+    colwidths = c(13),
     values = c("Lowest ITN access between 3-year campaigns for each quantifier")
   ) %>%
   fontsize(size = 9, part = "all") %>%
   colformat_double(
+    j=3:13,
     big.mark = ",",
     digits = 0,
     na_str = ""
   ) %>%
   bg(
     bg = colourer,
-    j = ~ . -iso_a2,
+    j = 3:13,
     part = "body") %>% 
   theme_vanilla %>% 
   align(align = "center", part = "header") %>% 
-  vline(j = c(9,10), border=white_border, part="body") %>% 
+  vline(j = c(10,11), border=white_border, part="body") %>% 
   set_table_properties(layout="autofit", width=.7)
 s4
 
@@ -547,10 +532,17 @@ Table \@ref(tab:tabscen5) provides a similar picture but for campaigns conducted
 
 ```{r tabscen5, tab.cap = "Lowest level of ITN access between 2-year campaigns at different population quantifiers. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed."}
 
+s5minrt <- s5min %>% 
+  left_join(rettimes) %>% 
+  select(-name) %>% 
+  mutate(lifespan=round(lifespan, digits=1)) %>% 
+  select(iso_a2, lifespan, everything())
 
-s5 <- flextable(s5min) %>%
+
+s5 <- flextable(s5minrt) %>%
   set_header_labels(
     iso_a2 = "Cty",
+    lifespan = "Retention time",
     accrk510 = "1.0",
     accrk511 = "1.1",
     accrk512 = "1.2",
@@ -563,26 +555,27 @@ s5 <- flextable(s5min) %>%
     accrk519 = "1.9",
     accrk520 = "2.0"
   ) %>%
-  add_header_row(colwidths = c(1, 11),
+  add_header_row(colwidths = c(2, 11),
                  values = c("", "Population divided by:")) %>%
   add_header_row(
-    colwidths = c(12),
+    colwidths = c(13),
     values = c("Lowest ITN access between 2-year campaigns for each quantifier")
   ) %>%
   fontsize(size = 9, part = "all") %>%
   align(align = "center", part = "header") %>%
   colformat_double(
+    j=3:13,
     big.mark = ",",
     digits = 0,
     na_str = ""
   ) %>%
   bg(
     bg = colourer,
-    j = ~ . -iso_a2,
+    j=3:13,
     part = "body") %>% 
   theme_vanilla %>% 
   align(align = "center", part = "header") %>% 
-  vline(j = c(9,10), border=white_border, part="body") %>% 
+  vline(j = c(10,11), border=white_border, part="body") %>% 
   set_table_properties(layout="autofit", width=.7)
 s5
 
@@ -696,6 +689,41 @@ geofun(scen = s3, title = s3title)
 The complete set of graphs for all scenarios is included as Supplemental File 1.
 
 Table \@ref(tab:flextable80) summarizes the recommended quantifiers under each scenario, given a target of maintaining 80% population ITN access. 
+```{r regionalschooldata}
+## Reading in school quant sheets to calculate % of regions that could make school dist work 
+## based on DHS data on % pop that are school-attending primary school students
+
+# read in sheets
+
+sheets_to_read <- excel_sheets("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/School Quant/schoolquant_v2.xlsx") ##Obtain the sheets in the workbook
+
+# x <- c("National Results")
+
+# sheets_to_read <- within(sheets_to_read, rm("National Results"))
+
+list_with_sheets <- lapply(sheets_to_read,
+                           function(i)read_excel("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/School Quant/schoolquant_v2.xlsx", sheet = i))
+
+names(list_with_sheets) <- sheets_to_read ##Add names
+
+x1 <- lapply(list_with_sheets,clean_names) ## apply the clean_names function to the full list
+invisible(list2env(x1 ,.GlobalEnv)) ## This function should put all the dataframes within the list (x1) into the global environment. Make it 'invisible' otherwise it appears in the Markdown.
+
+# rm("National Results") 
+
+allsch <- x1 %>% reduce(bind_rows) %>% 
+  drop_na(region) %>% 
+  mutate(country=case_when(country=="Sierra" ~ "Sierra Leone",
+                           country=="Burkina" ~ "Burkina Faso",
+                           country=="Congo" ~ "Rep. Congo",
+                           country=="Cote" ~ "Cote d'Ivoire",
+                           country=="Sao" ~ "Sao Tome and Principe",
+                           country=="Papua" ~ "Papua New Guinea",
+                           country=="East" ~ "Timor Leste",
+                           TRUE ~ as.character(country)
+                           )) %>% 
+  mutate(iso_a2=countrycode(country, origin="country.name", destination="iso2c"))
+```
 
 ```{r table-reccs}
 
@@ -704,7 +732,7 @@ schv2 <- read_excel("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Sc
   clean_names() %>% 
    # mutate(name = countrycode(iso3, origin = "iso3c", destination = "country.name")) %>%
   mutate(name_long = case_when(country == "DRC" ~ "Democratic Republic of the Congo",
-                          country == "Congo" ~ "Republic of the Congo",
+                          country == "Congo" ~ "Rep. Congo",
                           country == "Cote" ~ "Côte d'Ivoire",
                           country == "Sierra" ~ "Sierra Leone",
                           country == "Sao" ~ "Sao Tome",
@@ -721,19 +749,7 @@ schv2 <- read_excel("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Sc
   
 qt <- read.csv("output/s2s3table.csv")
 
-africa = world %>%
-  filter(continent == "Africa",!is.na(iso_a2)) 
-
-sch <-  africa %>%
-    left_join(schv2, by = "name_long") %>%
-    st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25")
-
-# then join with school dataset on iso_a2
-sch <- sch %>% 
-  left_join(qt, by = "iso_a2") %>% 
-  mutate(feasible80 = if_else(currentprim > s280,"yes","no"),
-         feasible70 = if_else(currentprim > s270, "yes","no"))
-
+# make a table with the target80
 sumtable <- read_excel("data/summary_target80.xlsx") %>% 
   clean_names() %>% 
   left_join(qt, by = "iso_a2") %>% 
@@ -821,8 +837,42 @@ Adjustments in quantification for ANC-EPI distribution did not lead to large dif
 Using the most recent Demographic and Health Survey, the proportion of the population that were primary school students currently attending school was calculated and compared to the population quantifiers needed to achieve 70% and 80% ITN access targets in Scenario 2. Countries where the proportion of primary school students attending school met or exceeded the population quantifier are shown in Fig. \@ref(fig:fig-school), as an indication of where annual school distribution would be feasible. This assumes that only one ITN is given per pupil; for the orange countries in Fig. \@ref(fig:fig-school), giving more than 1 ITN per pupil could provide a solution.
 
 
-```{r mapschoolfun}
-schfun <- function(column) {
+```{r schoolmappingdata}
+africa = world %>%
+  filter(continent == "Africa",!is.na(iso_a2)) 
+
+sch <-  africa %>%
+    left_join(schv2, by = "name_long") %>%
+    st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25")
+
+# then join with school dataset on iso_a2 NATIONAL LEVEL
+sch <- sch %>% 
+  left_join(qt, by = "iso_a2") %>% 
+  mutate(feasible80 = if_else(currentprim > s280,"yes","no"),
+         feasible70 = if_else(currentprim > s270, "yes","no"))
+
+# then join with school dataset on iso_a2 REGIONAL LEVEL
+allschq <- allsch %>% 
+  left_join(qt, by = "iso_a2") %>% 
+  mutate(feasible80 = if_else(percent_population_that_are_current_primary_students > s280,"yes","no"),
+         feasible70 = if_else(percent_population_that_are_current_primary_students > s270, "yes","no")) %>% 
+  drop_na(s270)
+
+# summarize % of regions that are feasible for school dist at 70 and 80% targets (collapse)
+pctregsch <- allschq %>% 
+  group_by(iso_a2) %>%
+  summarize(feas80=sum(feasible80=="yes"), feas70=sum(feasible70=="yes"), n=n()) %>%
+  mutate(pct70=feas70/n,
+         pct80=feas80/n) 
+
+# join the africa shapefile with the regional percent df:
+regsch <- africa %>% 
+  left_join(pctregsch, by="iso_a2") %>% 
+  st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25")
+```
+
+```{r schfunnat}
+schfunnat <- function(column) {
   column <- sym(column) 
   
   ggplot(sch) +
@@ -843,25 +893,60 @@ schfun <- function(column) {
 }
 ```
 
-```{r, include = FALSE}
-schfun("feasible17") +
-   labs(fill = "",
-       title = "Feasibility of Annual Primary School Distribution \nto reach 17% of population")
-```
 
-
-```{r}
-sch1 <- schfun("feasible70") +
+```{r natschoolmaps}
+sch1 <- schfunnat("feasible70") +
 labs(fill = "",
        title = "Feasibility of Annual Primary School \nDistribution to achieve 70% ITN access \nin Scenario 2") 
 
-sch2 <- schfun("feasible80") +
+sch2 <- schfunnat("feasible80") +
 labs(fill = "",
        title = "Feasibility of Annual Primary School \nDistribution to achieve 80% ITN access \nin Scenario 2") 
 ```
 
-```{r fig-school, fig.width = 7, fig.height = 5.25, out.width="80%", fig.cap = "Feasibility of large-scale annual school distribution to achieve ITN access targets for A) 70% and B) 80%"}
-ggarrange(sch1, sch2, align="h", labels = "AUTO", legend="bottom", common.legend = TRUE, vjust=1.5, hjust=0.05)
+```{r schfunreg}
+schfunreg <- function(column) {
+  column <- sym(column) 
+  
+  ggplot(regsch) +
+  geom_sf(
+    data = regsch,
+    aes(fill = !!column),
+    color = "white",
+    size = 0.5
+  ) +
+  theme_void() +
+    scale_fill_fermenter(n.breaks=6,
+                         palette="Purples",
+                         # type="div",
+                         direction=1,
+                         na.value = "WhiteSmoke") +
+  # scale_fill_steps(low="maroon", high="darkgreen",
+  #                  na.value = "WhiteSmoke",
+  #                  n.breaks = 6
+  #                  ) +
+  coord_sf() +
+  labs(fill = "",
+       title = "") +
+  theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
+}
+```
+
+```{r regschoolmaps}
+schr1 <- schfunreg("pct70") +
+labs(fill = "",
+       title = "Percent of regions with sufficient \nprimary school enrollment \nto achieve 70% ITN access \nin Scenario 2") 
+ 
+
+schr2 <- schfunreg("pct80") +
+labs(fill = "",
+       title = "Percent of regions with sufficient \nprimary school enrollment \nto achieve 80% ITN access \nin Scenario 2") 
+```
+
+```{r fig-school, fig.width = 7, fig.height = 5.5, out.width="80%", fig.cap = "Percentage of regions/provinces where large-scale annual school distribution to achieve ITN access targets for A) 70% and B) 80% is feasible, assuming one ITN is given per child."}
+
+ggarrange(schr1, schr2, align="h", labels= "AUTO", legend="bottom", common.legend = TRUE, vjust=1, hjust=-.1)
+# ggarrange(sch1, sch2, align="h", labels = "AUTO", legend="bottom", common.legend = TRUE, vjust=1.5, hjust=0.05)
 ```
 
 # Discussion
@@ -917,3 +1002,8 @@ HK was supported through a grant from The Bill & Melinda Gates Foundation.
 # Supplementary information
 
 # References
+
+```{r todor}
+invisible(todor())
+```
+
