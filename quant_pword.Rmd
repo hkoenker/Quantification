@@ -136,9 +136,19 @@ options(knitr.kable.NA = "")
 
 # Background
 
-Insecticide treated nets (ITNs) have served as the cornerstone of malaria vector control in sub-Saharan Africa for the past two decades. Over 2.5 billion ITNs have been delivered to countries [@Milliner:2016um], primarily through periodic mass distribution campaigns scheduled at approximately three-year intervals, aligning with the expected lifespan of nets. Recent work has shown significant variation in ITN durability across geographic zones, and while some studies support a three-year median lifespan, multi-country analyses of ITN retention times indicate half of countries can expect two years or less of useful life for the majority of nets they distribute [@10.1038/s41467-021-23707-7]. The implications of shorter-than-expected retention times have important implications for the way countries quantify ITN commodity need for mass campaigns, and raise several key questions. First, what is the projected impact of the mismatch in campaign cycle and ITN retention in terms of overall ITN coverage? Second, if mass campaigns every three years are insufficient due to ITNs lasting only 1-2 years, is switching to a two-year campaign cycle indicated, or are there alternative or supplemental ways to distribute ITNs to ensure high rates of ITN access are maintained over time? Third, with what we know now about ITN retention and ITN distribution modalities, is population divided by 1.8 (as currently recommended [@WorldHealthOrganization:2019ws]) the correct quantification approach for mass campaigns for all countries? Finally, what would optimum ITN quantification look like for countries given their particular ITN retention times, aiming to sustain high levels of ITN access (the necessary, but not sufficient, precursor to ITN use)?
+Insecticide treated nets (ITNs) have served as the cornerstone of malaria vector control in sub-Saharan Africa for the past two decades. Over 2.5 billion ITNs have been delivered to countries [@Milliner:2016um], primarily through periodic mass distribution campaigns scheduled at approximately three-year intervals, aligning with the expected lifespan of nets. Recent work has shown significant variation in ITN durability across geographic zones, and while some studies support a three-year median lifespan, multi-country analyses of ITN retention times indicate half of countries can expect two years or less of useful life for the majority of nets they distribute [@10.1038/s41467-021-23707-7]. The implications of shorter-than-expected retention times have important implications for the way countries quantify ITN commodity need for mass campaigns, and raise several key questions. First, what is the projected impact of the mismatch in campaign cycle and ITN retention in terms of overall ITN coverage? Second, if mass campaigns every three years are insufficient due to ITNs lasting only 1-2 years, is switching to a two-year campaign cycle indicated, or are there alternative or supplemental ways to distribute ITNs to ensure high rates of ITN access are maintained over time? Third, with what we know now about ITN retention and ITN distribution modalities, is "population divided by 1.8" (as recommended since 2010 [@Kilian:2010im, @WorldHealthOrganization:2019ws]) the correct quantification approach for mass campaigns for all countries? Finally, what would optimum ITN quantification look like for countries given their particular ITN retention times, aiming to sustain high levels of ITN access (the necessary, but not sufficient, precursor to ITN use)?
 
-This paper explores these questions using an existing stock and flow model [@10.1186/s12936-022-04272-w] to project population ITN access for countries in sub-Saharan Africa over five different distribution scenarios, using estimated ITN retention times from Bertozzi-Villa et al [@10.1038/s41467-021-23707-7] and varying quantification approaches within each distribution scenario. 
+```{r oddhh}
+odd <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Caps/hh size and quant factors v5.dta") %>% 
+  clean_names() %>% 
+  select(percentodd)
+```
+
+In practical terms, quantification for ITN distribution refers to a process whereby national malaria programmes estimate the number of ITNs required for mass campaigns by dividing the total population (or population living within areas targeted for the ITN campaign) by 1.8, which is intended to achieve an end result of households owning 1 ITN for every 2 people. The quantifier 1.8 was selected to account for the `r round(min(odd)*100, digits=1)`-`r round(max(odd)*100, digits=1)`% of households who have an odd number of household members, reflecting the need to round up in these cases [@Kilian:2010im]. Kilian et al originally recommended dividing by 1.6, in order to accommodate distribution challenges including outdated census information and the need to preposition full bales of nets rather than precisely subdividing them. In practice, WHO recommends "population divided by 1.8", and allows a buffer of up to 10% when the previous census is over 5 years old.
+
+Quantification for continuous ITN distribution lacks a "population divided by X" quantifier. It is most straightforward for distribution to pregnant women and infants, as these populations are a) relatively consistent at around 4% and 3% of the population, respectively, and b) attendance rates at antenatal care visits (ANC) and immunization visits (EPI) are generally well-monitored through HMIS. Annual procurements of ITNs for these channels are thus quite predictable. However, for ITN distribution through schools or community channels, quantification has been particularly challenging. The first large-scale pilots of these channels relied on modeling with NetCALC [@Koenker:2013ed], running individual scenarios to fine-tune the number of nets that would produce desired levels of ITN access. No rule of thumb quantifier was produced. It is likely that this gap has contributed in part to the limited scale-up of continuous distribution channels across malaria-endemic countries.
+
+This paper explores the above questions using an existing stock and flow model [@10.1186/s12936-022-04272-w] to project population ITN access for countries in sub-Saharan Africa over five different distribution scenarios, using estimated ITN retention times from Bertozzi-Villa et al [@10.1038/s41467-021-23707-7] and varying quantification approaches within each distribution scenario. Recommended quantifiers for each country are presented for each scenario and at different target levels of population ITN access.
 
 # Methods
 
@@ -709,8 +719,20 @@ names(list_with_sheets) <- sheets_to_read ##Add names
 x1 <- lapply(list_with_sheets,clean_names) ## apply the clean_names function to the full list
 invisible(list2env(x1 ,.GlobalEnv)) ## This function should put all the dataframes within the list (x1) into the global environment. Make it 'invisible' otherwise it appears in the Markdown.
 
-# rm("National Results") 
-
+rm("National Results")
+natl <-  read_excel("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/School Quant/schoolquant_v2.xlsx", sheet="National Results") %>% 
+  clean_names() %>% 
+  mutate(country=case_when(country=="Sierra" ~ "Sierra Leone",
+                           country=="Burkina" ~ "Burkina Faso",
+                           country=="Congo" ~ "Rep. Congo",
+                           country=="Cote" ~ "Cote d'Ivoire",
+                           country=="Sao" ~ "Sao Tome and Principe",
+                           country=="Papua" ~ "Papua New Guinea",
+                           country=="East" ~ "Timor Leste",
+                           TRUE ~ as.character(country)
+                           )) %>% 
+  mutate(iso_a2=countrycode(country, origin="country.name", destination="iso2c"))
+  
 allsch <- x1 %>% reduce(bind_rows) %>% 
   drop_na(region) %>% 
   mutate(country=case_when(country=="Sierra" ~ "Sierra Leone",
@@ -932,6 +954,34 @@ schfunreg <- function(column) {
 }
 ```
 
+```{r hhreachsch}
+natlhh <-  africa %>%
+    left_join(natl) %>%
+    st_transform("+proj=aea +lat_1=20 +lat_2=-23 +lat_0=0 +lon_0=25")
+
+schreach <- natlhh %>%   
+  ggplot() +
+  geom_sf(
+    aes(fill = percent_hh_with_child_attending_primary_school),
+    color = "white",
+    size = 0.5
+  ) +
+  theme_void() +
+    scale_fill_fermenter(n.breaks=5,
+                         palette="Blues",
+                         # type="div",
+                         direction=1,
+                         na.value = "WhiteSmoke") +
+  # scale_fill_steps(low="maroon", high="darkgreen",
+  #                  na.value = "WhiteSmoke",
+  #                  n.breaks = 6
+  #                  ) +
+  coord_sf() +
+  labs(fill = "",
+       title = "") +
+  theme(plot.margin = grid::unit(c(0, 0, 0, 0), "null"))
+```
+
 ```{r regschoolmaps}
 schr1 <- schfunreg("pct70") +
 labs(fill = "",
@@ -942,6 +992,7 @@ schr2 <- schfunreg("pct80") +
 labs(fill = "",
        title = "Percent of regions with sufficient \nprimary school enrollment \nto achieve 80% ITN access \nin Scenario 2") 
 ```
+
 
 ```{r fig-school, fig.width = 7, fig.height = 5.5, out.width="80%", fig.cap = "Percentage of regions/provinces where large-scale annual school distribution to achieve ITN access targets for A) 70% and B) 80% is feasible, assuming one ITN is given per child."}
 
@@ -957,10 +1008,11 @@ ggarrange(schr1, schr2, align="h", labels= "AUTO", legend="bottom", common.legen
 -	X% of countries won’t reach 80% even at 25%....
 -	Ghana needs X and is only doing Y
 -	What is the lowest access we are willing to tolerate between campaigns, or at any time…? What level of oversaturation/inefficiency are we willing to tolerate/invest in?
--	2-year campaigns….?????
+-	2-year campaigns….????? need to calculate the "excess" nets...
 -	Link back to 4 questions from the Intro
 -	No wonder no one is meeting 80% targets
 -	If we want 80% ITN use we would need 90% access as the target
+- School feasibility results; doesn't necessarily rule out school distribution (every net helps). Essentially, are the primary school students a large enough population to hit what's needed if you gave each of them one net. Still have the issue of concentration of school nets within certain households. [see map of % hh with a primary school kid in supplementary info] % attending reflects not only scolarization rates but also age structure of the population.
 -	Based on projections across multiple countries using varying ITN retention times from Bertozzi-Villa, overall recommendations for CD and campaign quantification for other countries
 -	Providing greater and greater numbers of nets/more frequently disincentivizes retention times (?)
 -	Limitation of the methods 
@@ -983,7 +1035,7 @@ Not applicable
 
 ## Availability of data and materials
 
-Code is available at https://github.com/hkoenker/
+Code is available at https://github.com/hkoenker/Quantification 
 
 ## Competing interests
 
@@ -996,12 +1048,20 @@ HK was supported through a grant from The Bill & Melinda Gates Foundation.
 ## Authors' contributions
 
 ## Acknowledgements
+The authors are grateful for the early feedback on this manuscript from Pete Gething and Amelia Bertozzi-Villa, and for Roger Koenker's assistance in building the NPC-ITN access conversion method. 
 
 ## Authors' information (optional)
 
 # Supplementary information
 
+```{r figreach, fig.cap = "Percent of households with a child attending primary school (most recent Demographic and Health Survey)" }
+schreach
+```
+
+
 # References
+
+More references to be added.
 
 ```{r todor}
 invisible(todor())
