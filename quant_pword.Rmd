@@ -451,7 +451,7 @@ ggarrange(dmmap,
 
 df <- as.data.frame(read_csv("data/WB_Population_Estimates_CSV/Population-EstimatesData.csv")) %>% 
   clean_names() %>% 
-  select(country_name, country_code, indicator_name, indicator_code, x2022, x2023, x2024, x2025, x2026, x2027, x2028, x2029, x2030, x2031, x2032, x2033, x2034, x2035, x2036, x2037) %>% 
+  select(country_name, country_code, indicator_name, indicator_code, x2020, x2021, x2022, x2023, x2024, x2025, x2026, x2027, x2028, x2029, x2030, x2031, x2032, x2033, x2034, x2035, x2036, x2037) %>% 
   filter(indicator_name=="Population, total") %>% 
   mutate(ccode=country_code) %>% 
   drop_na(x2025) 
@@ -703,11 +703,14 @@ t5_16 <- s5min %>%
 burkina5 <- s5min %>% 
   filter(iso_a2=="BF") %>% 
   left_join(rettimes)
+
+totcty <- s5min %>% 
+  nrow()  ## grab the total number of countries in the analysis
 ```
 
 \newpage
 
-For Scenario 4, the quantifier used for 3-year mass campaigns (in combination with routine ITN distribution at ANC/EPI clinics) was varied from 1.0 to 2.0. The lowest level of ITN access between campaigns is shown in Table \@ref(tab:tabscen4). Under the current recommended quantifier of 1.8, only `r t4_18$name[1]` and `r t4_18$name[2]`, both with net retention times of over three years, were estimated to maintain ITN access at or above 80% between campaigns. Even at population divided by 1.6, only `r words(length(unique(t4_16$name)))` countries maintained ITN access above 80%, likewise all with net retention times of at least three years. In Burkina Faso, with the standard quantifier of population / 1.8 and an estimated retention time of `r burkina4$lifespan[1]`, the country reaches a low point of `r round(burkina4$accrk418[1], digits=0)`% ITN access between campaigns. Using population / 1.1 would result in an estimated low point of `r round(burkina4$accrk411[1], digits=0)`% population ITN access between campaigns.
+For Scenario 4, the quantifier used for 3-year mass campaigns (in combination with routine ITN distribution at ANC/EPI clinics) was varied from 1.0 to 2.0. The lowest level of ITN access between campaigns is shown in Table \@ref(tab:tabscen4). Under the current recommended quantifier of 1.8, only `r t4_18$name[1]` and `r t4_18$name[2]`, both with net retention times of over three years, were estimated to maintain ITN access at or above 80% between campaigns. Even at population divided by 1.6, only `r words(length(unique(t4_16$name)))` countries (`r round(length(unique(t4_16$iso_a2))/totcty*100, digits=1)`% of countries in the sample) maintained ITN access above 80%, likewise all with net retention times of at least three years. In Burkina Faso, with the standard quantifier of population / 1.8 and an estimated retention time of `r burkina4$lifespan[1]`, the country reaches a low point of `r round(burkina4$accrk418[1], digits=0)`% ITN access between campaigns. Using population / 1.1 would result in an estimated low point of `r round(burkina4$accrk411[1], digits=0)`% population ITN access between campaigns.
 
 
 
@@ -768,7 +771,7 @@ s4
 
 ```
 
-Table \@ref(tab:tabscen5) provides a similar picture but for campaigns conducted every 2 years. Under a population / 1.8 quantifier, `r words(length(unique(t5_18$name)))` countries including `r combine_words(t5_18$name)` would all maintain ITN access at or above 80% between campaigns. In other countries, 2-yearly campaigns closer to one ITN per person would be needed in order to maintain ITN access at the 80% target. Continuing with the Burkina Faso example, with the standard quantifier of population / 1.8, the country reaches a low point of `r round(burkina5$accrk518[1], digits=0)`% ITN access in the year between campaigns. Using population / 1.2 would result in an estimated low point of `r round(burkina5$accrk512[1], digits=0)`% population ITN access between campaigns.
+Table \@ref(tab:tabscen5) provides a similar picture but for campaigns conducted every 2 years. Under a population / 1.8 quantifier, `r words(length(unique(t5_18$name)))` countries (`r round(length(unique(t5_18$iso_a2))/totcty*100, digits=1)`%) including `r combine_words(t5_18$name)` would all maintain ITN access at or above 80% between campaigns. In other countries, 2-yearly campaigns closer to one ITN per person would be needed in order to maintain ITN access at the 80% target. Continuing with the Burkina Faso example, with the standard quantifier of population / 1.8, the country reaches a low point of `r round(burkina5$accrk518[1], digits=0)`% ITN access in the year between campaigns. Using population / 1.2 would result in an estimated low point of `r round(burkina5$accrk512[1], digits=0)`% population ITN access between campaigns.
 
 ```{r tabscen5, tab.cap = "Lowest level of ITN access between 2-year campaigns at different population quantifiers. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed."}
 
@@ -1459,17 +1462,33 @@ ggarrange(schr1, schr2, align="h", labels= "AUTO", legend="bottom", common.legen
 
 # Discussion
 
--	Mass campaigns + ANC-EPI (7%) produces low access for most countries
--	Approach 80% access when Cameroon at 15%; TZA requires 22%; Liberia at 25% is still only 60%
-- But retention times and DM median lifespans are frequently quite different (c.f. Liberia, 1.0 vs 4+)
--	X% of countries won’t reach 80% even at 25%....
--	X% of countries won’t reach 80% even at 25%....
--	Ghana needs X and is only doing Y
+This analysis shows that the current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve targets of 80% population access to ITNs in the majority of malaria endemic countries, given overall retention times are estimated at below three years. 
+
+Second, the impulse to conduct mass campaigns every two years in places where nets have an estimated retention time or durability of two years, however intuitive, ultimately requires far more ITNs to maintain 80% population ITN access than under a strategy of continuous distribution. Compared to the current status quo, full scale continuous distribution of nets could provide continuous ITN access at 80% or higher, for `r round((avgscenpct$mean[2]-1)*100, digits=0)`% more nets, while a strategy of 2-year mass campaigns using a quantification factor tailored for net retention rates would require `r round((avgscenpct$mean[5]-1)*100, digits=0)`% more nets than status quo with similar coverage outcomes. 
+
+Third, after examining whether population/1.8 is appropriate in all settings, we find that in order to maintain population ITN access at target levels of 80%, tailoring of the quantification factor to the demographic profile and net durability profile of each country is necessary. As described in Bertozzi-Villa et al and shown here, the relationship between nets-per-capita and population ITN access is sensitive to average household size, with countries with average household size below 5 getting less ITN access for the same number of nets-per-capita than countries with average household size of 5, 6, or more. Net retention time is however the major driving factor behind the calculations for the optimal quantification factor. Countries with retention times of less than 2 years could not maintain ITN access at 80% between campaigns even when one ITN per person was delivered in the model, and countries with retention time of around 2.5 years required population/1.5 or population/1.2 to offset the rapid loss of nets post-campaign and still maintain sufficient ITN coverage. However, even these approaches would introduce what most planners and donors would consider a vast "oversupply" of ITNs at each campaign.
+
+Fourthly, optimal quantification factors, are presented here for a variety of ITN distribution strategies, along with the total number of nets that would be required, in an effort to facilitate decision making for national programmes and their partners. 
+
+The global malaria community faces significant challenges, with limited funding to implement live-saving interventions potentially the greatest immediate threat to malaria control efforts. Countries are advised to generate subnational strategies to tailor intervention packages to specific settings, but resources are inadequate to implement the desired combinations of interventions that would have the greatest impact. Countries are advised to prioritize activities in the face of limited funding, leaving national programmes with difficult choices about which population segments to cover fully, and which to leave with suboptimal protection. These recommendations to "do more with less" are not tenable. Insufficient vector control coverage is a key driver of malaria transmission; malaria cases increase between campaigns. The challenges of delivering more ITNs are clear - funding for both the nets and their distribution costs; donor appetite; not to mention the additional cost of new types of ITNs recommended for areas with insecticide resistance. However, the costs of continuing to deliver insufficient quantities of ITNs and provide only intermittent protection are also clear - continued loss of life, educational achievement, quality of life due to malaria. 
+
+There is a growing call to improve the retention time and/or durability of ITNs through improved physical specifications for ITNs and through improvements in household-level behaviors related to net care. Improvements in both areas would contribute substantially towards increasing retention times, but it is unlikely that this would offset the general and continued challenges of keeping nets in good condition for long periods of time across settings in malaria-endemic areas. Net durability is driven by behavioral factors in part, but also the household environment, which in many settings is simply a difficult place for nets to survive. This is particularly true for people living through humanitarian emergencies, and this population is projected to increase due to climate change and climate-related emergencies. 
+
+All of these results hinge on the estimated retention times. It's important to highlight that ITN durability studies, while largely in line with retention times used in this paper, do diverge in several cases. Most notably, Liberia's retention time was estimated at 1.0 years, but an ITN durability study completed in 2021 in two counties observed a median survival in serviceable condition of 4 years. Countries like Liberia with divergent data for net lifespan need to weigh these results carefully. Likewise, net retention times and durability have been demonstrated to vary subnationally; durability monitoring of ITNs in northern Nigeria showed they median lifespans of over five years, while the same product monitored simultaneously in southern zones of Nigeria had a lifespan of just over three years [@Obi:2020eza], consistent with findings from an earlier cross-sectional durability study in similar areas of Nigeria [@Kilian:2015hk]. Programmes must consider potential differences in net retention behavior and net durability as they weigh their quantification decisions.
+
+Two countries currently implement large-scale continuous distribution: Ghana distributes ITNs to school children in grades 2 and 6 between 3-year campaigns, while Tanzania has implemented full scale school distribution in 14 mainland regions since 2016, and expanded the programme to 5 additional regions in 2022. The quantities of ITNs distributed to school children in Ghana amount to `r round(1400000/with(afpop, x2020[which(country_name=="Ghana")])*100, digits=1)`% of the population (1.4 million ITNs in the [2020 school distribution](https://allianceformalariaprevention.com/wp-content/uploads/2021/06/CD_Ghana_SBD_Case_Study_0620201.pdf)) - far from the `r with(table80, scenario_3[which(name == "Ghana")])"`% estimated to be needed to maintain ITN access at levels of 80%. Tanzania's school net programme has delivered ITNs equivalent to 12-16% of the population in SNP zones over recent years, but they may require quantification of population x `r with(table80, scenario_2[which(name == "Tanzania")])"`% to maintain ITN access at 80%, discussed in more detail elsewhere [@10.1186/s12936-022-04272-w].
+
+This analysis uses a target of 80% population ITN access, but it must be noted that for ITN use levels to reach 80%, ITN access must be at least 90%, given the persistent (yet happily quite small) gap between ITN access and ITN use [@Koenker:2014gb;@10.1038/s41467-021-23707-7;@Bhatt:2015gn]. Targeting ITN access at 80% will max out ITN use around 70% or lower. Donors and programmes must therefore evaluate what target levels of ITN use are necessary for success, and adjust ITN access targets upwards accordingly.
+
+```{r}
+# This is due essentially to a larger fraction of nets being unavailable for use where household size is smaller: e.g. 2 nets for 3 people leaves "half a net" unable to be used, whereas 6 nets for 10 people leaves 
+```
+
 -	What is the lowest access we are willing to tolerate between campaigns, or at any time…? What level of oversaturation/inefficiency are we willing to tolerate/invest in?
 -	2-year campaigns….????? need to calculate the "excess" nets...
--	Link back to 4 questions from the Intro
+
 -	No wonder no one is meeting 80% targets
--	If we want 80% ITN use we would need 90% access as the target
+
 - School feasibility results; doesn't necessarily rule out school distribution (every net helps). Essentially, are the primary school students a large enough population to hit what's needed if you gave each of them one net. Still have the issue of concentration of school nets within certain households. [see map of % hh with a primary school kid in supplementary info] % attending reflects not only scolarization rates but also age structure of the population.
 -	Based on projections across multiple countries using varying ITN retention times from Bertozzi-Villa, overall recommendations for CD and campaign quantification for other countries
 -	Providing greater and greater numbers of nets/more frequently disincentivizes retention times (?)
