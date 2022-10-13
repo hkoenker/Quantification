@@ -87,6 +87,7 @@ library(knitr)
 library(stringr)
 library(stringi) # for removing accents from country names
 library(ggpubr) # includes ggarrange and cowplot 
+library(patchwork) # for insetting plots and nicer combos than ggarrange and cowplot, somehow
 
 # Load QR libraries
 library(quantreg)
@@ -469,9 +470,6 @@ To further understand the relative sizes of ITN distributions through various ch
 ## Scenarios
 
 To inform recommendations for quantification of ITNs, the above process was used to model ITN distributions under five typical ITN distribution scenarios, varying quantification approaches within each scenario. The majority of malaria-endemic countries currently implement Scenario 1; Tanzania has implemented Scenario 2 since 2013 in a subset of regions, while Ghana has implemented Scenario 3 since 2014. While countries aim to deliver mass campaigns every three years, some have recently argued for campaign every two years to offset shorter median net lifespans.
-```{r}
-# TODO: when did Ghana start school distribution?
-```
 
 1.	“Status Quo”: Mass campaigns every three years with routine distribution of ITNs to pregnant women and infants through antenatal clinics (ANC) and immunization visits (EPI). Quantification of the mass campaigns was fixed at population / 1.8 while quantification of routine distribution varied from population x 5%-7%.
 2.	“Full-scale continuous”: Full-scale annual school distribution of ITNs with routine distribution of ANC and EPI ITNs, fixing the routine distribution at population x 6% and varying the quantification of school distributions from population x 1-50%
@@ -1245,27 +1243,38 @@ asp <- avgscenpct %>%
   scale_fill_brewer(palette="Set2", labels=c("Full Scale CD", "Campaigns + CD", "3-year Campaigns", "2-year Campaigns")) +
   scale_x_discrete(labels=c("","","","")) +
   scale_y_continuous(labels = scales::percent, breaks=c(0,.5,1,1.5,2), limits=c(0,2.5)) +
-  geom_text(hjust=.5, vjust=-.75, size=3)+
+  geom_text(hjust=.5, vjust=-.75, size=2)+
   labs(fill="Scenario",
-       y="Percent",
+       y="",
        x="",
-       title="Percentage difference in total nets needed - mean of all countries") +
+       title="Across all countries",
+       # title="Percentage difference in total nets needed - mean of all countries"
+       ) +
   theme(axis.ticks.x = element_blank(),
         legend.key.size = unit(.25, 'cm'), #change legend key size
         # legend.key.height = unit(1, 'cm'), #change legend key height
         # legend.key.width = unit(1, 'cm'), #change legend key width
-        legend.title = element_text(size=10), #change legend title font size
+        legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=8),  #change legend text font size
-        plot.margin = unit(c(.3,0,0,0), "cm"))
+        plot.margin = unit(c(.3,0,0,0), "cm"),
+        rect = element_rect(fill = "white"),
+        legend.position="none",
+        plot.title = element_text(hjust = 0.8))
 
-asp
 
 # ggarrange(asp,mapscen, nrow=, ncol=1, widths=c(1,3), heights=c(1,3))  
 # ggarrange(mapscen, asp, nrow=2, ncol=1, widths=c(3,1), heights=c(3,1), labels="AUTO", align="h")  
 
-mapscen/asp + 
-  plot_annotation(tag_levels = 'A') + 
-  plot_layout(heights = c(3, 1))
+## Two-row patchwork to combine the graphs
+# mapscen/asp + 
+#   plot_annotation(tag_levels = 'A') + 
+#   plot_layout(heights = c(3, 1))
+
+
+
+TotNets <- mapscen + inset_element(asp, left = -0.05, bottom = -0.08, right = .3, top = .3)
+TotNets
+
 ```
 
 Adjustments in quantification for ANC-EPI distribution did not lead to large differences in ITN access in Scenario 1. The key factors driving variation across countries within a given scenario were the estimated retention times for each country and the mean household size. 
