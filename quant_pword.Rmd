@@ -1178,59 +1178,94 @@ scenpct <- tnets %>%
 #                      breaks = seq(-1, 1, 0.2),
 #                      labels = seq(-1, 1, 0.2))
   
-scenpct %>% 
+mapscen <- scenpct %>%
   # filter(name!="Eritrea") %>%
-  ggplot(aes(x=scenario, y=pct*100, fill=scenario)) +
+  ggplot(aes(x = scenario, y = pct * 100, fill = scenario)) +
   geom_col() +
-  geom_hline(yintercept=0) +
+  # geom_hline(yintercept = 0) +
   # scale_y_continuous(name = "Percent",
   #                    breaks = seq(-1, 1, 0.25),
   #                    labels = seq(-1, 1, 0.25)) +
-  scale_x_discrete(labels=c("","","","")) +
-  facet_geo(~code, grid=ssa_grid, label="code") +
-  labs(
-    title = "Total nets needed over 10 years to maintain \n≥80% ITN access, relative to Full Scale CD",
-    x = "",
-    y = "Percent",
-    fill = "Scenario"
+  scale_x_discrete(labels = c("", "", "", "")) +
+  facet_geo( ~ code, grid = ssa_grid, label = "code") +
+  labs(title = "Percentage difference in total nets needed over 10 years\nto maintain ≥80% ITN access, relative to Full Scale CD",
+       x = "",
+       y = "Percent",
+       fill = "Scenario") +
+  scale_fill_brewer(
+    palette = "Set2",
+    labels = c(
+      "Full Scale CD",
+      "Campaigns + CD",
+      "3-year Campaigns",
+      "2-year Campaigns"
+    )
   ) +
-  scale_fill_brewer(palette="Set2", labels=c("Full Scale CD", "Campaigns + CD", "3-year Campaigns", "2-year Campaigns")) +
+  theme_void() +
   theme(
     # legend.position="none",
     # axis.text.x = element_text(angle=45, hjust=1)
     # axis.text.x = element_blank(),
     axis.line = element_blank(),
+    axis.line.x = element_blank(),
+    axis.line.x.bottom=element_line(color="white"),
     axis.ticks.x = element_blank(),
     # axis.ticks.y = element_blank(),
     axis.text = element_text(size = 5),
-    panel.grid.major.x = element_line(color = "darkgrey", size = 0),
+    # panel.grid.major.x = element_line(color = "darkgrey", size = 0),
     strip.text.x = element_text(size = 6),
-  strip.background = element_rect(color = "white", size = .5),
-  legend.key.size = unit(.25, 'cm'), #change legend key size
-        # legend.key.height = unit(1, 'cm'), #change legend key height
-        # legend.key.width = unit(1, 'cm'), #change legend key width
-        legend.title = element_text(size=10), #change legend title font size
-        legend.text = element_text(size=8)) + #change legend text font size) 
-  scale_alpha(guide = 'none') +
-  scale_size(guide = 'none')
+    strip.background = element_rect(color = "white", size = .5),
+    legend.key.size = unit(.25, 'cm'),
+    #change legend key size
+    # legend.key.height = unit(1, 'cm'), #change legend key height
+    # legend.key.width = unit(1, 'cm'), #change legend key width
+    legend.title = element_text(size = 10),  #change legend title font size
+    legend.text = element_text(size = 8), #change legend text font size)
+    # axis.text.y = element_blank(),
+    # axis.ticks = element_blank(),
+    axis.title.x = element_blank(),
+    # axis.title.y = element_blank(),
+    # legend.position="none",
+    panel.background = element_blank(),
+    panel.border = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_blank()
+  )
 
 ggsave("figs/Fig_totnetsmap.png")
 
 avgscenpct <- scenpct %>% 
   group_by(scenario) %>% 
-  summarize(mean=mean(pct, na.rm = TRUE)) %>% 
-  ggplot(aes(x=scenario, y=mean*100, fill=scenario, label=round(mean*100, digits=0))) +
+  summarize(mean=mean(pct, na.rm = TRUE)) 
+
+asp <- avgscenpct %>% 
+  ggplot(aes(x=scenario, y=mean, fill=scenario, label=scales::percent(round(mean, digits=2)))) +
   geom_col() +
   scale_fill_brewer(palette="Set2", labels=c("Full Scale CD", "Campaigns + CD", "3-year Campaigns", "2-year Campaigns")) +
   scale_x_discrete(labels=c("","","","")) +
-  geom_text(hjust=.5, vjust=-.75)+
+  scale_y_continuous(labels = scales::percent, breaks=c(0,.5,1,1.5,2), limits=c(0,2.5)) +
+  geom_text(hjust=.5, vjust=-.75, size=3)+
   labs(fill="Scenario",
        y="Percent",
-       x="") +
-  theme(axis.ticks.x = element_blank())
+       x="",
+       title="Percentage difference in total nets needed - mean of all countries") +
+  theme(axis.ticks.x = element_blank(),
+        legend.key.size = unit(.25, 'cm'), #change legend key size
+        # legend.key.height = unit(1, 'cm'), #change legend key height
+        # legend.key.width = unit(1, 'cm'), #change legend key width
+        legend.title = element_text(size=10), #change legend title font size
+        legend.text = element_text(size=8),  #change legend text font size
+        plot.margin = unit(c(.3,0,0,0), "cm"))
 
-avgscenpct
-  
+asp
+
+# ggarrange(asp,mapscen, nrow=, ncol=1, widths=c(1,3), heights=c(1,3))  
+# ggarrange(mapscen, asp, nrow=2, ncol=1, widths=c(3,1), heights=c(3,1), labels="AUTO", align="h")  
+
+mapscen/asp + 
+  plot_annotation(tag_levels = 'A') + 
+  plot_layout(heights = c(3, 1))
 ```
 
 Adjustments in quantification for ANC-EPI distribution did not lead to large differences in ITN access in Scenario 1. The key factors driving variation across countries within a given scenario were the estimated retention times for each country and the mean household size. 
