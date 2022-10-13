@@ -7,7 +7,9 @@ grstyle set plain, hor compact
 grstyle set legend, nobox
 grstyle set color Set2
 
-* load and tidy the retention times. Our dataset has a row for each country and we will build out years from there (wide format) 
+set graphics off // toggle if you need to check graphs are looking ok 
+
+* STEP 1: LOAD DATA and tidy the retention times. Our dataset has a row for each country and we will build out years from there (wide format) 
 
 	import excel data/retentiontime.xlsx, clear firstrow case(l)
 	destring retention, replace
@@ -24,6 +26,107 @@ grstyle set color Set2
 	* even less work - 10m population, fixed growth rate, since net inputs based on pop and NPC, will cancel out 
 	
 
+**** import and save RKoenker's gridded points transforming nets-per-capita into ITN access with bands. We need three separate files for each hhsize because they all have their own lb and ubs. But we'll merge on the npc variable and hhsize variable.
+
+	**** Four different hh sizes: 0 is small, 1 is med1, 2 is med2, 3 is large
+	
+	
+		import delimited "data/itnpers_into_access_transformation_hh.csv", clear case(l)
+		
+		** save it a first time as the regular access estimates with CIs
+		rename npc npccentile
+		replace npccentile=round(npccentile/100,.01)
+		rename v3 accrk
+		rename v2 accrklb
+		rename v4 accrkub
+		
+		save data/itnpers_into_access_transformation_hh, replace 
+		
+		** save it a second time as the lower bound estimate and CI (has to match variables later)
+		rename npccentile npclbcentile
+		rename accrk acc_npclb
+		rename accrklb acclb_npclb
+		rename accrkub accub_npclb
+		
+		save data/itnpers_into_access_transformation_lb_hh, replace
+		
+		** save it a third time as the upper bound estimate and CI (has to match variables later)
+		rename npclbcentile npcubcentile
+		rename acc_npclb acc_npcub
+		rename acclb_npclb acclb_npcub
+		rename accub_npclb accub_npcub
+		
+		save data/itnpers_into_access_transformation_ub_hh, replace
+	
+
+/* *** The full dataset fitted for transformation:
+ 
+		import delimited "../data/itnpers_into_access_transformation.csv", clear case(l)
+		rename v1 npccentile
+		replace npccentile=round(npccentile/100,.01)
+		rename v3 accrk
+		rename v2 accrklb
+		rename v4 accrkub
+			
+		save itnpers_into_access_transformation, replace 
+		
+		rename npccentile npclbcentile
+		rename accrk acc_npclb
+		rename accrklb acclb_npclb
+		rename accrkub accub_npclb
+		
+		save itnpers_into_access_transformation_lb, replace
+		
+		rename npclbcentile npcubcentile
+		rename acc_npclb acc_npcub
+		rename acclb_npclb acclb_npcub
+		rename accub_npclb accub_npcub
+		
+		save itnpers_into_access_transformation_ub, replace
+*/		
+		
+
+	
+** Merge in the average hh size for each country 
+
+	use "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Analysis ITN Indicators compiled/national_itn_indicators.dta", clear
+	bysort country: egen maxy=max(year)
+	keep if year==maxy 
+	drop if meanhh==. // 8 dropped 
+	kountry country, from(other) stuck m
+	rename _ISO3N_ iso3n
+	kountry iso3n, from(iso3n) to(iso3c)
+	rename _ISO3C_ iso3
+	drop if dataset=="ZMPR18"
+	
+	keep country iso3 meanhh 
+	
+	replace iso3="CIV" if country=="Cote"
+	replace iso3="COD" if country=="DRC"
+	* replace iso3="STP" if country=="Sao" // not including Sao Tome & Principe
+	replace iso3="SLE" if country=="Sierra"
+	drop if iso3=="" // drop PNG and East Timor
+	
+	merge 1:1 iso3 using output/retentiontime
+	* _mer==1 is countries outside SSA that we don't need to include
+	* _mer==2 is countries I don't have mean hh size for, that we do need to include // https://globaldatalab.org/areadata/table/hhsize/CAF+DJI+GNQ+ERI+ETH+GNB+SOM+SSD+SDN/?levels=1
+	replace meanhh=5.59 if iso3=="CAF"
+	replace meanhh=5.89 if iso3=="DJI"
+	replace meanhh=6.15 if iso3=="ERI"
+	replace meanhh=5.83 if iso3=="ETH"
+	replace meanhh=5.98 if iso3=="SSD"
+	replace meanhh=5.98 if iso3=="SDN"
+	replace meanhh=5.81 if iso3=="GNQ"
+	replace meanhh=6.81 if iso3=="GNB"
+	replace meanhh=6.16 if iso3=="SOM"
+	
+	drop if _merge==1
+	drop _merge country 
+	
+	** create the groupings 
+	egen hhsize=cut(meanhh), at(0,4,5,6,14) label
+	
+	
 ** Call the local parameters from the file locals.do in the folder - this is the start and end year and others based on those:
 
 	include locals.do 
@@ -78,7 +181,7 @@ grstyle set color Set2
 		
 		sort iso3 year // this is crucial
 		
-		run "/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Quantification 2021/2. Internal crop and access calcs.do"
+		run "/Users/hannahkoenker/Dropbox/R Directory/Quantification/02_Internal_crop_access_calcs.do"
 		
 		di "`max'"
 		
@@ -148,8 +251,12 @@ grstyle set color Set2
 	putpdf paragraph, font(,20) halign(center)
 	putpdf text ("2. Projected ITN access from large-scale annual distributions")
 	
-	foreach x of numlist .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25 .26 .27 .28 .29 .30 {
+	** numlist indicates CD quantification, SEPARATE FROM the RCH quantification, which is assumed at 6% in line 263
+	
+	*foreach x of numlist .000001 .01 .02 .03 .04 .05 .06 .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25 .26 .27 .28 .29 .30 .31 .32 .33 .34 .35 .36 .37 .38 .39 .40 {
 		
+		foreach x of numlist .000001 .01(0.01).50 {
+			
 		preserve 
 		
 		** distribute nets = MRC in 2022 2025 2028 2031
@@ -161,18 +268,18 @@ grstyle set color Set2
 			
 		local thirdy = `secondy'+1
 		
-		replace totalnets=totalnets+(pop*`x') if year>=`thirdy' // add on the school/community nets
+		replace totalnets=totalnets+(pop*`x') if year>=`thirdy' // ADD ON the school/community nets to the RCH nets
 		
-		replace percpop=totalnets/pop*100 if year>=`starty' // fill in percent pop for the new years
+		replace percpop=totalnets/pop*100 if year>=`starty' // fill in percent pop for the new years - this is now total nets from BOTH SCHOOL AND RCH 
 		
 		local X=`x'*100 // whole number for putting into the file/graph names for saving, later
-		local X: di %2.0f `X' // this should make it 7, 8, etc. 
+		local X: di %2.0f `X' // this should make it 0, 7, 8, etc. THIS IS THE CD QUANT FACTOR ONLY.
 		
 		sort iso3 year // this is crucial
 		
 		run "02_Internal_crop_access_calcs.do"
 		
-		gen scenario=200+`X'
+		gen scenario=200+`X' // LABEL IS CD QUANT FACTOR ONLY 
 		local tag = 200+`X'
 		save "output/runs/`tag'", replace 
 
@@ -210,19 +317,21 @@ grstyle set color Set2
 	
 	local y=0.06 // assume 6% RCH 
 	
-	foreach x of numlist .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25 .26 .27 .28 .29 .30 {
+	** we can go to 40% in Scenario 3; maxes out at 39 
+	
+	foreach x of numlist .000001 .01(0.01).40 {
 		preserve 
 		
 		** distribute nets = MRC in 2022 2025 2028 2031
 			
 		replace totalnets=pop*`y' if year>=`starty' // issue the RCH nets starting from 2020 
-		replace totalnets=totalnets+(pop/1.8) if year==2022 | year==2025 | year==2028 | year==2031 | year==2034 // add on  the MRC nets 
-		replace totalnets=totalnets+(pop*`x') if year==2023 | year==2024 | year==2026 | year==2027 | year==2029 | year==2030 | year==2032 | year==2033 | year==2035 // issue the community/school nets between campaigns
+		replace totalnets=totalnets+(pop/1.8) if year==2022 | year==2025 | year==2028 | year==2031 | year==2034 // ADD ON  the MRC nets 
+		replace totalnets=totalnets+(pop*`x') if year==2023 | year==2024 | year==2026 | year==2027 | year==2029 | year==2030 | year==2032 | year==2033 | year==2035 // ADD ON the community/school nets between campaigns
 		
-		replace percpop=totalnets/pop*100 if year>=`starty' // fill in percent pop for the new years
+		replace percpop=totalnets/pop*100 if year>=`starty' // fill in percent pop for the new years -- is TOTAL CHANNEL PERCPOP
 		
 		local X=`x'*100 // whole number for putting into the file/graph names for saving, later
-		local X: di %2.0f `X' // this should make it 7, 8, etc. 
+		local X: di %2.0f `X' // this should make it 0, 1, 7, 8, etc. 
 		
 		sort iso3 year // this is crucial
 		

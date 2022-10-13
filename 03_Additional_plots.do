@@ -9,10 +9,10 @@
 		append using "output/runs/`x'"
 	}
 	
-	foreach x of numlist 207/230 {
+	foreach x of numlist 201/240 {
 		append using "output/runs/`x'"
 	}
-	foreach x of numlist 307/330 {
+	foreach x of numlist 301/340 {
 		append using "output/runs/`x'"
 	}
 	foreach x of numlist 410/420 {
@@ -180,6 +180,7 @@
 		tab scenario if iso3=="LBR" & accrk>=80 & accrk<=85 & group==3 // some countries, incl CAM, don't fall in this band! only 31 countries.
 
 	* then take the lowest scenario number from the highest frequency group 
+	* the "q" is the CD quantification factor only, it DOES NOT INCLUDE THE 6% RCH 
 	
 		preserve
 			collapse (count) group if group==3 & accrk>=70 & accrk<100 & year>2021 & percpop<61, by(iso_a2 scenario) // exclude years of the mass campaigns; band expanded to 70-100 for Scenario 3, as some btw years are always above 80
@@ -194,7 +195,7 @@
 		restore
 		
 		preserve
-			collapse (count) group if group==3 & accrk>=80 & accrk<90 & year>2021 & percpop<61, by(iso_a2 scenario)
+			collapse (count) group if group==3 & accrk>=80 & accrk<90 & year>2021 & percpop<61, by(iso_a2 scenario) // count # of years where access is at least 80%, excluding 2021 and any campaign years from the count.
 			bysort iso_a2: egen max = max(group)
 			bysort iso_a2: egen q = min(scenario) if group==max
 			collapse q, by(iso_a2)
@@ -268,23 +269,42 @@
 	*** SCENARIO 4 - 3y UCC - how far should ITN access drop between campaigns?
 	
 		* what's the lowest that ITN access drops to between campaigns?
-		
+		use output/quant_runs, clear 
 			
 				preserve 
 					collapse (min) accrk if group==4 & year>2021, by(iso_a2 scenario)
 					reshape wide accrk, i(i) j(scenario)
+					
+					
+					
 					save data/s4_min_acc, replace
+					
+			
+					** grab the q for keeping ITN access at or above 80
+					
+						reshape long accrk,  i(iso_a2) j(q) 
+						drop if accrk<80
+						bysort iso_a2: egen best=max(q)
+						
+						collapse best, by(iso_a2)
+						
+						save data/s4q, replace
 				restore 
+				
+			
 		
-		/* 
+		/* DOESN"T DO WHAT I WANT
 			preserve 
-				collapse (count) group  if group==4 & accrk>=70 & accrk<100 & percpop<61, by(iso_a2 scenario)
+				collapse (count) group  if group==4 & accrk>=80 & accrk<100 & percpop<61, by(iso_a2 scenario)
 				sort iso_a2 scenario
-				gen target=70
+				
 				bysort iso_a2: egen max = max(group)
 				bysort iso_a2: egen q = min(scenario) if group==max
+				collapse q, by(iso_a2)
+				replace q=(q-400)/10
+				gen target=80
+			restore 
 		*/
-		
 		*** SCENARIO 5 - 2y UCC - how far should ITN access drop between campaigns?
 	
 		* what's the lowest that ITN access drops to between campaigns?
@@ -293,7 +313,29 @@
 				preserve 
 					collapse (min) accrk if group==5 & year>2021, by(iso_a2 scenario)
 					reshape wide accrk, i(i) j(scenario)
+					
+					/*
+					levelsof iso_a2, local(clvl)
+					gen q=.
+					foreach c in clvl {
+						foreach var of varlist accrk* {
+							if (`var'==80 | `var'==81) & q==. {
+								replace q="`var'"
+							}
+					} // next var
+					} // next country
+					*/
 					save data/s5_min_acc, replace
+					
+					** grab the q for keeping ITN access at or above 80
+					
+						reshape long accrk,  i(iso_a2) j(q) 
+						drop if accrk<80
+						bysort iso_a2: egen best=max(q)
+						
+						collapse best, by(iso_a2)
+						
+						save data/s5q, replace
 				restore 
 		
 		
@@ -328,7 +370,7 @@ cd output/runs
 	* need total nets for 70, for 80, for 90 for each scenario 2, 3, and 4/5
 	* so 3 x 3 x 3 countries 
 
-	cd output/runs
+	* cd output/runs
 
 	* set year to keep records from:
 	local y=2021
