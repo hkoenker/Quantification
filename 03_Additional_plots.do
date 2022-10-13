@@ -195,7 +195,7 @@
 		restore
 		
 		preserve
-			collapse (count) group if group==3 & accrk>=80 & accrk<90 & year>2021 & percpop<61, by(iso_a2 scenario) // count # of years where access is at least 80%, excluding 2021 and any campaign years from the count.
+			collapse (count) group if group==3 & accrk>=80 & accrk<100 & year>2021 & percpop<61, by(iso_a2 scenario) // count # of years where access is at least 80%, excluding 2021 and any campaign years from the count.
 			bysort iso_a2: egen max = max(group)
 			bysort iso_a2: egen q = min(scenario) if group==max
 			collapse q, by(iso_a2)
