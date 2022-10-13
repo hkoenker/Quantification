@@ -11,6 +11,8 @@ docs/
 04_Quant_Plots_files/
 05_Scenarios_files/
 output/*.pdf
+output/runs/
+data/WB*
 *DS_Store
 .DS_Store
 *test
