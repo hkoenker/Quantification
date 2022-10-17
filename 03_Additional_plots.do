@@ -1,6 +1,6 @@
 *** 3. Additional plots Quantification 2021
 
-	** append data from all the runs 
+	** append data from all the runs -- MAKE SURE NUMBER LISTS BELOW ARE UPDATED TO REFLECT THE SCENARIOS USED IN 01 do file
 	cd "/Users/hannahkoenker/Dropbox/R Directory/Quantification"
 
 	clear
@@ -9,33 +9,55 @@
 		append using "output/runs/`x'"
 	}
 	
-	foreach x of numlist 201/240 {
+	foreach x of numlist 200/250 {
 		append using "output/runs/`x'"
 	}
-	foreach x of numlist 301/340 {
+	foreach x of numlist 300/340 {
 		append using "output/runs/`x'"
 	}
-	foreach x of numlist 410/420 {
+	foreach x of numlist 401/420 {
 		append using "output/runs/`x'"
 	}
-	foreach x of numlist 510/520 {
+	foreach x of numlist 505/520 {
+		append using "output/runs/`x'"
+	}
+	foreach x of numlist 605/607 {
 		append using "output/runs/`x'"
 	}
 	
 	label var year "year"
 	label var scenario "scenario"
 	
-	drop crop* npclb npcub accrkub acc_npclb accub_npclb acclb_npcub acc_npcub npclbcentile acclb_npclb npcubcentile k accrklb
+	
+		
+		
+	drop crop* npclb npcub accrkub acc_npclb accub_npclb acclb_npcub acc_npcub npclbcentile npcubcentile k accrklb
 	drop if iso3==""
 	
 	gen group=floor(scenario/100)
 	label var group "ITN strategy"
 	
 	
-	encode iso3, gen(cty)
+	** person-years of ITN access
+		
+		sort iso3 scenario year // important to sort by year here
+		
+		gen double pyp = accrk/100*pop 
+		bysort iso3 scenario: gen pypsum = sum(pyp) // gives running sum
+		
+		gen double pyplb = acclb_npclb/100*pop 
+		bysort iso3 scenario: gen pyplbsum = sum(pyplb)
+		
+		gen double pypub = accub_npcub/100*pop 
+		bysort iso3 scenario: gen pypubsum = sum(pypub)
+		
+		
+	** naming of countries
 	
-	kountry iso3, from(iso3c) to(iso2c)
-	rename _ISO2C_ iso_a2 
+		encode iso3, gen(cty)
+		
+		kountry iso3, from(iso3c) to(iso2c)
+		rename _ISO2C_ iso_a2 
 	
 	* twoway scatter accrk percpop, by(group) ms(oh) mcolor(%50)
 	
@@ -44,6 +66,31 @@
 	* twoway scatter accrk percpop if accrk>70 & scenario==207 & year>2021, ms(oh) mcolor(%50) xlabel(0(10)100) || scatter accrk percpop if accrk>70 & scenario==225 & year>2021,  ms(oh) mcolor(%50)
 	
 	save output/quant_runs, replace 
+	
+	preserve 
+	
+			keep iso3 year group scenario totalnets pyp*
+			
+			collapse (sum) totalnets pyp pyplb pypub, by(iso3 group scenario) 
+			
+			bysort iso3 group: egen double maxpyp=max(pyp)
+			gen ismaxpyp=maxpyp==pyp
+			gen best=0 // start from zero
+			
+			** Find the lowest quantifier that provides the max PYP for the CD scenarios (1, 2, 3, 6):
+				bysort iso3 group: egen minbest=min(scenario) if ismaxpyp==1 & (group<4 | group==6)
+				bysort iso3 group: replace best=1 if scenario==minbest & (group<4 | group==6)
+			
+			** Find the highest quantifier that provides the max pyp for the UCC scenarios (4, 5)
+				bysort iso3 group: egen maxbest=max(scenario) if ismaxpyp==1 & (group==4 | group==5)
+				bysort iso3 group: replace best=1 if scenario==maxbest & (group==4 | group==5)
+			
+			save output/totalnetspyp, replace
+			// mlabvpos(labpos)
+		*	twoway scatter  totalnets pyp, mcolor(%10)  || rcap pyplb pypub totalnets, horizontal lcolor(gs13%10)  ///
+		*   ytitle("Total nets distributed") xtitle("Person-years of ITN access (millions)") legend(off)
+	
+	restore 
 	
 	
 	* li iso_a2 percpop if accrk>70 & iso3!=""

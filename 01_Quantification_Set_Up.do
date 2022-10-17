@@ -375,9 +375,9 @@ set graphics off // toggle if you need to check graphs are looking ok
 	
 	local y=0.06 // assume 6% RCH 
 	
-	tokenize "1_0 1_1 1_2 1_3 1_4 1_5 1_6 1_7 1_8 1_9 2_0" // for saving the graph
+	tokenize "0_1 0_2 0_3 0_4 0_5 0_6 0_7 0_8 0_9 1_0 1_1 1_2 1_3 1_4 1_5 1_6 1_7 1_8 1_9 2_0" // for saving the graph
 	
-	foreach x of numlist 1.0(0.1)2.0 {
+	foreach x of numlist 0.1(0.1)2.0 {
 		preserve 
 		
 		** distribute nets = MRC in 2022 2025 2028 2031
@@ -440,9 +440,9 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 	
 	local y=0.06 // assume 6% RCH 
 	
-	tokenize "1_0 1_1 1_2 1_3 1_4 1_5 1_6 1_7 1_8 1_9 2_0" // for saving the graph
+	tokenize "0_5 0_6 0_7 0_8 0_9 1_0 1_1 1_2 1_3 1_4 1_5 1_6 1_7 1_8 1_9 2_0" // for saving the graph
 	
-	foreach x of numlist 1.0(0.1)2.0 {
+	foreach x of numlist 0.5(0.1)2.0 {
 		preserve 
 		
 		** distribute nets = MRC in 2022 2025 2028 2031
@@ -495,6 +495,61 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 			putpdf image "figs/quant_UCC_2y_pop_over_`1'.png"
 			putpdf pagebreak
 			mac shift
+		restore 	
+	}	
+	
+	*** Scenario 6 - 2 year campaigns at pop/1.8
+	
+	putpdf paragraph, font(,20) halign(center)
+	putpdf text ("6. Projected ITN access from 2 year mass campaigns with varying ANC-EPI distribution")
+
+	foreach x of numlist 0.05 0.06 0.07 {
+		preserve 
+		
+		** distribute nets = MRC every two years
+			
+		replace totalnets=pop*`x' if year>=`starty' // issue the RCH nets starting from the start year
+		foreach i of numlist `starty'(2)`endy' {
+			replace totalnets=totalnets+(pop/1.8) if year==`i' // add on the MRC nets every 2 years
+		}
+		
+		replace percpop=totalnets/pop*100 if year>=`starty' // fill in percent pop for the new years
+		
+		local X=`x'*100 // whole number for putting into the file/graph names for saving, later
+		local X: di %2.0f `X' // this should make it 7, 8, etc. 
+		
+		sort iso3 year // this is crucial
+		
+		run "02_Internal_crop_access_calcs.do"
+		
+		gen scenario=600+`X'
+		local tag = 600+`X'
+		save "output/runs/`tag'", replace 
+		
+	** GRAPH **
+
+
+	gen geo=""
+	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
+
+		foreach i of numlist 1/9 {
+			replace geo="0`i'_`1'" if iso3=="`1'"
+			mac shift
+		}
+		foreach i of numlist 10/40 {
+			replace geo="`i'_`1'" if iso3=="`1'"
+			mac shift
+		}
+		
+			twoway connected percpop year if year>=`starty', by(geo, compact col(10) holes(1 3 4 5 6 7 9 10 19 20 30 31 39 40 41 42 43 49 51 52 53 54 59 60 61 62 63 64 68 69)  note("3-year mass campaigns with ANC-EPI at `X'%"))  msymbol(oh) mcolor(%50) mlabel(percpop) mlabpos(6) mlabsize(tiny) xtitle("") note("") || ///
+				connected accrk year if year>=`starty', by(geo) msymbol(x) mcolor(%50) mlabel(accrk) mlabpos(12) mlabsize(tiny)  || ///
+				rarea acclb_npclb accub_npcub year, lcolor(gs9%20) fcolor(gs9%30)  ///
+				ytitle("Percent") xlabel(`starty'(1)`endy', labsize(tiny) angle(45)) ylabel(0(20)100) legend(order(1 2) size(vsmall) row(1)) ysize(*2) xsize(*1.5)
+					* title("`X'%")
+			graph export "figs/quant_ucc2_rch_`X'.png", replace
+			putpdf paragraph
+			putpdf image "figs/quant_ucc2_rch_`X'.png"
+			putpdf pagebreak
 		restore 	
 	}	
 	
