@@ -9,6 +9,8 @@ docs/
 *.docx
 04_Quant_Plots_files/
 05_Scenarios_files/
+04_Quant_Plots.html
+05_Scenarios.html
 output/*.pdf
 output/runs/
 data/WB*
