@@ -1,5 +1,5 @@
 ---
-title: "05 ITN Strategy Scenarios"
+title: "Supplementary File 1: Estimated ITN access under different distribution strategy scenarios and quantification factors"
 author: "Hannah Koenker"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -38,19 +38,20 @@ ssa_grid <- fread(geofacet_fname)
 
 ### GROUP INTO SCENARIOS TO TEST PLOTTING AND TO INSERT HEADERS BETWEEN SECTIONS 
 s1 <- c(105:107)
-s2 <- c(207:225)
-s3 <- c(307:325)
-s4 <- c(410:420)
-s5 <- c(510:520)
+s2 <- c(200:250)
+s3 <- c(300:340)
+s4 <- c(401:420)
+s5 <- c(505:520)
 
 s1title <- "3-year mass campaigns with ANC/EPI at "
-s2title <- "ANC/EPI at 6% and annual school/community distribution at "
-s3title <- "3-year mass campaigns with ANC/EPI at 6% and between-campaign school/community distribution at "
-s4title <- "3-year mass campaigns with ANC/EPI, at population / "
-s5title <- "2-year mass campaigns with ANC/EPI, at population / "
+s2title <- "ANC/EPI at 6% and annual school/community \ndistribution at "
+s3title <- "3-year mass campaigns with ANC/EPI at 6% \nand between-campaign school/community distribution \nat "
+s4title <- "3-year mass campaigns with ANC/EPI, \nat population / "
+s5title <- "2-year mass campaigns with ANC/EPI, \nat population / "
 ```
 
 ```{r read, warning = FALSE}
+## read in test data
 df <-  read_dta("output/runs/105.dta") %>%
   select(percpop, year, accrk, iso3, acclb_npclb, accub_npcub) %>%
   mutate(name = countrycode(iso3, origin = "iso3c", destination = "country.name")) %>%
@@ -61,7 +62,8 @@ df <-  read_dta("output/runs/105.dta") %>%
 ```
 
 ```{r plot_function}
-# read data in and plot
+# function that reads data in from each scenario and plots it for each country in an Africa-shaped grid
+
 geofun <- function(scen, title) {
   splot <- read_dta(filename) %>%
     select(percpop, year, accrk, iso3, acclb_npclb, accub_npcub) %>%
