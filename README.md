@@ -2,17 +2,23 @@
 Stata and R code for ITN Quantification project, multi-country
 
 # Scripts
-Stata scripts are 01, 02, 03 - these create the datasets with indicative populations, distribute the nets per different scenarios, decay them. The decay script in 02 works within script 01.
 
-R scripts 04, 05, 06:
-- 04 is full of exploratory maps, but also has the tables used in the current draft of the paper.
+Scripts are numbered and include both R and Stata scripts (#sorrynotsorry). 
 
-- 05 produces the full set of geofaceted graphs for each scenario result; it is Supplemental File 1. Takes a while to run. Some graph titles are cut off and I need to fix the size of that giant logo!
+- 01 - R Script - creates a file used to convert nets-per-capita to ITN access in later scripts
 
-- 06 creates the maps of where school distribution is feasible based on % population that are currently-attending primary school students from DHS. This relies on a Stata file that is not included here... 
+- 02 - Stata Do File - loads country retention times and creates hypothetical populations of 10million, with population growth over several years, then "distributes" ITNs in six different strategies. Each strategy is comprised of numerous iterations using different quantification factors. Each iteration is saved as a .dta file.
 
-# Paper
-Paper (quant_pword) is written with R Markdown with MS Word output. Much of the script content in 04-06 has been transferred into this file. Tables are built with flextable to facilitate Word output. A Word template file (drdanholmes-ref-word.docx) serves to guide the styles used for the paper (size, font, captions, line spacing, etc). Bibliography file is located in quant_paper/quantbibfile.bib, using bibtex.
+- 03 - Stata Do File - used within 02 to decay the ITN crops according to the Chitnis function.
+
+- 04 - Stata Do File - appends all the iteration .dta files together and then runs code to identify the 'best' quantifier for each ITN strategy scenario for each country (i.e. lowest population x X% quantifier for continuous distribution strategies; highest population/Y quantifier for the mass campaign scenarios).
+
+- 05 - R Markdown file for the manuscript, output to Microsoft Word, pulling from files created above and other files in the data folder to produce all the analysis and plots for the paper, including supplemental tables and figures, but not Supplemental File 1 or Supplemental File 2. Tables are built with flextable to facilitate Word output. A Word template file (drdanholmes-ref-word.docx) serves to guide the styles used for the paper (size, font, captions, line spacing, etc). Bibliography file is located in quant_paper/quantbibfile.bib, using bibtex.
+
+- 06 - R Markdown file that produces the full set of geofaceted graphs for each scenario result; it is Supplemental File 1. Takes a while to run. It also saves copies of the plots as pdfs.
+
+- 07 - R Markdown file that produces the full set of frontier plots (total person-years of ITN access vs total nets required, for each of scenarios, showing only the iteration within each scenario that provides the most person-years of ITN access for the fewest ITNs). It also saves copies of the plots as pdfs.
+
 
 # Underlying data
 Underlying data is not kept in this repo, mainly due to my existing file structures and workflows. Please contact me if you're interested in working with data from this project, however.
