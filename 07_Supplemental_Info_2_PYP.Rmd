@@ -141,7 +141,7 @@ pypplot <- pyp %>%
          color = guide_legend(override.aes = aes(label = ""))) ## remove the "a" from the marker in legend
 
 print(pypplot)
-  plotname <- paste("figs/pyp_",iso3,".pdf", sep = "")
+  plotname <- paste("figs/pyp/pyp_",iso3,".pdf", sep = "")
   ggsave(plotname)
   
 }
