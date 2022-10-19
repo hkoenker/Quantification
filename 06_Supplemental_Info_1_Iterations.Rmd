@@ -104,7 +104,7 @@ geofun <- function(scen, title) {
     scale_alpha(guide = 'none') +
     scale_size(guide = 'none')
   print(splot)
-  plotname <- paste("figs/scen_",scen,".pdf", sep = "")
+  plotname <- paste("figs/iterations/scen_",scen,".pdf", sep = "")
   ggsave(plotname)
 }
 ```
