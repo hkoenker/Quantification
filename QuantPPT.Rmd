@@ -222,7 +222,7 @@ totalscenarios <- scentable %>%
 ![Scenario 3 - three-year mass campaigns with ANC/EPI distribution at 6%, and between-campaign continuous distribution at 10%](figs/geofacet_cd10ucc.png)
 
 
-The complete set of graphs for all `r totalscenarios` scenarios is included as [Supplemental File 1](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/06_Supplemental_Info_1_Iterations.html).
+The complete set of graphs for all `r totalscenarios` scenarios is included as [Supplemental File 1](https://github.com/hkoenker/Quantification/blob/master/06_Supplemental_Info_1_Iterations.pdf).
 
 ## We are not distributing enough nets to maintain ITN access at 80%
 
