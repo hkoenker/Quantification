@@ -12,6 +12,7 @@ docs/
 04_Quant_Plots.html
 05_Scenarios.html
 06_Suitability_School_Distribution.html
+06_Supplemental_Info_1_Iterations.html
 output/*.pdf
 output/runs/*
 data/WB*
