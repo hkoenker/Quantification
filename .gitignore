@@ -13,9 +13,12 @@ docs/
 05_Scenarios.html
 06_Suitability_School_Distribution.html
 output/*.pdf
-output/runs/
+output/runs/*
 data/WB*
+data/WPP*
 *DS_Store
 .DS_Store
 *test
 ssa_grid2*
+data/*mean*
+04_Unused_totalnets_plots.do
