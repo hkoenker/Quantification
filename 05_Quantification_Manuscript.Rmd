@@ -15,10 +15,7 @@ output:
     reference_docx: "drdanholmes-ref-word.docx"
     # reference_docx: "doc/Malaria Journal Article Template.docx"
 # abstract: |
-#    [350 words max]
 # keywords: 
-#   - insecticide-treated nets
-#   - long-lasting insecticidal nets
 # journal: "Malaria Journal"
 date: Draft of `r format(Sys.time(), '%d %B, %Y')`; do not circulate
 classoption: review, 3p
@@ -38,7 +35,6 @@ header-includes:
   - \floatplacement{figure}{H}
   - \usepackage{setspace}\doublespacing
   - \biboptions{sort&compress}
-  # - \usepackage{draftwatermark}
   # rticles::elsevier_article:
     # latex_engine: xelatex
     # keep_tex: true
@@ -410,16 +406,9 @@ To assess feasibility of large-scale school distribution in relation to optimal 
 ```{r readmins}
 s2min <- read_dta("data/s2_min_npp.dta") %>% 
   clean_names()
-s2mean <- read_dta("data/s2_mean_npp.dta") %>% 
-  clean_names()
 
 s3min <- read_dta("data/s3_min_npp.dta") %>% 
   clean_names()
-s3mean <- read_dta("data/s3_mean_npp.dta") %>% 
-  clean_names()
-
-s2max <- read_dta("data/s2_max_acc.dta") %>% 
-  mutate(maxacc = round_half_up(maxacc, digits=0))
 
 s4min <- read_dta("data/s4_min_acc.dta") %>% 
   clean_names() 
@@ -543,8 +532,6 @@ table_q_s2s3long <- t2 %>%
 table_q_s2s3short <- table_q_s2s3long %>% 
   filter(iso3 %in% shortlist3)
 
-# export table to csv for use in file 06 School Suitability and for pulling into quant_paper.Rmd:
-# write.csv(table_q_s2s3, "output/s2s3table.csv", row.names = FALSE)
 
 ```
 
@@ -589,8 +576,10 @@ tables2s3function <- function(df) {
   set_table_properties(width=.5)
 } 
 
-tables2s3function(table_q_s2s3short)
+t23 <- tables2s3function(table_q_s2s3short)
+t23
 
+save_as_image(t23, path="figs/Tab_Scen23.png")
 ```
 
 
@@ -716,7 +705,11 @@ s4minrtshort <- s4minrtlong %>%
   filter(iso3 %in% shortlist3) %>% 
   arrange(lifespan)
 
-s4tablefunction(s4minrtshort)
+tab4 <- s4tablefunction(s4minrtshort)
+tab4
+
+save_as_image(tab4, path="figs/Tab_Scen4.png")
+
 ```
 
 Table \@ref(tab:tabscen5) provides a similar picture but for campaigns conducted every 2 years. Under a population / 1.8 quantifier, `r words(length(unique(t5_18$name)))` countries (`r round(length(unique(t5_18$iso_a2))/totcty*100, digits=1)`%) including `r combine_words(t5_18$name)` would all maintain ITN access at or above 80% between campaigns. In other countries, 2-yearly campaigns closer to one ITN per person would be needed in order to maintain ITN access at the 80% target. Continuing with the `r countrycode(examplecountry, origin="iso2c", destination="country.name")` example, with the standard quantifier of population / 1.8, the country reaches a low point of `r round(examplecty5$accrk518[1], digits=0)`% ITN access in the year between campaigns. Using population / 1.2 would result in an estimated low point of `r round(examplecty5$accrk512[1], digits=0)`% population ITN access between campaigns.
@@ -780,7 +773,11 @@ s5minrtshort <- s5minrtlong %>%
   arrange(lifespan)
 
 
-s5tablefunction(s5minrtshort)
+tab5 <- s5tablefunction(s5minrtshort)
+tab5
+
+save_as_image(tab5, path="figs/Tab_Scen5.png")
+
 ```
 
 
@@ -900,10 +897,10 @@ The complete set of graphs for all `r totalscenarios` scenarios is included as S
 
 ```{r table-reccs}
 
-qt <- read.csv("output/s2s3table.csv") # this table is produced in the code further above and gets joined later on; don't drop columns here
 
-qt80 <- qt %>% 
-  select(iso_a2, s280, s380) # just keep the target=80 columns for Scen 2 & 3, for merging below
+qt80 <- table_q_s2s3long %>% 
+  select(iso3, s280, s380) %>% # just keep the target=80 columns for Scen 2 & 3, for merging below
+  mutate(iso_a2 = countrycode(iso3, origin="iso3c", destination="iso2c"))
 
 
 sumtable <- t4 %>% 
@@ -938,7 +935,7 @@ table80rtshort <- table80rtlong %>%
   filter(iso3 %in% shortlist3) %>% 
   arrange(lifespan)
   
-
+write_csv(table80, "output/table80.csv", col_names = TRUE)
 ```
 
 Table \@ref(tab:recctable80) summarizes the recommended quantifiers under each scenario, given a target of maintaining 80% population ITN access. For Liberia, with a median retention time of `r with(table80rtshort, lifespan[which(iso3=="LBR")])` years, a full scale continuous distribution strategy would need have an annual ITN need of population x `r with(table80rtshort, scenario_2[which(iso3=="LBR")])`%, and a strategy implementing mass campaigns every three years using population/1.8 and adding continuous distribution between campaigns would need to quantify the continuous distribution channel in each non-campaign year using population x `r with(table80rtshort, scenario_3[which(iso3=="LBR")])`%. Both strategies assume that ITN delivery to pregnant women and infants is ongoing, reaching about 6% of the population. Under tailored mass campaign scenarios, Liberia cannot maintain ITN access above 80% even when ten nets per person are distributed every three years; a strategy of campaigns every two years would only maintain ITN access above 80% if the quantification approach is to multiply the population by `r with(table80rtshort, scenario_5[which(iso3=="LBR")])` - delivering, in essence, one net per person every other year. In contrast, countries with longer retention times such as Republic of Congo or Cameroon are able to sustain 80% ITN access with full scale continuous strategies that quantify the annual ITN need using population x `r with(table80rtshort, scenario_2[which(iso3=="COG")])`% and `r with(table80rtshort, scenario_2[which(iso3=="CMR")])`%, respectively, and could implement continuous distribution between campaigns to sustain access with only population x `r with(table80rtshort, scenario_3[which(iso3=="COG")])`% and `r with(table80rtshort, scenario_3[which(iso3=="CMR")])`%, respectively. Alternately, they could implement three-yearly campaigns with no continuous distribution, using population divided by `r with(table80rtshort, scenario_4[which(iso3=="COG")])` and `r with(table80rtshort, scenario_4[which(iso3=="CMR")])`, along with ITN delivery to pregnant women and infants.
@@ -1035,7 +1032,11 @@ recctablefunction <- function(df) {
   height(height=0.3, part="body") %>% 
   hrule(rule="exact", part="body")
 }
-recctablefunction(table80rtshort)
+tabrecc <- recctablefunction(table80rtshort)
+tabrecc
+
+save_as_image(tabrecc, path="figs/Tab_Reccs.png")
+
 ```
 
 ```{r totalnetsdf}
@@ -1088,6 +1089,9 @@ scenpct <- tnets %>%
 avgscenpct <- scenpct %>% 
   group_by(scenario) %>% 
   summarize(mean=mean(pct, na.rm = TRUE)) 
+
+write_csv(avgscenpct, "output/avgscenpct.csv", col_names = TRUE) ## write to CSV for pulling into the ppt version
+
 ```
 
 The total number of nets needed under each recommended scenario in Table \@ref(table:recctable80) to maintain 80% ITN access is presented in Fig. \@ref(fig:totalnets)A, for all countries in the sample, and summarized across countries in Fig. \@ref(fig:totalnets)B. For comparability, results are presented as a percentage difference compared to a status quo scenario of three-yearly campaigns quantified with population/1.8 plus routine distribution of ITNs to pregnant women and infants through ANC and EPI channels. For `r tnets %>% filter(tot2<tot0) %>% count() %>% pull()` of the `r length(unique(table80rtlong$iso3))` countries, full scale continuous distribution would maintain ITN access at 80% with fewer nets than currently being delivered under three-yearly status quo campaigns. Across all countries, full scale continuous distribution was expected to maintain ITN access at 80% with `r round((avgscenpct$mean[2]-1)*100, digits=1)`% more ITNs than status quo. Strategies deploying continuous distribution between mass campaigns required `r round((avgscenpct$mean[3]-1)*100, digits=1)`% more ITNs than status quo, while mass campaign strategies with tailored quantification factors required nearly two and a half times as many ITNs for three-yearly campaigns, and `r round((avgscenpct$mean[5]-1)*100, digits=1)`% more ITNs for two-yearly campaigns.
@@ -1201,13 +1205,15 @@ sch <-  africa %>%
 
 # then join with school dataset on iso_a2 NATIONAL LEVEL
 sch <- sch %>% 
-  left_join(qt, by = "iso_a2") %>% 
+  mutate(iso3=countrycode(iso_a2, origin="iso2c", destination="iso3c")) %>% 
+  left_join(table_q_s2s3long, by = "iso3") %>% 
   mutate(feasible80 = if_else(currentprim > s280,"yes","no"),
          feasible70 = if_else(currentprim > s270, "yes","no"))
 
 # then join with school dataset on iso_a2 REGIONAL LEVEL
 allschq <- allsch %>% 
-  left_join(qt, by = "iso_a2") %>% 
+  mutate(iso3=countrycode(iso_a2, origin="iso2c", destination="iso3c")) %>% 
+  left_join(table_q_s2s3long, by = "iso3") %>% 
   mutate(feasible80 = if_else(percent_population_that_are_current_primary_students > s280,"yes","no"),
          feasible70 = if_else(percent_population_that_are_current_primary_students > s270, "yes","no")) %>% 
   drop_na(s270)
@@ -1580,26 +1586,34 @@ The authors are grateful for the early feedback on this manuscript from Pete Get
 s2s3tablelong <- tables2s3function(table_q_s2s3long)
 s2s3tablelong 
 
-save_as_html(s2s3tablelong, path="Scenario_2_and_3_Quantifiers_Table_Full_Version.html")
+save_as_html(s2s3tablelong, path="output/Scenario_2_and_3_Quantifiers_Table_Full_Version.html")
+save_as_image(s2s3tablelong, path="figs/Scenario_23.png")
 ```
 
 ```{r s4tablelong, tab.cap = "Lowest level of ITN access between 3-year campaigns at different population quantifiers for all countries. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns.  Routine ITN delivery to pregnant women and infants is assumed."}
 s4tablelong <- s4tablefunction(s4minrtlong)
 s4tablelong
 
-save_as_html(s4tablelong, path="Scenario_4_Lowest_Access_Table_Full_Version.html")
+save_as_html(s4tablelong, path="output/Scenario_4_Lowest_Access_Table_Full_Version.html")
+save_as_image(s4tablelong, path="figs/Scenario_4.png")
+
 ```
 
 ```{r s5tablelong, tab.cap = "Lowest level of ITN access between 2-year campaigns at different population quantifiers for all countries. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed."}
 s5tablelong <- s5tablefunction(s5minrtlong)
 s5tablelong
 
-save_as_html(s5tablelong, path="Scenario_5_Lowest_Access_Table_Full_Version.html")
+save_as_html(s5tablelong, path="output/Scenario_5_Lowest_Access_Table_Full_Version.html")
+save_as_image(s5tablelong, path="figs/Scenario_5.png")
 
 ```
 
 ```{r recctablelong, tab.cap="Summary of recommended quantifiers for all countries and scenarios, to maintain ITN access at or above 80%. The quantifiers are for only the continuous distribution channel or mass campaign; annual RCH distribution equivalent to 6% of the population is assumed in each scenario, but is not part of the listed quantifiers"}
-recctablefunction(table80rtlong)
+recclong <- recctablefunction(table80rtlong)
+recclong
+
+save_as_html(recclong, path="output/Table_Reccs.html")
+save_as_image(recclong, path="figs/Reccs_long.png")
 ```
 
 ```{r figreach, fig.cap = "A) Percent of households with a child attending primary school; B) Percent of households with a pregnant woman, child under 12 months, or child attending primary school. Data from most recent Demographic and Health Survey"}
