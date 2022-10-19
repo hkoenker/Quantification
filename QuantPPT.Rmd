@@ -113,18 +113,14 @@ options(knitr.kable.NA = "")
 # Introduction 
 
 ## Background (1)
-
+:::::::::::::: {.columns}
+::: {.column}
 - ITNs are not lasting as long as expected - most countries have an estimated retention time of less than 3 years [@10.1038/s41467-021-23707-7]. 
-
-## Key Questions
-
-1. what is the projected impact of the mismatch in campaign cycle and ITN retention in terms of overall ITN coverage? 
-
-2. if mass campaigns every three years are insufficient due to ITNs lasting only 1-2 years, is switching to a two-year campaign cycle indicated, or are there alternative or supplemental ways to distribute ITNs to ensure high rates of ITN access are maintained over time? 
-
-3. with what we know now about ITN retention and ITN distribution modalities, is "population divided by 1.8" still the correct quantification approach for mass campaigns for all countries? 
-
-4. what would optimum ITN quantification look like for countries given their particular ITN retention times, aiming to sustain high levels of ITN access (the necessary, but not sufficient, precursor to ITN use)?
+:::
+::: {.column}
+![Bertozzi-Villa et al, 2021](/Users/hannahkoenker/Dropbox/ITN Cube Paper/main_figures/figure_5_v1.pdf) 
+:::
+::::::::::::::
 
 ```{r oddhh}
 odd <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Caps/hh size and quant factors v5.dta") %>% 
@@ -140,6 +136,17 @@ odd <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Caps/h
 - Kilian et al originally recommended dividing by 1.6, in order to accommodate distribution challenges including outdated census information and the need to preposition full bales of nets rather than precisely subdividing them. 
 
 - In practice, WHO recommends "population divided by 1.8", and allows a buffer of up to 10% when the previous census is over 5 years old.
+
+## Key Questions
+
+1. What is the projected impact of the mismatch in campaign cycle and ITN retention in terms of overall ITN coverage? 
+
+2. If mass campaigns every three years are insufficient due to ITNs lasting only 1-2 years, is switching to a two-year campaign cycle indicated, or are there alternative or supplemental ways to distribute ITNs to ensure high rates of ITN access are maintained over time? 
+
+3. With what we know now about ITN retention and ITN distribution modalities, is "population divided by 1.8" still the correct quantification approach for mass campaigns for all countries? 
+
+4. What would optimum ITN quantification look like for countries given their particular ITN retention times, aiming to sustain high levels of ITN access (the necessary, but not sufficient, precursor to ITN use)?
+
 
 ## Continuous distribution needs an "easy" quantification approach
 
@@ -180,10 +187,12 @@ totalscenarios <- scentable %>%
 
 :::::::::::::: {.columns}
 ::: {.column}
-![A) ITN retention times and median lifespans estimated from durability monitoring studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC](figs/Fig_Retention_Decay_NPC.png)
+![](figs/Fig_Retention_Decay_NPC.png)
 :::
 ::: {.column}
-For each year, the stock and flow model used a country-specific estimated median lifespan from Malaria Atlas Project (MAP) estimates published in Bertozzi-Villa et al [@10.1038/s41467-021-23707-7], shown in blue in panel A, to decay each crop of distributed nets annually. Panel A also presents estimated median lifespans from ITN durability monitoring (DM) activities gathered from www.pmi.gov and published literature [@Abilio:2020fl; @Kilian:2020dj; @Mansiangi:2020cv; @Haji:2020de; @Obi:2020eza; @Kilian:2015hk; @10.1371/journal.pmed.1003248; @Randriamaherijaona:2017fo]. The net decay functions rely on smooth-compact loss function developed by Nakul Chitnis and described in Koenker et al and Bhatt et al [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w], and are shown in Panel B. Panel C presents the fitted monotonic curves for the relationship between ITNs per capita and ITN access, stratified by average household size.
+- Panel A: Country-specific estimated median lifespan from Malaria Atlas Project (MAP) [@10.1038/s41467-021-23707-7], compared to estimated median lifespans from ITN durability monitoring (DM) activities [@Abilio:2020fl; @Kilian:2020dj; @Mansiangi:2020cv; @Haji:2020de; @Obi:2020eza; @Kilian:2015hk; @10.1371/journal.pmed.1003248; @Randriamaherijaona:2017fo]. 
+- Panel B shows net decay functions rely on smooth-compact loss function developed by Nakul Chitnis [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w]
+- Panel C shows the fitted monotonic curves for the relationship between ITNs per capita and ITN access, stratified by average household size.
 
 :::
 ::::::::::::::
@@ -226,7 +235,9 @@ The complete set of graphs for all `r totalscenarios` scenarios is included as [
 ## Quantification factors for continuous distribution strategies 
 :::::::::::::: {.columns}
 ::: {.column}
-All scenarios assume that ANC and EPI delivery of ITNs is ongoing and provides nets to 6% of the population. However, quantifiers listed in the table represent only the continuous distribution channel, e.g. Liberia would require both ANC/EPI distribution as well as continuous distribution quantified using population x 28% to maintain ITN access at levels of 70%.
+- All scenarios assume that ANC and EPI delivery of ITNs is ongoing and provides nets to 6% of the population. 
+- However, quantifiers listed in the table represent only the continuous distribution channel, 
+    - e.g. Liberia would require both ANC/EPI distribution as well as continuous distribution quantified using population x 28% to maintain ITN access at levels of 70%.
 :::
 ::: {.column}
 
@@ -251,29 +262,48 @@ All scenarios assume that ANC and EPI delivery of ITNs is ongoing and provides n
 
 ## How many nets are needed under the recommended scenarios?
 
-![Total nets needed over 10 years, relative to full scale continuous distribution](figs/Fig_totalnets.png)
+:::::::::::::: {.columns}
+::: {.column}
+![Percent difference in total nets needed by scenario](figs/Fig_avgtotalnets.png)
+
+:::
+::: {.column}
+![](figs/Fig_facettotalnets.png)
+:::
+::::::::::::::
 
 ## Are there enough primary school children to make school distribution feasible?
 
 :::::::::::::: {.columns}
 ::: {.column}
-![Percentage of regions/provinces per country where large-scale annual school distribution to achieve ITN access targets for A) 70% and B) 80% is feasible, assuming one ITN is given per child](figs/Fig_reg_schoolfeasibility.png)
+![](figs/Fig_reg_schoolfeasibility.png)
+
 :::
 ::: {.column}
-The proportion of regions/provinces within each country where primary school students attending school met or exceeded the population quantifier are shown here, as an indication of the extent within a country where annual school distribution would be feasible. This assumes that only one ITN is given per pupil; for the countries with a limited proportion of regions where the primary-school-attending population is large enough, giving more than 1 ITN per pupil could provide a solution. Alternately, additional community-based channels could be designed to distribute ITNs alongside school-based distribution. 
+- Plot indicates the extent within a country where annual school distribution would be feasible. 
+- Assumes that only one ITN is given per pupil; for the countries with a limited proportion of regions where the primary-school-attending population is large enough, giving more than 1 ITN per pupil could provide a solution. 
+- Alternately, additional community-based channels could be designed to distribute ITNs alongside school-based distribution. 
 :::
 ::::::::::::::
 
 ## Which strategies offer the most value for money?
 
+:::::::::::::: {.columns}
+::: {.column}
 ![Frontier plots of person-years of ITN access vs total nets delivered, in illustrative populations of 10 million people for comparability](figs/Fig_pyp.png)
-Frontier plots for all countries are included in [Supplemental File 2](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/07_Supplemental_Info_2_PYP.html).
+
+:::
+::: {.column}
+
+- Frontier plots for all countries are included in [Supplemental File 2](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/07_Supplemental_Info_2_PYP.html).
+:::
+::::::::::::::
 
 # Discussion
 
 ## Takeaways (1)
 ```{r}
-avgscenpctx <- read_csv("output/avgscenpct.csv")
+avgscenpctx <- read_csv("output/avgscenpct.csv", show_col_types = FALSE)
 ```
 
 1. Current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve targets of 80% population access to ITNs in the majority of malaria-endemic countries, given overall retention times are estimated at below three years. 
@@ -310,7 +340,7 @@ avgscenpctx <- read_csv("output/avgscenpct.csv")
 
 ## Are countries currently doing CD doing enough?
 ```{r}
-table80x <- read_csv("output/table80.csv")
+table80x <- read_csv("output/table80.csv", show_col_types = FALSE)
 ```
 
 1. Ghana distributes ITNs to school children in grades 2 and 6 between 3-year campaigns, while Tanzania has implemented full scale school distribution in 14 mainland regions since 2016, and expanded the programme to 5 additional regions in 2022. 
@@ -402,23 +432,13 @@ table80x <- read_csv("output/table80.csv")
 :::
 ::::::::::::::
 
+# Thank you
 
----
+
+## Additional slides
 
 ![A) Percent of households with a child attending primary school; B) Percent of households with a pregnant woman, child under 12 months, or child attending primary school. Data from most recent Demographic and Health Survey](figs/Fig_CD_reach.png)
 
-
-## Supplementary File 1
-
-- Estimated ITN access under five ITN distributions scenarios and at varying quantification approaches (`r totalscenarios` iterations)
-
-- [Link to file](https://github.com/hkoenker/Quantification/blob/master/04_Quant_Plots.html)
-
-## Supplementary File 2 
-
-- Frontier plots of Person-years of ITN access vs Total nets delivered for 40 countries
-
-- [Link to file](https://github.com/hkoenker/Quantification/blob/master/07_SI_2_PYP.html)
 
 
 ## References
