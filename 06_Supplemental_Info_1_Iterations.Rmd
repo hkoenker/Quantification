@@ -1,0 +1,217 @@
+---
+title: "Supplementary File 1: Estimated ITN access under different distribution strategy scenarios and quantification factors"
+author: "Hannah Koenker"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+    fig_width: 7
+    fig_height: 6
+    fig_caption: yes
+    df_print: kable
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(haven)
+library(tidyverse)
+library(geofacet)
+library(broom)
+library(readxl)
+library(janitor)
+library(countrycode)
+library(data.table)
+
+# ![](images/TH_logo.jpg){width=1.0"}
+```
+
+
+
+```{r grid}
+geofacet_fname <- "data/geofacet_ssa.csv"
+ssa_grid <- fread(geofacet_fname)
+```
+
+```{r}
+
+### GROUP INTO SCENARIOS TO TEST PLOTTING AND TO INSERT HEADERS BETWEEN SECTIONS 
+s1 <- c(105:107)
+s2 <- c(200:250)
+s3 <- c(300:340)
+s4 <- c(401:420)
+s5 <- c(505:520)
+
+s1title <- "3-year mass campaigns with ANC/EPI at "
+s2title <- "ANC/EPI at 6% and annual school/community \ndistribution at "
+s3title <- "3-year mass campaigns with ANC/EPI at 6% \nand between-campaign school/community distribution \nat "
+s4title <- "3-year mass campaigns with ANC/EPI, \nat population / "
+s5title <- "2-year mass campaigns with ANC/EPI, \nat population / "
+```
+
+```{r read, warning = FALSE}
+## read in test data
+df <-  read_dta("output/runs/105.dta") %>%
+  select(percpop, year, accrk, iso3, acclb_npclb, accub_npcub) %>%
+  mutate(name = countrycode(iso3, origin = "iso3c", destination = "country.name")) %>%
+  mutate(name = case_when(name == "Congo - Kinshasa" ~ "Democratic Republic of Congo",
+                          name == "Congo - Brazzaville" ~ "Republic of Congo")) %>%
+  mutate(code2 = countrycode(iso3, origin = "iso3c", destination = "iso2c")) %>%
+  mutate(code = iso3)
+```
+
+```{r plot_function}
+# function that reads data in from each scenario and plots it for each country in an Africa-shaped grid
+
+geofun <- function(scen, title) {
+  splot <- read_dta(filename) %>%
+    select(percpop, year, accrk, iso3, acclb_npclb, accub_npcub) %>%
+    mutate(name = countrycode(iso3, origin = "iso3c", destination = "country.name")) %>%
+    mutate(code = iso3) %>%
+    ggplot(aes(x = year - 2000)) +
+   geom_hline(yintercept = 80, size=0.25, linetype="solid", color = "red", alpha = 0.5) +
+  geom_hline(yintercept = 90, size=0.25, linetype="solid", color = "red", alpha = 0.5) +
+  # geom_line(aes(y = percpop, color = "percpop"), alpha = 0.5, size = 0.75) +
+  geom_line(aes(y = accrk, color = "accrk"), alpha = 0.5, size = 0.75) +
+    geom_ribbon(aes(ymin = acclb_npclb, ymax = accub_npcub),
+                color = NA,
+                alpha = 0.25) +
+    scale_color_brewer(
+      palette = "Set2",
+      labels = c("Predicted ITN Access")
+    ) +
+    scale_x_continuous(breaks = seq(20, 35, 5),
+                       labels = c("'20", "'25", "'30", "'35")) +
+    theme_minimal() +
+    facet_geo( ~ code, grid = ssa_grid, label = "code") +
+    labs(title = paste(title, X, "% of the population"),
+         x = "",
+         y = "Percent",
+         color = "") +
+    theme(
+      # legend.position="none",
+      # axis.text.x = element_text(angle=45, hjust=1)
+      # axis.text.x = element_blank(),
+      axis.line = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.text = element_text(size = 6),
+      panel.grid.major.x = element_line(color = "darkgrey", size =
+                                          0.25)
+    ) +
+    scale_alpha(guide = 'none') +
+    scale_size(guide = 'none')
+  print(splot)
+  plotname <- paste("figs/scen_",scen,".pdf", sep = "")
+  ggsave(plotname)
+}
+```
+
+# Scenario 1 - Mass campaigns every three years with varying routine ANC/EPI distribution
+
+```{r scen1, warning = FALSE, message=FALSE}
+for(i in seq_along(s1)) {
+  # create the path and filename from the scenario number
+  filename = paste("output/runs/", s1[[i]], ".dta", sep = "")
+  
+  # extract the quantifier from scenario number (last two digits) to put into the titles
+  X <- s1[[i]]-round(s1[[i]],digits=-2)
+  
+  geofun(scen = s1[[i]], title = s1title)
+}
+```
+
+# Scenario 2 - ANC/EPI distribution at 6%, varying annual school/community distribution
+
+```{r scen2, warning = FALSE, message=FALSE}
+for(i in seq_along(s2)) {
+  # create the path and filename from the scenario number
+  filename = paste("output/runs/", s2[[i]], ".dta", sep = "")
+  
+  # extract the quantifier from scenario number (last two digits) to put into the titles
+  X <- s2[[i]]-round(s2[[i]],digits=-2)
+  
+  geofun(scen = s2[[i]], title = s2title)
+}
+```
+
+# Scenario 3 - 3-year mass campaigns with ANC/EPI distribution at 6%, varying annual school/community distribution between campaigns
+
+```{r scen3, warning = FALSE, message=FALSE}
+for(i in seq_along(s3)) {
+  # create the path and filename from the scenario number
+  filename = paste("output/runs/", s3[[i]], ".dta", sep = "")
+  
+  # extract the quantifier from scenario number (last two digits) to put into the titles
+  X <- s3[[i]]-round(s3[[i]],digits=-2)
+  
+  geofun(scen = s3[[i]], title = s3title)
+}
+```
+
+# Scenario 4 - 3-year mass campaigns with ANC/EPI distribution at 6%, varying campaign quantifier
+
+```{r scen4, warning = FALSE, message=FALSE}
+for(i in seq_along(s4)) {
+  # create the path and filename from the scenario number
+  filename = paste("output/runs/", s4[[i]], ".dta", sep = "")
+  
+  # extract the quantifier from scenario number (last two digits) to put into the titles
+  X <- (s4[[i]]-round(s4[[i]],digits=-2))/10
+  
+  geofun(scen = s4[[i]], title = s4title)
+}
+```
+
+# Scenario 5 - 2-year mass campaigns with ANC/EPI distribution at 6%, varying campaign quantifier
+
+```{r scen5, warning = FALSE, message=FALSE}
+for(i in seq_along(s5)) {
+  # create the path and filename from the scenario number
+  filename = paste("output/runs/", s5[[i]], ".dta", sep = "")
+  
+  # extract the quantifier from scenario number (last two digits) to put into the titles
+  X <- (s5[[i]]-round(s5[[i]],digits=-2))/10
+  
+  geofun(scen = s5[[i]], title = s5title)
+}
+```
+
+```{r facet_geo_no_loop, include=FALSE}
+# This is for testing the graph look
+df %>%
+  ggplot(aes(x = year - 2000)) +
+  geom_hline(yintercept = 80, size=0.25, linetype="solid", color = "red", alpha = 0.5) +
+  geom_hline(yintercept = 90, size=0.25, linetype="solid", color = "red", alpha = 0.5) +
+  # geom_line(aes(y = percpop, color = "percpop"), alpha = 0.5, size = 0.75) +
+  geom_line(aes(y = accrk, color = "accrk"), alpha = 0.5, size = 0.75) +
+  # geom_ribbon(aes(ymin = acclb_npclb, ymax = accub_npcub),
+  #             color = NA,
+  #             alpha = 0.25) +
+  scale_color_brewer(
+    palette = "Set2",
+    labels = c("ITN Access",
+               "ITNs issued as \na percent \nof population")
+  ) +
+  scale_x_continuous(breaks = seq(20, 35, 5),
+                     labels = c("'20", "'25", "'30", "'35")) +
+  theme_minimal() +
+  facet_geo(~ code, grid = ssa_grid, label = "code") +
+  labs(title = "",
+       x = "",
+       y = "Predicted population ITN access") +
+  theme(
+    legend.title = element_blank(),
+    # legend.position="none",
+    # axis.text.x = element_text(angle=45, hjust=1)
+    # axis.text.x = element_blank(),
+    axis.line = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text=element_text(size=6),
+    panel.grid.major.x = element_line(color = "darkgrey", size =
+                                        0.25)
+  )
+```
+
