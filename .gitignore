@@ -22,3 +22,9 @@ data/WPP*
 ssa_grid2*
 data/*mean*
 04_Unused_totalnets_plots.do
+doc/th_template_2022.pptx
+data/.DS_Store
+output/.DS_Store
+QuantPPT.log
+QuantPPT.tex
+qppt_test*
