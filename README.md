@@ -7,7 +7,7 @@ Scripts are numbered and include both R and Stata scripts (#sorrynotsorry).
 
 - 01 - R Script - creates a file used to convert nets-per-capita to ITN access in later scripts
 
-- 02 - Stata Do File - loads country retention times and creates hypothetical populations of 10million, with population growth over several years, then "distributes" ITNs in six different strategies. Each strategy is comprised of numerous iterations using different quantification factors. Each iteration is saved as a .dta file.
+- 02 - Stata Do File - loads country retention times and creates hypothetical populations of 10million, with population growth over several years, then "distributes" ITNs in six different strategies. Each strategy is comprised of numerous iterations using different quantification factors. Each iteration is saved as a .dta file. It calls 03 as well as "locals.do"; the latter is where the start and end years for the analysis are set.
 
 - 03 - Stata Do File - used within 02 to decay the ITN crops according to the Chitnis function.
 
