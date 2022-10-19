@@ -3,10 +3,12 @@ title: "Supplementary File 1: Estimated ITN access under different distribution 
 author: "Hannah Koenker"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document:
+  pdf_document:
+  # html_document:
     toc: yes
     toc_depth: 2
-    toc_float: yes
+    number_sections: true
+  #   toc_float: yes
     fig_width: 7
     fig_height: 6
     fig_caption: yes
