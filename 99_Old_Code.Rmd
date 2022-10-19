@@ -110,3 +110,20 @@ output: html_document
 #   kable_paper(full_width = F) %>% 
 #   add_header_above(c(" " = 1, "Continuous Distribution" = 2, "Mass Campaign" = 2))
 ```
+
+```{r}
+## Extract Africa population data from giant World Bank file - but Eritrea is missing ## https://datacatalog.worldbank.org/search/dataset/0037655 
+
+# df <- as.data.frame(read_csv("data/WB_Population_Estimates_CSV/Population-EstimatesData.csv")) %>% 
+#   clean_names() %>% 
+#   select(country_name, country_code, indicator_name, indicator_code, x2020, x2021, x2022, x2023, x2024, x2025, x2026, x2027, x2028, x2029, x2030, x2031, x2032, x2033, x2034, x2035, x2036, x2037) %>% 
+#   filter(indicator_name=="Population, total") %>% 
+#   mutate(ccode=country_code) %>% 
+  # drop_na(x2025) 
+# afpop <- df %>% 
+#   mutate(iso_a2=countrycode(country_code, origin="iso3c", destination="iso2c")) %>% 
+#   filter(iso_a2 %in% a2levels)
+# 
+# rm(df)
+```
+

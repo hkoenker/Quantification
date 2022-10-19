@@ -181,7 +181,7 @@ totalscenarios <- scentable %>%
 For each year, the stock and flow model used a country-specific estimated median lifespan from Malaria Atlas Project (MAP) estimates published in Bertozzi-Villa et al [@10.1038/s41467-021-23707-7], shown in blue in Fig. \@ref(fig:ret-decay-fig)A, to decay each crop of distributed nets annually. Fig. \@ref(fig:ret-decay-fig)A also presents estimated median lifespans from ITN durability monitoring (DM) activities gathered from www.pmi.gov and published literature [@Abilio:2020fl; @Kilian:2020dj; @Mansiangi:2020cv; @Haji:2020de; @Obi:2020eza; @Kilian:2015hk; @10.1371/journal.pmed.1003248; @Randriamaherijaona:2017fo]. The net decay functions rely on smooth-compact loss function developed by Nakul Chitnis and described in Koenker et al and Bhatt et al [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w], and are shown in Fig. \@ref(fig:ret-decay-fig)B.
 
 ```{r dmmap}
-ls <- read_excel("data/Copy of MAP ITN retention data.xlsx", sheet="Sheet1") %>%
+ls <- read_excel("data/MAP_retentiontime_DM_medianlifespan.xlsx", sheet="Sheet1") %>%
   clean_names() %>%
   drop_na(country) %>%
   rename(lifespan=median_retention_years) %>%
@@ -328,6 +328,9 @@ B <- as.data.frame(A)
 
 taus <- 1:3/4 # make list of 0.25, .5, .75 for confidence bounds
 xx <- seq(min(B[,2]), max(B[,2]),length=100) # make list of values .01-0.99
+
+## Quantile regression:
+
 G <- matrix(0,length(xx),length(taus))
 for(i in 1:length(taus)){
   f <- rqss(y ~ qss(x, constraint = "I", lambda = .5), tau = taus[i], data = B)
@@ -405,7 +408,7 @@ S4 <- as.data.frame(S4) %>%
 fithhsize <- S1 %>% 
   bind_rows(S2, S3, S4)
 
-write.csv(fithhsize, "data/itnpers_into_access_transformation_hh.csv")
+# write.csv(fithhsize, "data/itnpers_into_access_transformation_hh.csv")
 
 
 
@@ -455,19 +458,6 @@ dmmap / (decay | npchh) +
 
 
 ```{r afpop}
-## Extract Africa population data from giant World Bank file - but Eritrea is missing ## https://datacatalog.worldbank.org/search/dataset/0037655 
-
-# df <- as.data.frame(read_csv("data/WB_Population_Estimates_CSV/Population-EstimatesData.csv")) %>% 
-#   clean_names() %>% 
-#   select(country_name, country_code, indicator_name, indicator_code, x2020, x2021, x2022, x2023, x2024, x2025, x2026, x2027, x2028, x2029, x2030, x2031, x2032, x2033, x2034, x2035, x2036, x2037) %>% 
-#   filter(indicator_name=="Population, total") %>% 
-#   mutate(ccode=country_code) %>% 
-  # drop_na(x2025) 
-# afpop <- df %>% 
-#   mutate(iso_a2=countrycode(country_code, origin="iso3c", destination="iso2c")) %>% 
-#   filter(iso_a2 %in% a2levels)
-# 
-# rm(df)
 
 ## Extract Africa population data from UN WPP 2022 Demographic Indicators Medium File (https://population.un.org/wpp/Download/Standard/CSV/)
 
