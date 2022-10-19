@@ -1,4 +1,20 @@
-**** Multi country projections of coverage at different retention times and ITN strategies
+****************************************************************************************************
+
+**** Multi country projections of ITN access across different retention times and ITN strategies
+**** Author: Hannah Koenker
+**** Created: Jan 2020
+
+**** This file loads ITN retention times for different countries from Bertozzi-Villa et al, then calculates 
+**** ITN access across each country under five major ITN distribution strategies and within each strategy,
+**** several different quantification approaches.
+
+**** The file calls locals from "local.do" and runs a separate do file to produce the net crops within each loop.
+
+**** An earlier version graphed results from each iteration and used putpdf to produce a pdf file 
+**** with all of the plots for each scenario. I manually recreated the geo_facet grid used by Amelia for these.
+**** This code has been commented out as R is now used to produce the full suite of the same plots. 
+
+****************************************************************************************************
 
 cd "/Users/hannahkoenker/Dropbox/R Directory/Quantification"
 
@@ -11,7 +27,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 
 * STEP 1: LOAD DATA and tidy the retention times. Our dataset has a row for each country and we will build out years from there (wide format) 
 
-	import excel data/retentiontime.xlsx, clear firstrow case(l)
+	import excel data/retentiontime.xlsx, clear firstrow case(l) // load data from Bertozzi-Villa et al 2021 in Nature Comms
 	destring retention, replace
 	destring retlb, replace
 	destring retub, replace
@@ -59,7 +75,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		save data/itnpers_into_access_transformation_ub_hh, replace
 	
 
-/* *** The full dataset fitted for transformation:
+/* *** The full dataset fitted for transformation - ignores household size:
  
 		import delimited "../data/itnpers_into_access_transformation.csv", clear case(l)
 		rename v1 npccentile
@@ -131,7 +147,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 
 	include locals.do 
 
-* create the population in the start year. Below we will project population forward through the end year. 13 years.
+* create the population (10 million for all countries) in the start year. Below we will project population forward through the end year. 13 years.
 
 	gen pop`starty'=10000000
 	format pop`starty' %15.0f
@@ -190,13 +206,13 @@ set graphics off // toggle if you need to check graphs are looking ok
 	*******************************************************************
 	*/
 	
-	putpdf clear
-	putpdf begin 
+	* putpdf clear
+	* putpdf begin 
 	
 ***** SCENARIO 1 -- distribute nets in a mass campaign with RCH between
 	
-	putpdf paragraph, font(,20) halign(center)
-	putpdf text ("1. Projected ITN access from 3 year mass campaigns with varying ANC-EPI distribution")
+	* putpdf paragraph, font(,20) halign(center)
+	* putpdf text ("1. Projected ITN access from 3 year mass campaigns with varying ANC-EPI distribution")
 
 	foreach x of numlist 0.05 0.06 0.07 {
 		preserve 
@@ -220,7 +236,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		save "output/runs/`tag'", replace 
 		
 	** GRAPH **
-
+/*
 
 	gen geo=""
 	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -243,13 +259,16 @@ set graphics off // toggle if you need to check graphs are looking ok
 			putpdf paragraph
 			putpdf image "figs/quant_ucc_rch_`X'.png"
 			putpdf pagebreak
+*/			
+			
 		restore 	
 	}	
 	
+	
 * SCENARIO 2 - distribute nets in large-scale school/community distribution, but do a mass campaign in 2020 two years prior.
 
-	putpdf paragraph, font(,20) halign(center)
-	putpdf text ("2. Projected ITN access from large-scale annual distributions")
+	* putpdf paragraph, font(,20) halign(center)
+	* putpdf text ("2. Projected ITN access from large-scale annual distributions")
 	
 	** numlist indicates CD quantification, SEPARATE FROM the RCH quantification, which is assumed at 6% in line 263
 	
@@ -284,7 +303,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		save "output/runs/`tag'", replace 
 
 	** GRAPH **
-
+/*
 
 	gen geo=""
 	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -307,13 +326,15 @@ set graphics off // toggle if you need to check graphs are looking ok
 			putpdf paragraph
 			putpdf image "figs/quant_annual_`X'.png"
 			putpdf pagebreak
+			
+*/
 		restore 	
 	}	
-	
+
 * SCENARIO 3 - distribute nets in mass campaigns with RCH and varying between-campaign distribution
 	
-	putpdf paragraph, font(,20) halign(center)
-	putpdf text ("3. Projected ITN access from 3 year mass campaigns with 6% ANC-EPI distribution and varying between-campaign annual distributions")
+	* putpdf paragraph, font(,20) halign(center)
+	* putpdf text ("3. Projected ITN access from 3 year mass campaigns with 6% ANC-EPI distribution and varying between-campaign annual distributions")
 	
 	local y=0.06 // assume 6% RCH 
 	
@@ -342,7 +363,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		save "output/runs/`tag'", replace 
 		
 	** GRAPH **
-
+/*
 	
 	gen geo=""
 	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -365,13 +386,15 @@ set graphics off // toggle if you need to check graphs are looking ok
 			putpdf paragraph
 			putpdf image "figs/quant_UCC_btw_`X'.png"
 			putpdf pagebreak
+			
+*/
 		restore 	
 	}	
 	
 * SCENARIO 4 - distribute nets in 3-year mass campaigns with varying population/x 
 	
-	putpdf paragraph, font(,20) halign(center)
-	putpdf text ("4. Projected ITN access from 3 year mass campaigns with varying quantifiers and 6% ANC-EPI distribution")
+	* putpdf paragraph, font(,20) halign(center)
+	* putpdf text ("4. Projected ITN access from 3 year mass campaigns with varying quantifiers and 6% ANC-EPI distribution")
 	
 	local y=0.06 // assume 6% RCH 
 	
@@ -399,7 +422,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		save "output/runs/`tag'", replace 
 		
 	** GRAPH **
-
+/*
 
 	gen geo=""
 tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -427,16 +450,17 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 			putpdf image "figs/quant_UCC_pop_over_`1'.png"
 			putpdf pagebreak
 			mac shift
+			
+*/
 		restore 	
 	}	
 	
 	
-	* more useful maybe to run graphs by x, for a given country...
 
 * SCENARIO 5 - distribute nets in 2-year mass campaigns with varying population/x 
 	
-	putpdf paragraph, font(,20) halign(center)
-	putpdf text ("5.Projected ITN access from 2 year mass campaigns with varying quantifiers and 6% ANC-EPI distribution")
+	* putpdf paragraph, font(,20) halign(center)
+	* putpdf text ("5.Projected ITN access from 2 year mass campaigns with varying quantifiers and 6% ANC-EPI distribution")
 	
 	local y=0.06 // assume 6% RCH 
 	
@@ -467,7 +491,7 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 		save "output/runs/`tag'", replace 
 		
 	** GRAPH **
-
+/*
 
 	gen geo=""
 tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -481,9 +505,7 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 		mac shift
 	}
 	
-	
-	
-	
+
 			twoway connected percpop year if year>=`starty', by(geo, compact col(10) holes(1 3 4 5 6 7 9 10 19 20 30 31 39 40 41 42 43 49 51 52 53 54 59 60 61 62 63 64 68 69) note("2-year mass campaigns with annual ANC-EPI at 6%; population/`x'"))  msymbol(oh) mcolor(%50) mlabel(percpop) mlabpos(6) mlabsize(tiny) xtitle("") note("") || ///
 				connected accrk year if year>=`starty', by(geo) msymbol(x) mcolor(%50) mlabel(accrk) mlabpos(12) mlabsize(tiny)  || ///
 				rarea acclb_npclb accub_npcub year, lcolor(gs9%20) fcolor(gs9%30)  ///
@@ -495,13 +517,15 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 			putpdf image "figs/quant_UCC_2y_pop_over_`1'.png"
 			putpdf pagebreak
 			mac shift
+			
+*/
 		restore 	
 	}	
 	
 	*** Scenario 6 - 2 year campaigns at pop/1.8
 	
-	putpdf paragraph, font(,20) halign(center)
-	putpdf text ("6. Projected ITN access from 2 year mass campaigns with varying ANC-EPI distribution")
+	* putpdf paragraph, font(,20) halign(center)
+	* putpdf text ("6. Projected ITN access from 2 year mass campaigns with varying ANC-EPI distribution")
 
 	foreach x of numlist 0.05 0.06 0.07 {
 		preserve 
@@ -524,10 +548,12 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 		
 		gen scenario=600+`X'
 		local tag = 600+`X'
+		
+		
 		save "output/runs/`tag'", replace 
 		
 	** GRAPH **
-
+/*
 
 	gen geo=""
 	tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ETH SOM LBR CIV TGO NGA CMR RWA KEN GAB COG GNQ BDI UGA COM AGO COD ZMB TZA ZWE MWI MOZ MDG"
@@ -550,9 +576,10 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 			putpdf paragraph
 			putpdf image "figs/quant_ucc2_rch_`X'.png"
 			putpdf pagebreak
+			
+*/
 		restore 	
 	}	
 	
-	putpdf save output/quant_summary_`max'.pdf, replace 
+	* putpdf save output/quant_summary_stata.pdf, replace 
 	
-	* !pdftk quant_UCC_y2_pop_over_1_0.pdf quant_UCC_y2_pop_over_1_1.pdf quant_UCC_y2_pop_over_1_2.pdf cat output combined_abc.pdf
