@@ -1181,7 +1181,8 @@ asp <- avgscenpct %>%
         legend.position="none",
         plot.title = element_text(hjust = 0.8))
 
-
+ggsave("figs/Fig_avgtotalnets.png", plot=asp)
+ggsave("figs/Fig_facettotalnets.png", plot=mapscen)
 
 
 TotNets <- mapscen + inset_element(asp, left = -0.05, bottom = -0.09, right = .3, top = .3)+ 
