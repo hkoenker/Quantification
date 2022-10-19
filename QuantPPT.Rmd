@@ -178,13 +178,15 @@ totalscenarios <- scentable %>%
 
 ## Estimating ITN access from net distributions and population (1)
 
+:::::::::::::: {.columns}
+::: {.column}
 ![A) ITN retention times and median lifespans estimated from durability monitoring studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC](figs/Fig_Retention_Decay_NPC.png)
+:::
+::: {.column}
+For each year, the stock and flow model used a country-specific estimated median lifespan from Malaria Atlas Project (MAP) estimates published in Bertozzi-Villa et al [@10.1038/s41467-021-23707-7], shown in blue in panel A, to decay each crop of distributed nets annually. Panel A also presents estimated median lifespans from ITN durability monitoring (DM) activities gathered from www.pmi.gov and published literature [@Abilio:2020fl; @Kilian:2020dj; @Mansiangi:2020cv; @Haji:2020de; @Obi:2020eza; @Kilian:2015hk; @10.1371/journal.pmed.1003248; @Randriamaherijaona:2017fo]. The net decay functions rely on smooth-compact loss function developed by Nakul Chitnis and described in Koenker et al and Bhatt et al [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w], and are shown in Panel B. Panel C presents the fitted monotonic curves for the relationship between ITNs per capita and ITN access, stratified by average household size.
 
 :::
-
-For each year, the stock and flow model used a country-specific estimated median lifespan from Malaria Atlas Project (MAP) estimates published in Bertozzi-Villa et al [@10.1038/s41467-021-23707-7], shown in blue in Fig. \@ref(fig:ret-decay-fig)A, to decay each crop of distributed nets annually. Fig. \@ref(fig:ret-decay-fig)A also presents estimated median lifespans from ITN durability monitoring (DM) activities gathered from www.pmi.gov and published literature [@Abilio:2020fl; @Kilian:2020dj; @Mansiangi:2020cv; @Haji:2020de; @Obi:2020eza; @Kilian:2015hk; @10.1371/journal.pmed.1003248; @Randriamaherijaona:2017fo]. The net decay functions rely on smooth-compact loss function developed by Nakul Chitnis and described in Koenker et al and Bhatt et al [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w], and are shown in Fig. \@ref(fig:ret-decay-fig)B.
-
-:::
+::::::::::::::
 
 ## Estimating ITN access from net distributions and population (2)
 
@@ -211,7 +213,7 @@ For each year, the stock and flow model used a country-specific estimated median
 ![Scenario 3 - three-year mass campaigns with ANC/EPI distribution at 6%, and between-campaign continuous distribution at 10%](figs/geofacet_cd10ucc.png)
 
 
-The complete set of graphs for all `r totalscenarios` scenarios is included as [Supplemental File 1](https://htmlpreview.github.io/?.
+The complete set of graphs for all `r totalscenarios` scenarios is included as [Supplemental File 1](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/06_Supplemental_Info_1_Iterations.html).
 
 ## We are not distributing enough nets to maintain ITN access at 80%
 
@@ -222,23 +224,29 @@ The complete set of graphs for all `r totalscenarios` scenarios is included as [
 
 
 ## Quantification factors for continuous distribution strategies 
-
+:::::::::::::: {.columns}
+::: {.column}
 All scenarios assume that ANC and EPI delivery of ITNs is ongoing and provides nets to 6% of the population. However, quantifiers listed in the table represent only the continuous distribution channel, e.g. Liberia would require both ANC/EPI distribution as well as continuous distribution quantified using population x 28% to maintain ITN access at levels of 70%.
+:::
+::: {.column}
 
-![Recommended annual quantifiers for continuous distribution channels.](figs/Tab_Scen23.png)
+
+![](figs/Tab_Scen23.png)
+:::
+::::::::::::::
 
 ## Tailored quantification factors for 3-year campaigns 
 
-![Lowest level of ITN access between 3-year campaigns at different population quantifiers. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns.  Routine ITN delivery to pregnant women and infants is assumed.](figs/Tab_Scen4.png)
+![](figs/Tab_Scen4.png)
 
 ## Tailored quantification factors for 2-year campaigns 
 
-![Lowest level of ITN access between 2-year campaigns at different population quantifiers. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed.](figs/Tab_Scen5.png)
+![](figs/Tab_Scen5.png) 
 
 ## Recommended quantification factors for countries and scenarios
 
 
-![Summary of recommended quantifiers for scenarios, to maintain ITN access at or above 80%. The quantifiers are for only the continuous distribution channel or mass campaign; annual RCH distribution equivalent to 6% of the population is assumed in each scenario, but is not part of the listed quantifiers](figs/Tab_Reccs.png)
+![](figs/Tab_Reccs.png)
 
 
 ## How many nets are needed under the recommended scenarios?
@@ -247,18 +255,19 @@ All scenarios assume that ANC and EPI delivery of ITNs is ongoing and provides n
 
 ## Are there enough primary school children to make school distribution feasible?
 
+:::::::::::::: {.columns}
+::: {.column}
 ![Percentage of regions/provinces per country where large-scale annual school distribution to achieve ITN access targets for A) 70% and B) 80% is feasible, assuming one ITN is given per child](figs/Fig_reg_schoolfeasibility.png)
-
 :::
-
-The proportion of regions/provinces within each country where primary school students attending school met or exceeded the population quantifier are shown in Fig. \@ref(fig:fig-school), as an indication of the extent within a country where annual school distribution would be feasible. This assumes that only one ITN is given per pupil; for the countries in Fig. \@ref(fig:fig-school) with a limited proportion of regions where the primary-school-attending population is large enough, giving more than 1 ITN per pupil could provide a solution. Alternately, additional community-based channels could be designed to distribute ITNs alongside school-based distribution. 
-
+::: {.column}
+The proportion of regions/provinces within each country where primary school students attending school met or exceeded the population quantifier are shown here, as an indication of the extent within a country where annual school distribution would be feasible. This assumes that only one ITN is given per pupil; for the countries with a limited proportion of regions where the primary-school-attending population is large enough, giving more than 1 ITN per pupil could provide a solution. Alternately, additional community-based channels could be designed to distribute ITNs alongside school-based distribution. 
 :::
+::::::::::::::
 
 ## Which strategies offer the most value for money?
 
 ![Frontier plots of person-years of ITN access vs total nets delivered, in illustrative populations of 10 million people for comparability](figs/Fig_pyp.png)
-Frontier plots for all countries are included in Supplemental File 2.
+Frontier plots for all countries are included in [Supplemental File 2](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/07_Supplemental_Info_2_PYP.html).
 
 # Discussion
 
@@ -351,7 +360,7 @@ table80x <- read_csv("output/table80.csv")
 
 :::::::::::::: {.columns}
 ::: {.column}
-- [Link to full table](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/Scenario_2_and_3_Quantifiers_Table_Full_Version.html)
+- [Link to full table](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/output/Scenario_2_and_3_Quantifiers_Table_Full_Version.html)
 :::
 ::: {.column}
 ![Recommended annual quantifiers for continuous distribution channels. All scenarios assume that ANC and EPI delivery of ITNs is ongoing and provides nets to 6% of the population](figs/Scenario_23.png)
@@ -364,7 +373,7 @@ table80x <- read_csv("output/table80.csv")
 
 :::::::::::::: {.columns}
 ::: {.column}
-- [Link to full table](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/Scenario_2_and_3_Quantifiers_Table_Full_Version.html)
+- [Link to full table](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/output/Scenario_4_Lowest_Access_Table_Full_Version.html)
 :::
 ::: {.column}
 ![Lowest level of ITN access between 3-year campaigns at different population quantifiers for all countries. Routine ITN delivery to pregnant women and infants is assumed.](figs/Scenario_4.png)
@@ -375,17 +384,23 @@ table80x <- read_csv("output/table80.csv")
 
 :::::::::::::: {.columns}
 ::: {.column}
-- [Link to full table](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/Scenario_2_and_3_Quantifiers_Table_Full_Version.html)
+- [Link to full table](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/output/Scenario_5_Lowest_Access_Table_Full_Version.html)
 :::
 ::: {.column}
 ![Lowest level of ITN access between 2-year campaigns at different population quantifiers for all countries. Routine ITN delivery to pregnant women and infants is assumed.](figs/Scenario_5.png)
 :::
 ::::::::::::::
 
----
+## Full table for recommended quantifiers
 
+:::::::::::::: {.columns}
+::: {.column}
+- [Link to full table](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/output/Table_Reccs.html)
+:::
+::: {.column}
 ![Summary of recommended quantifiers for all countries and scenarios, to maintain ITN access at or above 80%. The quantifiers are for only the continuous distribution channel or mass campaign; annual RCH distribution equivalent to 6% of the population is assumed in each scenario, but is not part of the listed quantifiers](figs/Reccs_long.png)
-
+:::
+::::::::::::::
 
 
 ---
