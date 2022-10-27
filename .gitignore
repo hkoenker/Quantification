@@ -9,7 +9,6 @@ figs/pyp/*.pdf
 *.png
 quant_pword_JY_AK.docx
 quant_paper/quant_paper.docx
-
 doc/
 04_Quant_Plots_files/
 05_Scenarios_files/
@@ -18,7 +17,7 @@ doc/
 06_Suitability_School_Distribution.html
 06_Supplemental_Info_1_Iterations.html
 output/*.pdf
-output/runs/*.dta
+output/runs/
 data/WB*
 data/WPP*
 *DS_Store
