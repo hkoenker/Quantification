@@ -3,7 +3,8 @@
 .RData
 .Ruserdata
 docs/
-*.pdf
+figs/iterations/*.pdf
+figs/pyp/*.pdf
 *cache*
 *.png
 *.docx
@@ -14,7 +15,7 @@ docs/
 06_Suitability_School_Distribution.html
 06_Supplemental_Info_1_Iterations.html
 output/*.pdf
-output/runs/*
+output/runs/*.dta
 data/WB*
 data/WPP*
 *DS_Store
@@ -32,3 +33,5 @@ qppt_test*
 QuantPPT.pptx
 99_Old_Code.Rmd
 scratch/*
+
+
