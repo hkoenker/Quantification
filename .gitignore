@@ -7,7 +7,10 @@ figs/iterations/*.pdf
 figs/pyp/*.pdf
 *cache*
 *.png
-*.docx
+quant_pword_JY_AK.docx
+quant_paper/quant_paper.docx
+
+doc/
 04_Quant_Plots_files/
 05_Scenarios_files/
 04_Quant_Plots.html
