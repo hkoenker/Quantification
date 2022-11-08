@@ -1684,11 +1684,11 @@ ggsave("figs/Fig_CD_reach.png", width=6, height=5, dpi=300)
 
 ## Supplementary File 1 - Estimated ITN access under five ITN distributions scenarios and at varying quantification approaches
 
-[Link to file](https://github.com/hkoenker/Quantification/blob/master/04_Quant_Plots.html)
+[Link to file](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/06_Supplemental_Info_1_Iterations.html)
 
 ## Supplementary File 2 - Frontier plots of Person-years of ITN access vs Total nets delivered
 
-[Link to file](https://github.com/hkoenker/Quantification/blob/master/07_SI_2_PYP.html)
+[Link to file](https://htmlpreview.github.io/?https://github.com/hkoenker/Quantification/blob/master/07_Supplemental_Info_2_PYP.html)
 
 # References
 
