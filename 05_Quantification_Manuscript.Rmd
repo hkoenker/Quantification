@@ -132,7 +132,16 @@ options(knitr.kable.NA = "")
 
 # Abstract
 
-Insecticide treated nets (ITNs) have served as the cornerstone of malaria vector control in sub-Saharan Africa for the past two decades. Over 2.5 billion ITNs have been delivered to countries [@Milliner:2016um], primarily through periodic mass distribution campaigns scheduled at approximately three-year intervals, aligning with the expected lifespan of nets.
+Insecticide treated nets (ITNs) have served as the cornerstone of malaria vector control in sub-Saharan Africa for the past two decades. Over 2.5 billion ITNs have been delivered since 2004 primarily through periodic mass distribution campaigns scheduled at approximately three-year intervals, aligning with the expected lifespan of nets. Recent work indicates that ITN retention times are less than two years in most countries, raising key questions for quantification approaches and delivery frequency for ITN distribution. This paper models several quantification approaches for five typical ITN distribution strategies, calculating the population of the population with access to an ITN, and presents recommended quantification approaches to meet global targets for ITN access and use.
+
+A stock and flow model with annual timesteps was used to model ITN distribution and resulting ITN access for 2020-2035 under five scenarios in 40 countries: 1) three-year mass campaigns, 2) full-scale annual continuous distribution, 3) three-year mass campaigns with continuous distribution in the years between campaigns, 4) three-year mass campaigns at different quantification approaches, 5) two-year mass campaigns at different quantification approaches. All scenarios included ITN distribution to pregnant women at antenatal clinics and infants at immunization visits.
+
+The current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve or maintain targets of 80% population access to ITNs in most malaria-endemic countries, given most estimated retention times are less than three years. Tailored three-year or two-year mass campaigns were less efficient than annual continuous distribution strategies in nearly all settings.
+
+Given variation in ITN retention times across countries, tailored quantification approaches for mass campaigns and continuous distribution strategies are warranted. The quantity of ITNs required to meet these goals are substantially larger than current plans. National programmes and their funding partners should work to increase the number of ITNs distributed to those vulnerable to malaria, while at the same time working to extend the useful life of these critical commodities.
+
+
+
 
 # Background
 
@@ -266,7 +275,7 @@ dmmap <- lsdm %>%
        y = "Retention / median lifespan (years)") +
   scale_y_continuous(breaks=seq(0,6, by=1))
 
-dmmap
+# dmmap
 ggsave("figs/MAP_vs_DM_lifespans.png", width=6, height=5, dpi=300)
 
 ```
@@ -378,7 +387,7 @@ npchh <- fithhsize %>%
 ggsave("figs/npc_hhsize.png", width=6, height=5, dpi=300)
 ```
 
-```{r ret-decay-fig, fig.width = 7, fig.height = 6, out.width="80%", fig.cap = "A) ITN retention times and median lifespans estimated from durability monitoring studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC"}
+```{r ret-decay-fig, fig.width = 7, fig.height = 6, out.width="80%", fig.cap = "A) ITN retention times and median lifespans estimated from durability monitoring (DM) studies B) Smooth-compact loss function for net decay C) nonparametric conditional quartile function for ITN access as a function of NPC"}
 
 dmmap / (decay | npchh) + 
   plot_annotation(tag_levels = 'A')
@@ -604,7 +613,7 @@ tables2s3function <- function(df) {
 t23 <- tables2s3function(table_q_s2s3short)
 t23
 
-save_as_image(t23, path="figs/Tab_Scen23.png")
+invisible(save_as_image(t23, path="figs/Tab_Scen23.png"))
 ```
 
 
@@ -733,7 +742,7 @@ s4minrtshort <- s4minrtlong %>%
 tab4 <- s4tablefunction(s4minrtshort)
 tab4
 
-save_as_image(tab4, path="figs/Tab_Scen4.png")
+invisible(save_as_image(tab4, path="figs/Tab_Scen4.png"))
 
 ```
 
@@ -801,7 +810,7 @@ s5minrtshort <- s5minrtlong %>%
 tab5 <- s5tablefunction(s5minrtshort)
 tab5
 
-save_as_image(tab5, path="figs/Tab_Scen5.png")
+invisible(save_as_image(tab5, path="figs/Tab_Scen5.png"))
 
 ```
 
@@ -1061,7 +1070,7 @@ recctablefunction <- function(df) {
 tabrecc <- recctablefunction(table80rtshort)
 tabrecc
 
-save_as_image(tabrecc, path="figs/Tab_Reccs.png")
+invisible(save_as_image(tabrecc, path="figs/Tab_Reccs.png"))
 
 ```
 
@@ -1427,7 +1436,9 @@ pyp <- pyp %>%
          scenario_3=300+scenario_3,
          scenario_4=400+10*scenario_4,
          scenario_5=500+10*scenario_5,
-         bestq=case_when(scenario==107 ~ 1,
+         pypnet=pyp/totalnets,
+         bestq=case_when(group==6 & minbest==scenario ~ 1,
+                         group==1 & minbest==scenario ~ 1,
                          scenario==scenario_2 ~ 1,
                          scenario==scenario_3 ~ 1,
                          scenario==scenario_4 ~ 1,
@@ -1438,19 +1449,41 @@ pyp <- pyp %>%
 rm(table80t)
 
 pyp1 <- pyp %>% 
-  filter(iso3=="LBR",best==1) %>% 
+  filter(iso3=="LBR",bestq==1) %>% 
   arrange(group) %>% 
   mutate(relpyp=pyp/pyp[1],
-         relnets=totalnets/totalnets[1])
+         relnets=totalnets/totalnets[1]) %>% 
+  select(iso3, scenario, bestq, group, relpyp, relnets, pypnet)
+
+pyp2 <- pyp %>% 
+  filter(iso3=="GIN",bestq==1) %>% 
+  arrange(group) %>% 
+  mutate(relpyp=pyp/pyp[1],
+         relnets=totalnets/totalnets[1]) %>% 
+  select(iso3, scenario, bestq, group, relpyp, relnets, pypnet)
+
+pyp3 <- pyp %>% 
+  filter(iso3=="TZA",bestq==1) %>% 
+  arrange(group) %>% 
+  mutate(relpyp=pyp/pyp[1],
+         relnets=totalnets/totalnets[1]) %>% 
+  select(iso3, scenario, bestq, group, relpyp, relnets, pypnet)
 
 pyp5 <- pyp %>% 
-  filter(iso3=="COG",best==1) %>% 
+  filter(iso3=="COG",bestq==1) %>% 
   arrange(group) %>% 
   mutate(relpyp=pyp/pyp[1],
-         relnets=totalnets/totalnets[1])
+         relnets=totalnets/totalnets[1]) %>% 
+  select(iso3, scenario, bestq, group, relpyp, relnets, pypnet)
+
+pypnet <- pyp %>%
+  filter(bestq==1) %>% 
+  ggplot(aes(x=group, y=pypnet, group=group)) +
+  geom_boxplot()
+ # pypnet
 ```
 
-Finally, person-years of protection, expressed as person-years of ITN access, can be compared to total nets delivered to assess value for money of different ITN distribution strategies and within them, different quantification factors. Figure \@ref(fig:pyp) shows the quantification options within each scenario that provided the maximum person-years of protection, against the total nets required, for two countries representing shorter and longer retention times, over a 10-year period. While status quo strategies of 3-yearly campaigns quantified using population/1.8 with ANC/EPI at 7% require the least number of ITNs, they also provide the fewest person-years of ITN access. Moving rightward along the x-axis in Fig. \@ref(fig:pyp)A, we find options that provide more person-years of ITN access, each with slightly more total nets required. However, in Fig. \@ref(fig:pyp)B, with a nearly three-year retention time, annual CD quantified at population x `r with(pyp, scenario_2[which(iso3=="COG" & bestq==1 & group==2)])-200`% provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=0)` million person-years of ITN access over 10 years, with other options requiring more total nets but providing only minimal, if any, benefits in protection. Moreover, countries with shorter retention times require far more nets overall in order to provide similar levels of protection compared to countries with longer retention times: a full-scale CD program in country A achieves less than `r round(with(pyp, pyp[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs, compared to country B, where full scale CD provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs. Frontier plots for all countries are included in Supplemental File 2.
+Finally, person-years of protection, expressed as person-years of ITN access, can be compared to total nets delivered to assess value for money of different ITN distribution strategies and within them, different quantification factors. Figure \@ref(fig:pyp) shows the quantification options within each scenario that provided the maximum person-years of protection, against the total nets required, for two countries representing shorter and longer retention times, over a 10-year period. While status quo strategies of 3-yearly campaigns quantified using population/1.8 with ANC/EPI at 7% require the fewest ITNs, they also provide the fewest person-years of ITN access. Moving rightward along the x-axis in Fig. \@ref(fig:pyp)A, we find options that provide more person-years of ITN access, each with slightly more total nets required. However, in Fig. \@ref(fig:pyp)B, with a nearly three-year retention time, annual CD quantified at population x `r with(pyp, scenario_2[which(iso3=="COG" & bestq==1 & group==2)])-200`% provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=0)` million person-years of ITN access over 10 years, with other options requiring more total nets but providing only minimal, if any, benefits in protection. Moreover, countries with shorter retention times require far more nets overall in order to provide similar levels of protection compared to countries with longer retention times: a full-scale CD program in country A achieves less than `r round(with(pyp, pyp[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs, compared to country B, where full scale CD provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs. Frontier plots for all countries are included in Supplemental File 2.
 
 ```{r pyp, fig.height=4, fig.width=6, fig.cap = "Frontier plots of person-years of ITN access vs total nets delivered, in illustrative populations of 10 million people for comparability"}
 
@@ -1647,7 +1680,7 @@ s2s3tablelong <- tables2s3function(table_q_s2s3long)
 s2s3tablelong 
 
 save_as_html(s2s3tablelong, path="output/Scenario_2_and_3_Quantifiers_Table_Full_Version.html")
-save_as_image(s2s3tablelong, path="figs/Scenario_23.png")
+invisible(save_as_image(s2s3tablelong, path="figs/Scenario_23.png"))
 ```
 
 ```{r s4tablelong, tab.cap = "Lowest level of ITN access between 3-year campaigns at different population quantifiers for all countries. Green color reflects higher ITN access while red indicates lower ITN access reached between campaigns.  Routine ITN delivery to pregnant women and infants is assumed."}
@@ -1655,7 +1688,7 @@ s4tablelong <- s4tablefunction(s4minrtlong)
 s4tablelong
 
 save_as_html(s4tablelong, path="output/Scenario_4_Lowest_Access_Table_Full_Version.html")
-save_as_image(s4tablelong, path="figs/Scenario_4.png")
+invisible(save_as_image(s4tablelong, path="figs/Scenario_4.png"))
 
 ```
 
@@ -1664,7 +1697,7 @@ s5tablelong <- s5tablefunction(s5minrtlong)
 s5tablelong
 
 save_as_html(s5tablelong, path="output/Scenario_5_Lowest_Access_Table_Full_Version.html")
-save_as_image(s5tablelong, path="figs/Scenario_5.png")
+invisible(save_as_image(s5tablelong, path="figs/Scenario_5.png"))
 
 ```
 
@@ -1673,7 +1706,7 @@ recclong <- recctablefunction(table80rtlong)
 recclong
 
 save_as_html(recclong, path="output/Table_Reccs.html")
-save_as_image(recclong, path="figs/Reccs_long.png")
+invisible(save_as_image(recclong, path="figs/Reccs_long.png"))
 ```
 
 ```{r figreach, fig.cap = "A) Percent of households with a child attending primary school; B) Percent of households with a pregnant woman, child under 12 months, or child attending primary school. Data from most recent Demographic and Health Survey"}
