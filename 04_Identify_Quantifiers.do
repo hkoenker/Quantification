@@ -195,10 +195,12 @@
 		restore
 		
 		preserve
-			collapse (count) group if group==3 & accrk>=90 & accrk<=100 & year>2021 & percpop<61, by(iso_a2 scenario) // here we do include 100, otherwise CMR and COG don't appear in table.
+		* here we do include 100, otherwise CMR and COG don't appear in table.
+			collapse (count) group if group==3 & accrk>=90 & accrk<=100 & year>2021 & percpop<61, by(iso_a2 scenario) 
 			bysort iso_a2: egen max = max(group)
 			bysort iso_a2: egen q = min(scenario) if group==max & max>=`s23max'
 			collapse q, by(iso_a2)
+			* collapse q max, by(iso_a2)
 			replace q=q-300
 			gen target=90
 			
