@@ -151,17 +151,17 @@
 			
 				
 				gen npccentile=round(npc,.01) // create variable for merging with RKoenker's dataset of gridded points, rounded to 2 decimal places 
-				merge m:1 npccentile hhsize using data/itnpers_into_access_transformation_hh
+				merge m:1 npccentile hhsize using "data/npc_access/itnpers_into_access_transformation_hh"
 				drop if _m==2 // drop 3 levels of npccentile grid that don't match to any npc 
 				drop _merge // 1561 obs that have npc<0.01 that 'don't match', which is fine, see next lines 
 				
 				** merge again (same data; new variable names) for the lower and upper bounds
 				gen npclbcentile=round(npclb,.01)
-				merge m:1 npclbcentile hhsize using data/itnpers_into_access_transformation_lb_hh
+				merge m:1 npclbcentile hhsize using data/npc_access/itnpers_into_access_transformation_lb_hh
 				drop _merge 
 				
 				gen npcubcentile=round(npcub,.01)
-				merge m:1 npcubcentile hhsize using data/itnpers_into_access_transformation_ub_hh
+				merge m:1 npcubcentile hhsize using data/npc_access/itnpers_into_access_transformation_ub_hh
 				drop _merge
 		
 		

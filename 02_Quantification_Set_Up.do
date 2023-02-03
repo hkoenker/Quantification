@@ -197,7 +197,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		
 		sort iso3 year // this is crucial
 		
-		run "/Users/hannahkoenker/Dropbox/R Directory/Quantification/02_Internal_crop_access_calcs.do"
+		run "/Users/hannahkoenker/Dropbox/R Directory/Quantification/03_Internal_crop_access_calcs.do"
 		
 		di "`max'"
 		
@@ -229,7 +229,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		
 		sort iso3 year // this is crucial
 		
-		run "02_Internal_crop_access_calcs.do"
+		run "03_Internal_crop_access_calcs.do"
 		
 		gen scenario=100+`X'
 		local tag = 100+`X'
@@ -296,7 +296,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		
 		sort iso3 year // this is crucial
 		
-		run "02_Internal_crop_access_calcs.do"
+		run "03_Internal_crop_access_calcs.do"
 		
 		gen scenario=200+`X' // LABEL IS CD QUANT FACTOR ONLY 
 		local tag = 200+`X'
@@ -356,7 +356,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		
 		sort iso3 year // this is crucial
 		
-		run "02_Internal_crop_access_calcs.do"
+		run "03_Internal_crop_access_calcs.do"
 		
 		gen scenario=300+`X'
 		local tag = 300+`X'
@@ -415,7 +415,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 		
 		sort iso3 year // this is crucial
 		
-		run "02_Internal_crop_access_calcs.do"
+		run "03_Internal_crop_access_calcs.do"
 		
 		gen scenario=400+(`x'*10)
 		local tag = 400+(`x'*10)
@@ -484,7 +484,7 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 		
 		sort iso3 year // this is crucial
 		
-		run "02_Internal_crop_access_calcs.do"
+		run "03_Internal_crop_access_calcs.do"
 		
 		gen scenario=500+(`x'*10)
 		local tag = 500+(`x'*10)
@@ -544,7 +544,7 @@ tokenize "MRT ERI GMB SEN GNB MLI NER TCD SDN DJI SLE GIN GHA BFA BEN CAF SSD ET
 		
 		sort iso3 year // this is crucial
 		
-		run "02_Internal_crop_access_calcs.do"
+		run "03_Internal_crop_access_calcs.do"
 		
 		gen scenario=600+`X'
 		local tag = 600+`X'
