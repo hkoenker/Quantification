@@ -98,3 +98,61 @@ lsdm %>%
 
 
 ggsave("figs/MAP_vs_DM_lifespans.png", width=6, height=5, dpi=300)
+
+
+#---- Mozambique only ----
+
+lsdm %>%
+  filter(country=="Mozambique") %>% 
+  ggplot() +
+  geom_point(aes(
+    y = lifespan,
+    x = type,
+    color = type,
+    # alpha = type,
+    shape = type)) +
+  # ,
+  # alpha=0.8) 
+  geom_linerange(aes(
+    x = type,
+    ymin = lb,
+    ymax = ub,
+    color = type
+    # alpha = both
+  ),
+  alpha=0.8) +
+  theme_minimal() +
+  # scale_alpha_discrete(range=c(1,0), guide="none") +
+  # scale_alpha_continuous(range = c(0.25, 1), guide = "none") +
+  scale_color_hue(
+    # palette="Dark2",
+    name = "Study Type", 
+    labels = c("DM", "MAP")) +
+  scale_shape_manual(
+    name = "Study Type",
+    labels = c("DM", "MAP"),
+    values = c(19, 0)
+  ) + # if guide=="none" here, shape won't appear correctly in legend
+  geom_text(aes(
+    y=lifespan,
+    x=type,
+    color=type,
+    label=lifespan),
+    size=4,
+    hjust=-1,
+    vjust=-.5,
+    show.legend = FALSE
+  ) +
+  theme(legend.position="right",
+        text = element_text(size = 9),
+        axis.title.y = element_text(size=8),
+        #       axis.text.x = element_text(
+        #   angle = 45,
+        #   vjust = 0.9,
+        #   hjust = 1,
+        #   size = 7
+        # ),
+        axis.text.x=element_blank()) +
+  labs(x = "",
+       y = "Retention / median lifespan (years)") +
+  scale_y_continuous(breaks=seq(0,4, by=.5))
