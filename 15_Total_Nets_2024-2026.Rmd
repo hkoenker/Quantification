@@ -130,18 +130,20 @@ tnets3 <- table80rtlong %>%
          tot2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2024*routine+x2025*routine+x2026*routine,
          tot3=x2024*routine+x2025*routine+x2026*routine+x2026/1.8+x2024*(scenario_3/100)+x2025*(scenario_3/100),
          tot4=x2024*routine+x2025*routine+x2026*routine+x2026/scenario_4,
-         tot5=x2024*routine+x2025*routine+x2026*routine+x2026/scenario_5,
+         tot5=x2024*routine+x2025*routine+x2026*routine+x2024/scenario_5+x2026/scenario_5,
+         tot6=x2024*routine+x2025*routine+x2026*routine+x2024/1.8+x2026/1.8,
          s0vs2=tot2/tot0,
          s0vs3=tot3/tot0,
          s0vs4=tot4/tot0,
-         s0vs5=tot5/tot0)
+         s0vs5=tot5/tot0,
+         s0vs6=tot6/tot0)
         
 
 
 
 
 totalnets <- tnets3 %>% 
-  select(iso3, lifespan, tot0, tot2, tot3, tot4, tot5) %>% 
+  select(iso3, lifespan, tot0, tot2, tot3, tot4, tot5, tot6) %>% 
   pivot_longer(contains("tot"), names_to = "scenario", names_prefix = "tot", values_to = "totalnets")
 
 scenpct <- tnets3 %>% 
@@ -182,7 +184,8 @@ scenpct %>%
       "Full Scale CD",
       "Campaigns + CD",
       "3-year Campaigns, \n(tailored)",
-      "2-year Campaigns, \n(tailored)"
+      "2-year Campaigns, \n(tailored)",
+      "2-year Campaigns (pop/1.8)"
     )
   ) +
   theme_void() +
@@ -233,6 +236,7 @@ s4 <- tnets3 %>%
 s5 <- tnets3 %>% 
   filter(iso3=="CMR") %>% 
   pull(scenario_5)
+# scenario_6 qfactor not needed, it's just 1.8
 
 tnets3 %>% 
   filter(iso3 == "CMR") %>% 
