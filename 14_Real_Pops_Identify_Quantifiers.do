@@ -10,23 +10,23 @@
 	clear
 	
 	foreach x of numlist 105/107 {
-		append using "output/runs/`x'"
+		append using "output/realpop/`x'"
 	}
 	
 	foreach x of numlist 200/250 {
-		append using "output/runs/`x'"
+		append using "output/realpop/`x'"
 	}
 	foreach x of numlist 300/340 {
-		append using "output/runs/`x'"
+		append using "output/realpop/`x'"
 	}
 	foreach x of numlist 401/420 {
-		append using "output/runs/`x'"
+		append using "output/realpop/`x'"
 	}
 	foreach x of numlist 505/520 {
-		append using "output/runs/`x'"
+		append using "output/realpop/`x'"
 	}
 	foreach x of numlist 605/607 {
-		append using "output/runs/`x'"
+		append using "output/realpop/`x'"
 	}
 	
 	label var year "year"
@@ -65,7 +65,7 @@
 	
 	
 	
-	save output/quant_runs, replace 
+	save output/quant_realpop, replace 
 	
 	** Calculate total person-years of ITN access and the quantifiers that provide the max PYP for the various scenarios
 	
@@ -91,7 +91,7 @@
 			
 			** However, file can still be used in R to merge in the Qs from table 2 etc and then label those as 'best' and plot them in the graph. 
 			
-			save output/totalnetspyp, replace
+			save output/totalnetspyp_realpop, replace
 		
 	
 	restore 
@@ -151,7 +151,7 @@
 			
 			append using "`s2t80'"
 			append using "`s2t70'"
-			save data/s2_min_npp, replace 
+			save output/realpop/s2_min_npp, replace 
 		restore
 	
 	
@@ -206,7 +206,7 @@
 			
 			append using "`s3t80'"
 			append using "`s3t70'"
-			save data/s3_min_npp, replace 
+			save output/realpop/s3_min_npp, replace 
 		restore
 	
 	
@@ -219,7 +219,7 @@
 	
 		* what's the lowest that ITN access drops to between campaigns?
 		
-		use output/quant_runs, clear 
+		use output/quant_realpop, clear 
 			
 				preserve 
 					collapse (min) accrk if group==4 & year>2021, by(iso_a2 scenario)
@@ -227,7 +227,7 @@
 					
 					
 					
-					save data/s4_min_acc, replace
+					save output/realpop/s4_min_acc, replace
 					
 			
 					** grab the q for keeping ITN access at or above 80
@@ -238,7 +238,7 @@
 						
 						collapse best, by(iso_a2)
 						
-						save data/s4q, replace
+						save output/realpop/s4q, replace
 				restore 
 				
 			
@@ -254,7 +254,7 @@
 					reshape wide accrk, i(i) j(scenario)
 					
 		
-					save data/s5_min_acc, replace
+					save output/realpop/s5_min_acc, replace
 					
 					** grab the q for keeping ITN access at or above 80
 					
@@ -264,7 +264,7 @@
 						
 						collapse best, by(iso_a2)
 						
-						save data/s5q, replace
+						save output/realpop/s5q, replace
 				restore 
 		
 		
