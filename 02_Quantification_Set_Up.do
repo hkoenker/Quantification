@@ -283,7 +283,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 
 		replace totalnets=pop/1.8 if year==`starty' // do a mass campaign in 2020, then wait two years before organizing the school/community channels. 
 		
-		replace totalnets=pop*0.06 if year>=`secondy' // just do RCH at 6% in 2021 and forward, while waiting for school/community to start.
+		replace totalnets=pop*0.06 if year>=`starty' // just do RCH at 6% in 2020 and forward, while waiting for school/community to start.
 			
 		local thirdy = `secondy'+1
 		
