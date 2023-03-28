@@ -185,7 +185,7 @@ for(i in seq_along(s2)) {
 }
 ```
 
-# Scenario 3 - 3-year mass campaigns with ANC/EPI distribution at 6%, varying annual school/community distribution between campaigns
+# Scenario 3 - Three-year mass campaigns with ANC/EPI distribution at 6%, varying annual school/community distribution between campaigns
 
 ```{r scen3, warning = FALSE, message=FALSE, results="asis"}
 for(i in seq_along(s3)) {
@@ -200,7 +200,7 @@ for(i in seq_along(s3)) {
 }
 ```
 
-# Scenario 4 - 3-year mass campaigns with ANC/EPI distribution at 6%, varying campaign quantifier
+# Scenario 4 - Three-year mass campaigns with ANC/EPI distribution at 6%, varying campaign quantifier
 
 ```{r scen4, warning = FALSE, message=FALSE, results="asis"}
 for(i in seq_along(s4)) {
@@ -215,7 +215,7 @@ for(i in seq_along(s4)) {
 }
 ```
 
-# Scenario 5 - 2-year mass campaigns with ANC/EPI distribution at 6%, varying campaign quantifier
+# Scenario 5 - Two-year mass campaigns with ANC/EPI distribution at 6%, varying campaign quantifier
 
 ```{r scen5, warning = FALSE, message=FALSE, results="asis"}
 for(i in seq_along(s5)) {
