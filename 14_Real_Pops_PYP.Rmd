@@ -101,11 +101,13 @@ pyp <- pyp %>%
          scenario_3=300+scenario_3,
          scenario_4=400+10*scenario_4,
          scenario_5=500+10*scenario_5,
+         # scenario_6=600+10*scenario_6,
          bestq=case_when(scenario==107 ~ 1,
                          scenario==scenario_2 ~ 1,
                          scenario==scenario_3 ~ 1,
                          scenario==scenario_4 ~ 1,
                          scenario==scenario_5 ~ 1,
+                         scenario==606 ~ 1,
                          TRUE ~ 0))
 
 ```
@@ -168,7 +170,7 @@ print(pypplot)
 
 # Frontier Plots (alpha order by country code)
 
-Note: all countries use an illustrative population of 10,000,000 people.
+Note: all countries use World Bank population projections, but do not account for areas where people are not at risk of malaria, or subnational tailoring of ITN strategies.
 
 ```{r pyploop, warning = FALSE, message=FALSE}
 for(i in a3levels) {
