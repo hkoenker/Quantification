@@ -1,12 +1,12 @@
 ---
-title: How many mosquito nets are needed to reach universal coverage - an update
+title: How many mosquito nets are needed to maintain universal coverage - an update
 author: 
-  - Hannah Koenker^[Tropical Health LLP, hannah@trophealth.com]
-  - Josh Yukich^[Tulane University Center for Applied Malaria Research and Evaluation, jyukich@tulane.edu]
-  - Marcy Erskine^[International Federation of Red Cross and Red Crescent Societies, marcy.erskine@ifrc.org] 
-  - Robert Opoku^[International Federation of Red Cross and Red Crescent Societies, robert.opoku@ifrc.org]
-  - Eleanore Sternberg^[Tropical Health LLP, eleanore@trophealth.com] # with distill_article can use name affiliation etc details
-  - Albert Kilian^[Tropical Health LLP, albert@trophealth.com]
+  - Hannah Koenker^[Tropical Health LLP, Baltimore, USA, hannah@trophealth.com, corresponding author]
+  - Josh Yukich^[Tulane University Center for Applied Malaria Research and Evaluation, New Orleans, USA, jyukich@tulane.edu]
+  - Marcy Erskine^[International Federation of Red Cross and Red Crescent Societies, Geneva, Switzerland, marcy.erskine@ifrc.org] 
+  - Robert Opoku^[International Federation of Red Cross and Red Crescent Societies, Nairobi, Kenya, robert.opoku@ifrc.org]
+  - Eleanore Sternberg^[Tropical Health LLP, Liverpool, UK, eleanore@trophealth.com] # with distill_article can use name affiliation etc details
+  - Albert Kilian^[Tropical Health LLP, Montagut, Spain, albert@trophealth.com]
 output: 
   bookdown::word_document2:
     fig_caption: yes
@@ -136,9 +136,9 @@ Insecticide treated nets (ITNs) have served as the cornerstone of malaria vector
 
 A stock and flow model with annual timesteps was used to model ITN distribution and resulting ITN access for 2020-2035 under five scenarios in 40 countries: 1) three-year mass campaigns, 2) full-scale annual continuous distribution, 3) three-year mass campaigns plus continuous distribution in the years between campaigns, 4) three-year mass campaigns at different quantification approaches, 5) two-year mass campaigns at different quantification approaches. All scenarios included ITN distribution to pregnant women at antenatal clinics and infants at immunization visits.
 
-The current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve or maintain targets of 80% population access to ITNs in most malaria-endemic countries, given most estimated retention times are less than three years. Tailored three-year or two-year mass campaigns were less efficient than annual continuous distribution strategies in nearly all settings. Recommended quantifiers for annual continuous distributions ranged from population x 36% to population x 15% for countries with one- and three-year median retention times, respectively.
+The current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve or maintain targets of 80% population access to ITNs in most malaria-endemic countries, given most estimated retention times are less than three years. Tailored three- or two-year mass campaigns were less efficient than annual continuous distribution strategies in nearly all settings. For countries with at least two-year ITN retention times, full scale continuous distribution provided better ITN access while needing 11%-37% fewer ITNs compared to current mass campaigns.
 
-Given variation in ITN retention times across countries, tailored quantification approaches for mass campaigns and continuous distribution strategies are warranted. The quantity of ITNs required to meet these goals are substantially larger than current plans. National malaria programmes and their funding partners should work to increase the number of ITNs distributed to those vulnerable to malaria, while at the same time working to extend the useful life of these critical commodities.
+Given variation in ITN retention times across countries, tailored quantification approaches for mass campaigns and continuous distribution strategies are warranted. Continuous distribution strategies are likely to offer more efficient ways to maintain ITN coverage, with fewer nets, where ITN retention times are at least two years. National malaria programmes and their funding partners should work to increase the number of ITNs available to those vulnerable to malaria, while at the same time working to extend the useful life of these critical commodities.
 
 
 # Background
@@ -198,11 +198,13 @@ For each year, the stock and flow model used a country-specific estimated median
 ls <- read_excel("data/MAP_retentiontime_DM_medianlifespan.xlsx", sheet="Sheet1") %>%
   clean_names() %>%
   filter(type=="MAP") %>% 
+  filter(country!="Myanmar") %>% 
   drop_na(country) %>%
   rename(lifespan=median_retention_years) %>%
   separate(x95_percent_ci, into = c("lb", "ub"),
            sep = "\\s*(–|-)\\s*", convert = TRUE) %>% 
-  select(-site)
+  select(-site) %>% 
+  mutate(iso3=countrycode(country, origin="country.name", destination="iso3c"))
 
 dm <- read_excel("../DM Maps/Median lifespan DM multisite.xlsx") %>% 
   clean_names() %>% 
@@ -218,11 +220,22 @@ dm <- read_excel("../DM Maps/Median lifespan DM multisite.xlsx") %>%
 
 lsdm <- ls %>% 
   bind_rows(dm) %>% 
-  mutate(iso3=countrycode(country, origin="country.name", destination="iso3c")) %>% 
-  mutate(iso3=case_when(type=="MAP" ~ as.character(iso3)))
+  mutate(iso3=countrycode(country, origin="country.name", destination="iso3c")) 
+# %>% 
+#   mutate(iso3=case_when(type=="MAP" ~ as.character(iso3)))
 
 levels <- lsdm$country[ls$type=='MAP'][rev(order(ls$lifespan[ls$type=='MAP']))]
 lsdm$country_ord <- factor(lsdm$country, levels = levels)
+
+# ls <- ls %>%
+#   mutate(iso3=countrycode(country, origin="country.name", destination="iso3c"))
+levels3 <- lsdm$iso3[ls$type=='MAP'][rev(order(ls$lifespan[ls$type=='MAP']))]
+lsdm$iso3ord <- factor(lsdm$iso3, levels = levels3)
+# lsdm <- lsdm %>% 
+#   mutate(iso3ord=if_else(is.na(iso3ord), countrycode(country, origin="country.name", destination="iso3c"), iso3ord))
+
+# lsdm <- lsdm %>% 
+#   mutate(iso3ord=countrycode(country_ord, origin="country.name", destination="iso3c"))
 
 # save a small version of retention times for joining into results tables:
 rettimes <- lsdm %>% 
@@ -231,7 +244,7 @@ rettimes <- lsdm %>%
                         # country=="Cote d'Ivoire" ~ "Côte d'Ivoire",
                         country=="Congo (Republic of)" ~ "Rep. Congo",
                         TRUE~as.character(country))) %>% 
-  dplyr::select(-type, -country, -lb, -ub, -both, -country_ord) %>% 
+  dplyr::select(-type, -country, -lb, -ub, -both, -country_ord, -iso3ord) %>% 
   mutate(name=stri_trans_general(name,"Latin-ASCII")) %>% # remove o-hat from Cote d'Ivoire
 mutate(iso_a2 = countrycode(name, origin = "country.name", destination = "iso2c"))
 
@@ -241,14 +254,14 @@ dmmap <- lsdm %>%
   ggplot() +
   geom_point(aes(
     y = lifespan,
-    x = country_ord,
+    x = iso3ord,
     color = type,
     alpha = type,
     shape = type)) +
   # ,
   # alpha=0.8) 
   geom_linerange(aes(
-    x = country_ord,
+    x = iso3ord,
     ymin = lb,
     ymax = ub,
     color = type
@@ -256,7 +269,7 @@ dmmap <- lsdm %>%
   ),
   alpha=0.8) +
   theme_classic() +
-  scale_alpha_discrete(range=c(1,0), guide="none") +
+  scale_alpha_discrete(range=c(1,1), guide="none") +
   # scale_alpha_continuous(range = c(0.25, 1), guide = "none") +
   scale_color_hue(
   # scale_color_brewer(palette="Set2",
@@ -265,30 +278,30 @@ dmmap <- lsdm %>%
   scale_shape_manual(
     name = "Study Type",
     labels = c("DM", "MAP"),
-    values = c(1, 0)
+    values = c(1, 2)
   ) + # if guide=="none" here, shape won't appear correctly in legend
-  geom_text(aes(
-    y=lifespan,
-    x=country_ord,
-    color=type,
-    label=iso3),
-    size=1.5,
-    ) +
+  # geom_text(aes(
+  #   y=lifespan,
+  #   x=country_ord,
+  #   color=type,
+  #   label=iso3),
+  #   size=1.5,
+  #   ) +
   theme(legend.position="right",
         text = element_text(size = 9),
         axis.title.y = element_text(size=8),
-  #       axis.text.x = element_text(
-  #   angle = 45,
-  #   vjust = 0.9,
-  #   hjust = 1,
-  #   size = 7
-  # )) +,
-  axis.text.x=element_blank()) +
+        axis.text.x = element_text(
+    angle = 45,
+    vjust = 1,
+    hjust = 1,
+    size = 6
+  )) +
+  # axis.text.x=element_blank()) +
   labs(x = "",
        y = "Retention / median lifespan (years)") +
   scale_y_continuous(breaks=seq(0,6, by=1))
 
-# dmmap
+ # dmmap
 ggsave("figs/MAP_vs_DM_lifespans.png", width=6, height=5, dpi=300)
 
 ```
@@ -402,7 +415,7 @@ npchh <- fithhsize %>%
 ggsave("figs/npc_hhsize.png", width=6, height=5, dpi=300)
 ```
 
-```{r ret-decay-fig, fig.width = 7, fig.height = 6, out.width="80%", fig.cap = "A) ITN retention times estimated by Malaria Atlas Project (MAP) and median lifespans estimated from durability monitoring (DM) studies B) Smooth-compact loss function for net decay C) Nonparametric conditional quantile function for ITN access as a function of nets-per-capita (NPC)"}
+```{r ret-decay-fig, fig.width = 7, fig.height = 6, out.width="80%", fig.cap = "A) ITN retention times estimated by Malaria Atlas Project (MAP) and median lifespans estimated from durability monitoring (DM) studies; countries are labeled by IS03 code. B) Smooth-compact loss function for net decay C) Nonparametric conditional quantile function for ITN access as a function of nets-per-capita (NPC)"}
 
 dmmap / (decay | npchh) + 
   plot_annotation(tag_levels = 'A')
@@ -542,11 +555,11 @@ shortlist2 <- c("LR","GN","TZ","TG","CG","CM")
 shortlist3 <- c("LBR","GIN","TZA","TGO","COG","CMR")
 ```
 
-Given a target of 80% ITN access, the recommended quantification approaches for each scenario varied considerably across countries. Adjustments in quantification for ANC-EPI distribution did not lead to large differences in ITN access in Scenario 1. The key factors driving variation across countries within a given scenario were the estimated retention times for each country and the mean household size. Recommended quantification approaches are summarized for the scenarios that include continuous distribution in Table \@ref(tab:table-min-quantifier), for three-year mass campaigns in Table \@ref(tab:tabscen4), and for two-year mass campaigns in Table \@ref(tab:tabscen5).
+Given a target of 80% ITN access, the recommended quantification approaches for each scenario varied considerably across countries. Adjustments in quantification for ANC-EPI distribution did not lead to large differences in ITN access in Scenario 1. The key factors driving variation across countries within a given scenario were the estimated retention times for each country and the mean household size. Recommended quantification approaches are summarized for the scenarios that include continuous distribution in Table \@ref(tab:table-min-quantifier), for three-year mass campaigns in Table \@ref(tab:tabscen4), and for two-year mass campaigns in Table \@ref(tab:tabscen5). Six countries are included in these tables representing a range of ITN retention times from one year to three and a half years at approximately half-year intervals. The complete tables including all countries are available in the Supplemental Material.
 
-For Scenario 2, which relies on full-scale annual continuous distribution in combination with routine ANC/EPI ITN delivery to maintain access, the annual quantifier needed to maintain ITN access at 70% ranged from `r s2_70_low$q[1]`% of the population in `r s2_70_low$country[1]` (estimated net retention time of `r s2_70_low$lifespan[1]` years), to `r s2_70_high$q[1]`% of the population in `r combine_words(s2_70_high$country)` (retention times of `r combine_words(s2_70_high$lifespan)` years, respectively). Similarly, to maintain ITN access at 80%, the quantifier ranged from `r s2_80_low$q[1]`% of the population in `r s2_80_low$country[1]`, to `r s2_80_high$q[1]`% of the population in `r s2_80_high$country[1]`. In only a few countries was ITN access able to reach 90%, requiring a quantifier of `r s2_90_low$q[1]`% of the population in `r s2_90_low$country[1]` (retention time of `r s2_90_low$lifespan[1]` years), to `r s2_90_high$q[1]`% of the population in `r combine_words(s2_90_high$country)` (`r s2_90_high$lifespan[1]` years retention time). 
+For Scenario 2, which relies on full-scale annual continuous distribution in combination with routine ANC/EPI ITN delivery to maintain access, the annual quantifier needed to maintain ITN access at 70% ranged from `r s2_70_low$q[1]`% of the population in `r s2_70_low$country[1]` (estimated net retention time of `r s2_70_low$lifespan[1]` years), to `r s2_70_high$q[1]`% of the population in `r combine_words(s2_70_high$country)` (retention times of `r combine_words(s2_70_high$lifespan)` years, respectively). Similarly, to maintain ITN access at 80%, the quantifier ranged from `r s2_80_low$q[1]`% of the population in `r s2_80_low$country[1]`, to `r s2_80_high$q[1]`% of the population in `r s2_80_high$country[1]`. For ITN access to be maintained at 90% required a quantifier of between `r s2_90_low$q[1]`% of the population in `r s2_90_low$country[1]` (retention time of `r s2_90_low$lifespan[1]` years) and `r s2_90_high$q[1]`% of the population in `r combine_words(s2_90_high$country)` (`r s2_90_high$lifespan[1]` years retention time; Table \@ref(tab:table-min-quantifier)). 
 
-For Scenario 3, where mass campaigns are conducted every three years, routine distribution of ITNs through ANC/EPI is conducted consistently, and continuous distribution supplements ITN access in the years between campaigns, there was also a range of quantifiers for the annual continuous distribution channels. At the 70% target, `r words(length(unique(s3_70_low$country)))` countries required ITNs equivalent to `r s3_70_low$q[1]`% of the population, essentially indicating that three-year campaigns with ANC and EPI distribution would maintain ITN access at 70%, but for `r s3_70_high$country[1]`, continuous distribution quantified using population x `r s3_70_high$q[1]`% was needed to maintain ITN access between campaigns. At the 80% target, `r words(length(unique(s3_80_low$country)))` countries still achieved this with no continuous distribution ITNs between campaigns (`r combine_words(s3_80_low$country)`), while `r combine_words(s3_80_high$country)` was estimated to need `r s3_80_high$q[1]`% of the population in ITNs. At the 90% target for ITN access, `r combine_words(s3_90_low$country)`, with an estimated net retention time of `r s3_90_low %>% summarize(min(lifespan))` years, was the country projected to maintain ITN access at 90% between campaigns with the lowest quantifier, at `r s3_90_low$q[1]`% of the population. 
+For Scenario 3, where mass campaigns are conducted every three years, routine distribution of ITNs through ANC/EPI is conducted consistently, and continuous distribution supplements ITN access in the years between campaigns, there was also a range of quantifiers for the annual continuous distribution channels. At the 70% target, `r words(length(unique(s3_70_low$country)))` countries required ITNs equivalent to `r s3_70_low$q[1]`% of the population, essentially indicating that three-year campaigns with ANC and EPI distribution would maintain ITN access at 70%. For countries with the shortest retention times like `r s3_70_high$country[1]`, continuous distribution quantified using population x `r s3_70_high$q[1]`% was needed to maintain ITN access between campaigns. `r Words(length(unique(s3_80_low$country)))` countries were able to maintain the 80% access target with no continuous distribution ITNs between campaigns (`r combine_words(s3_80_low$country)`), while `r combine_words(s3_80_high$country)` was estimated to need `r s3_80_high$q[1]`% of the population in ITNs in each year between campaigns. `r combine_words(s3_90_low$country)`, with an estimated net retention time of `r s3_90_low %>% summarize(min(lifespan))` years, was the country with the lowest quantifier that maintained ITN access at 90% between campaigns, with population times `r s3_90_low$q[1]`% between campaigns. Table \@ref(tab:table-min-quantifier) summarises the recommended quantifiers for six countries, to maintain ITN access at 70%, 80%, or 90%; full results are in the Supplemental Material.
 
 ```{r Quantifier_Table}
 t2 <- s2min %>% 
@@ -583,14 +596,14 @@ table_q_s2s3short <- table_q_s2s3long %>%
 
 ```
 
-```{r table-min-quantifier, tab.cap = "Recommended annual quantifiers for continuous distribution channels for six countries with a range of estimated ITN retention times. All scenarios assume that ANC and EPI delivery of ITNs is ongoing in addition and provides nets to 6% of the population (not shown in table)."}
+```{r table-min-quantifier, tab.cap = "Recommended annual quantifiers for continuous distribution channels for six countries with a range of estimated ITN retention times; i.e. Togo should quantify the nets needed for full-scale continuous distribution by multiplying their population by 19%, each year, to maintain 80% ITN access. All scenarios assume that ANC and EPI delivery of ITNs is ongoing and provides nets to 6% of the population, in addition to any CD nets. The six countries shown here (labeled by IS03 code) represent the range of ITN retention times from 1 year to 3.5 years at approximately 6-month intervals. Results for all countries are available in the Supplemental Material. "}
 
 std_border = fp_border(color="gray") ## set the color of the border needed later down
 
 tables2s3function <- function(df) {
   flextable(df) %>% 
    set_header_labels(
-   iso3 = "Country Code",
+   iso3 = "Country (ISO3 code)",
    lifespan = "Retention time (years)",
              s270 = "70%",
              s280 = "80%",
@@ -748,7 +761,7 @@ s4tablefunction <- function(df) {
 ```
 
 
-```{r tabscen4, tab.cap = "Lowest level of ITN access between three-year campaigns at different population quantifiers. Routine ITN delivery to pregnant women and infants is assumed."}
+```{r tabscen4, tab.cap = "Lowest level of ITN access between three-year campaigns at different population quantifiers. Routine ITN delivery to pregnant women and infants is assumed. The six countries shown here represent the range of ITN retention times from 1 year to 3.5 years at approximately 6-month intervals. Results for all countries are available in the Supplemental Material."}
 
 s4minrtlong <- s4min %>% 
   left_join(rettimes) %>% 
@@ -769,7 +782,7 @@ invisible(save_as_image(tab4, path="figs/Tab_Scen4.png"))
 
 ```
 
-Table \@ref(tab:tabscen5) provides a similar picture but for campaigns conducted every two years. Under a population / 1.8 quantifier, `r words(length(unique(t5_18$name)))` countries (`r round(length(unique(t5_18$iso_a2))/totcty*100, digits=1)`%) including `r combine_words(t5_18$name)` would all maintain ITN access at or above 80% between campaigns. In other countries, two-yearly campaigns closer to one ITN per person would be needed in order to maintain ITN access at the 80% target. For example, Liberia reaches a low point of `r round(examplecty5$accrk518[1], digits=0)`% ITN access in the year between campaigns using population / 1.8. Using population / 1.0 - or one net per person, every two years - would result in an estimated ITN access of `r round(examplecty5$accrk510[1], digits=0)`% between campaigns.
+Table \@ref(tab:tabscen5) provides a similar picture but for campaigns conducted every two years. Under a population / 1.8 quantifier, `r words(length(unique(t5_18$name)))` countries (`r round(length(unique(t5_18$iso_a2))/totcty*100, digits=1)`%) including `r combine_words(t5_18$name)` would all maintain ITN access at or above 80% between campaigns. In other countries, two-yearly campaigns closer to one ITN per person would be needed in order to maintain ITN access at the 80% target. For example, Liberia reaches a low point of `r round(examplecty5$accrk518[1], digits=0)`% ITN access in the year between campaigns using population / 1.8. Using population / 1.0 (one net per person, every two years) would result in an estimated ITN access of `r round(examplecty5$accrk510[1], digits=0)`% between campaigns.
 
 
 ```{r s5tablefunction}
@@ -815,7 +828,7 @@ s5tablefunction <- function(df) {
 }
 ```
 
-```{r tabscen5, tab.cap = "Lowest level of ITN access between two-year campaigns at different population quantifiers. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed."}
+```{r tabscen5, tab.cap = "Lowest level of ITN access between two-year campaigns at different population quantifiers. Values of 100 indicate excess nets in the system (for example Cameroon). Routine ITN delivery to pregnant women and infants is assumed. The six countries shown here represent the range of ITN retention times from 1 year to 3.5 years at approximately 6-month intervals. Results for all countries are available in the Supplemental Material."}
 
 s5minrtlong <- s5min %>% 
   left_join(rettimes) %>% 
@@ -849,6 +862,7 @@ s2title <- "ANC/EPI at 6% and annual school/community \ndistribution at "
 s3title <- "3-year mass campaigns with ANC/EPI at 6% and \nbetween-campaign school/community distribution at "
 s4title <- "3-year mass campaigns with ANC/EPI, \nat population / "
 s5title <- "2-year mass campaigns with ANC/EPI, \nat population / "
+s6title <- "2-year mass campaigns with ANC/EPI at "
 ```
 
 
@@ -915,6 +929,21 @@ ggsave("figs/geofacet_3ucc.png", width=6, height=5, dpi=300)
 
 ```
 
+```{r geo-facets-2ucc, warning = FALSE, message=FALSE, fig.width = 7, fig.height = 6, out.width="80%", fig.cap = "Estimated ITN access under a typical two-year mass campaign strategy, with ANC/EPI distribution at 6% of the population annually. Red lines indicate 80% and 90% ITN access targets."}
+
+s6 <- 606 ## set the scenario selected for inclusion in the paper
+
+# create the path and filename from the scenario number
+filename = paste("output/runs/", s6, ".dta", sep = "")
+  
+# extract the quantifier from scenario number (last two digits) to put into the titles
+X <- s6-round(s6,digits=-2)
+  
+geos6 <- geofun(scen = s6, title = s6title)
+
+ggsave(plot=geos6, "figs/geofacet_2ucc.png", width=6, height=5, dpi=300)
+
+```
 
 ```{r geo-facets-cd, warning = FALSE, message=FALSE, fig.width = 7, fig.height = 6, out.width="80%", fig.cap = "Estimated ITN access with annual ANC/EPI at 6% and full continuous distribution strategy at 17% of the population in nets each year. Shaded areas indicate 95% confidence intervals accounting for both net retention times and ITN access as a function of nets-per-capita (NPC). Red lines indicate 80% and 90% ITN access targets."}
 
@@ -997,7 +1026,7 @@ write_csv(table80, "output/table80.csv", col_names = TRUE)
 write_csv(table80rtlong, "output/table80rtlong.csv", col_names = TRUE)
 ```
 
-Table \@ref(tab:recctable80) summarizes the recommended quantifiers under each scenario, given a target of maintaining 80% population ITN access. For Liberia, with a median retention time of just over one year, a full scale continuous distribution strategy would need to have an annual ITN need of population x `r with(table80rtshort, scenario_2[which(iso3=="LBR")])`%, and a strategy implementing mass campaigns every three years using population/1.8 and adding continuous distribution between campaigns would need to quantify the continuous distribution channel in each non-campaign year using population x `r with(table80rtshort, scenario_3[which(iso3=="LBR")])`%. Both strategies assume that ITN delivery to pregnant women and infants is ongoing, reaching about 6% of the population. Under tailored mass campaign scenarios, the models suggest that when net lifetimes are around 12 months, no three-year campaign strategy can achieve universal access; a strategy of campaigns every two years would only maintain ITN access above 80% if the quantification approach is to multiply the population by `r with(table80rtshort, scenario_5[which(iso3=="LBR")])` - delivering, in essence, one net per person every other year. In contrast, countries with longer retention times such as Republic of Congo or Cameroon are able to sustain 80% ITN access with full scale continuous strategies that quantify the annual ITN need using population x `r with(table80rtshort, scenario_2[which(iso3=="COG")])`% and `r with(table80rtshort, scenario_2[which(iso3=="CMR")])`%, respectively, and could implement continuous distribution between campaigns to sustain access with only population x `r with(table80rtshort, scenario_3[which(iso3=="COG")])`% and `r with(table80rtshort, scenario_3[which(iso3=="CMR")])`%, respectively. Alternately, they could implement three-yearly campaigns with no continuous distribution, using population divided by `r with(table80rtshort, scenario_4[which(iso3=="COG")])` and `r with(table80rtshort, scenario_4[which(iso3=="CMR")])`, along with ITN delivery to pregnant women and infants.
+Table \@ref(tab:recctable80) summarizes the recommended quantifiers under each scenario, given a target of maintaining 80% population ITN access. For Liberia, with a median retention time of just over one year, a full scale continuous distribution strategy would need to have an annual ITN need of population x `r with(table80rtshort, scenario_2[which(iso3=="LBR")])`%, and a strategy implementing mass campaigns every three years using population/1.8 and adding continuous distribution between campaigns would need to quantify the continuous distribution channel in each non-campaign year using population x `r with(table80rtshort, scenario_3[which(iso3=="LBR")])`%. Both strategies assume that ITN delivery to pregnant women and infants is ongoing, reaching about 6% of the population. Under tailored mass campaign scenarios, the models suggest that when net lifetimes are around 12 months, no three-year campaign strategy can achieve universal access; a strategy of campaigns every two years would only maintain ITN access above 80% if the quantification approach is to multiply the population by `r with(table80rtshort, scenario_5[which(iso3=="LBR")])` - delivering, in essence, one net per person every other year. In contrast, countries with longer retention times such as Republic of Congo or Cameroon are able to sustain 80% ITN access with full scale continuous strategies that quantify the annual ITN need using population x `r with(table80rtshort, scenario_2[which(iso3=="COG")])`% or `r with(table80rtshort, scenario_2[which(iso3=="CMR")])`%, respectively, or could choose to implement continuous distribution between campaigns to sustain access with only population x `r with(table80rtshort, scenario_3[which(iso3=="COG")])`% or `r with(table80rtshort, scenario_3[which(iso3=="CMR")])`%, respectively. Alternately, they could implement three-yearly campaigns with no continuous distribution, using population divided by `r with(table80rtshort, scenario_4[which(iso3=="COG")])` and `r with(table80rtshort, scenario_4[which(iso3=="CMR")])`, always along with ITN delivery to pregnant women and infants.
 
 ```{r regionalschooldata}
 ## Reading in school quant sheets to calculate % of regions that could make school dist work 
@@ -1071,13 +1100,13 @@ schv2 <- read_excel("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Sc
   
 ```
 
-```{r recctable80, tab.cap = "Summary of recommended quantifiers for scenarios, to maintain ITN access at or above 80%. The quantifiers are for only the continuous distribution channel or mass campaign; annual ANC/EPI distribution equivalent to 6% of the population is assumed in each scenario, but is not part of the listed quantifiers"}
+```{r recctable80, tab.cap = "Summary of recommended quantifiers for scenarios, to maintain ITN access at or above 80%. The quantifiers are for only the continuous distribution channel or mass campaign; annual ANC/EPI distribution equivalent to 6% of the population is assumed in each scenario, but is not part of the listed quantifiers. Results for all countries are available in the Supplemental Material."}
 ## Join retention times to table80
 
 
 recctablefunction <- function(df) {
   flextable(df) %>% 
-  set_header_labels(iso3="Country",lifespan="Retention time (years)", scenario_2="Full-scale continuous + routine",scenario_3="Campaign + routine + continuous between campaigns",scenario_4="three-yearly campaigns",scenario_5="two-yearly campaigns") %>% 
+  set_header_labels(iso3="Country",lifespan="Retention time (years)", scenario_2="Scenario 2: Full-scale continuous + routine",scenario_3="Scenario 3: Campaign + routine + continuous between campaigns",scenario_4="Scenario 4: Three-yearly campaigns",scenario_5="Scenario 5: Two-yearly campaigns") %>% 
   add_header_row(colwidths = c(2,2,2), values=c("","Continuous Distribution\nITNs = Population x X, annually","Mass Campaign\nITNs = Population / X")) %>% 
   # width(width=.2) %>% 
   fontsize(size=9, part="all") %>% 
@@ -1105,8 +1134,10 @@ tnets <- table80rtlong %>%
   left_join(afpop, by=c("iso3"= "country_code")) %>% 
   mutate(routine=.06,
          tot0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         tot2=x2022/1.8+x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
-         tot3=x2022/1.8+x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100),
+         # tot2=x2022/1.8+x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
+         # tot3=x2022/1.8+x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100),
+        tot2=x2022/1.8+x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100)+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
+         tot3=x2022/1.8+x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100)+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
          tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
          tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
          s0vs2=tot2/tot0,
@@ -1160,7 +1191,7 @@ write_csv(avgscenpct, "output/avgscenpct.csv", col_names = TRUE) ## write to CSV
 
 ```
 
-The total number of nets needed under each recommended scenario in Table \@ref(tab:recctable80) to maintain 80% ITN access is presented in Fig. \@ref(fig:totalnets)A, for each country in the sample, and summarized across countries in Fig. \@ref(fig:totalnets)B. For comparability, results are presented as a percentage difference compared to a status quo scenario of three-yearly campaigns quantified with population/1.8 plus routine distribution of ITNs to pregnant women and infants through ANC and EPI channels. For `r tnets %>% filter(tot2<tot0) %>% count() %>% pull()` of the `r length(unique(table80rtlong$iso3))` countries, full scale continuous distribution would maintain ITN access at 80% with fewer nets than are currently being delivered under three-yearly status quo campaigns. Across all countries, full scale continuous distribution was expected to maintain ITN access at 80% with `r round((avgscenpct$mean[2]-1)*100, digits=1)`% more ITNs than status quo. Strategies deploying continuous distribution between mass campaigns required `r round((avgscenpct$mean[3]-1)*100, digits=1)`% more ITNs than status quo, while mass campaign strategies with tailored quantifiers required nearly two and a half times as many ITNs for three-yearly campaigns, and `r round((avgscenpct$mean[5]-1)*100, digits=1)`% more ITNs for two-yearly campaigns.
+The total number of nets needed under each recommended scenario in Table \@ref(tab:recctable80) to maintain 80% ITN access is presented in Fig. \@ref(fig:totalnets), summarized by ITN retention times grouped in half-year intervals. For comparability, results are presented as a percentage difference compared to a status quo scenario of three-yearly campaigns quantified with population/1.8 plus routine distribution of ITNs to pregnant women and infants through ANC and EPI channels. Continuous distribution required fewer nets to maintain ITN access at 80% for countries with ITN retention times of at least two years (`r tnets %>% filter(tot2<tot0) %>% count() %>% pull()` of the `r length(unique(table80rtlong$iso3))` study countries). The full scale CD scenario required 11% fewer nets when ITN retention times were 2.0-2.4 years, 29% fewer nets for retention times of 2.5-2.9 years, and 37% fewer nets for retention times of at least three years. Across all countries, full scale continuous distribution was expected to maintain ITN access at 80% with `r round((avgscenpct$mean[2]-1)*100, digits=1)`% more ITNs than status quo. Strategies deploying continuous distribution between mass campaigns required `r round((avgscenpct$mean[3]-1)*100, digits=0)`% more ITNs than status quo across all countries. For countries with ITN retention times of less than two years, 80% ITN access was maintained but required more nets than currently being procured, while for countries with retention times of 2.0-2.4 years the relative number of nets required was comparable to status quo (99%), and fewer nets were required compared to status quo for countries with retention times of 2.5-2.9 years (82%) and at least three years (79%). Three-yearly mass campaign strategies with tailored quantifiers required nearly two and a half times as many ITNs compared to status quo, although for countries with ITN retention times of at least 2.5 years, only 9% (2.5-2.9 years) and 5% (3.0-2.6 years) more nets would be needed. Overall, `r round((avgscenpct$mean[5]-1)*100, digits=1)`% more ITNs would be required for tailored two-yearly campaigns to maintain 80% access, compared to status quo, and 28% more nets were required under this scenario even for countries with at least two-year ITN retention times. Comparing the full scale CD results to the tailored three- and two-year campaign results provides a direct comparison of nets required for each strategy to achieve similar ITN access. 
 
 ```{r totalnets, dpi=300, fig.width=6, fig.height=6, fig.cap="Relative proportions of total ITNs needed over 10 years, compared to status quo (three-yearly campaigns at population/1.8), by scenario and ITN retention time. Grey labels show group average for each scenario."}
 pal <- "Purples"
@@ -1185,11 +1216,11 @@ mapscen <- scenpct %>%
     # discrete=TRUE,
     palette = pal,
     labels = c(
-      "Status Quo", 
-      "Full Scale CD",
-      "Campaigns + CD",
-      "3-year Campaigns, \n(tailored)",
-      "2-year Campaigns, \n(tailored)"
+      "1. Status Quo", 
+      "2. Full Scale CD",
+      "3. Campaigns + CD",
+      "4. 3-year Campaigns, \n(tailored)",
+      "5. 2-year Campaigns, \n(tailored)"
     )
   ) +
   theme_minimal() +
@@ -1267,24 +1298,34 @@ scenpct_lifespan %>%
     labels=c("1-1.4 yrs", "1.5-1.9 yrs", "2.0-2.4 yrs", "2.5-2.9 yrs", "3-3.6 yrs")) +  
   geom_text(position = position_dodge(width = .9), hjust=.5, vjust=-.75, size=2) +
     scale_y_continuous(labels = scales::percent, breaks=c(0,1,2,3,4), limits=c(0,4.5)) +
-  scale_x_discrete(labels=c("Status Quo", "Full Scale CD", "Campaigns + CD", "3-year Campaigns", "2-year Campaigns")) +
-  annotate("rect", xmin = .6, xmax = 1.4, ymin = 1.1, ymax = 1.3,
-  alpha = .2) +
-  annotate("text", x = 1, y = 1.2, label = "100%", size=2, vjust=.5) +
-  annotate("rect", xmin = 1.6, xmax = 2.4, ymin = 1.5, ymax = 1.7,
-  alpha = .2) +
-  annotate("text", x = 2, y = 1.6, label = paste0(round((avgscenpct$mean[2])*100, digits=0),"%"), size=2, vjust=0.5) +
-  annotate("rect", xmin = 2.6, xmax = 3.4, ymin = 1.7, ymax = 1.9,
-  alpha = .2) +
-  annotate("text", x = 3, y = 1.8, label = paste0(round((avgscenpct$mean[3])*100, digits=0),"%"), size=2, vjust=0.5) +
-  annotate("rect", xmin = 3.6, xmax = 4.4, ymin = 2.7, ymax = 2.9,
-  alpha = .2) +
-  annotate("text", x = 4, y = 2.8, label = paste0(round((avgscenpct$mean[4])*100, digits=0),"%"), size=2, vjust=0.5) +
-  annotate("rect", xmin = 4.6, xmax = 5.4, ymin = 2.3, ymax = 2.5,
-  alpha = .2) +
-  annotate("text", x = 5, y = 2.4, label = paste0(round((avgscenpct$mean[5])*100, digits=0),"%"), size=2, vjust=0.5) +
+  scale_x_discrete(labels=c("1. Status Quo",
+      "2. Full scale CD",
+      "3. Campaigns + CD",
+      "4. 3-year campaigns",
+      "5. 2-year campaigns")) +
+  geom_bracket(inherit.aes = FALSE, type="text",y.position=1.2, xmin=.6, xmax=1.4, label="100%") +
+  geom_bracket(inherit.aes = FALSE, type="text",y.position=1.6, xmin=1.6, xmax=2.4, label=paste0(round((avgscenpct$mean[2])*100, digits=0),"%")) +
+  geom_bracket(inherit.aes = FALSE, type="text",y.position=1.8, xmin=2.6, xmax=3.4, label=paste0(round((avgscenpct$mean[3])*100, digits=0),"%")) +
+  geom_bracket(inherit.aes = FALSE, type="text",y.position=2.8, xmin=3.6, xmax=4.4, label=paste0(round((avgscenpct$mean[4])*100, digits=0),"%")) +
+  geom_bracket(inherit.aes = FALSE, type="text",y.position=2.4, xmin=4.6, xmax=5.4, label=paste0(round((avgscenpct$mean[5])*100, digits=0),"%")) +
+   geom_bracket(inherit.aes = FALSE, type="text",y.position=4.5, xmin=1.6, xmax=5.4, label="Strategies maintaining 80% ITN access") +
+  # annotate("rect", xmin = .6, xmax = 1.4, ymin = 1.1, ymax = 1.3,
+  # alpha = .2) +
+  # annotate("text", x = 1, y = 1.2, label = "100%", size=2, vjust=.5) +
+  # annotate("rect", xmin = 1.6, xmax = 2.4, ymin = 1.5, ymax = 1.7,
+  # alpha = .2) +
+  # annotate("text", x = 2, y = 1.6, label = paste0(round((avgscenpct$mean[2])*100, digits=0),"%"), size=2, vjust=0.5) +
+  # annotate("rect", xmin = 2.6, xmax = 3.4, ymin = 1.7, ymax = 1.9,
+  # alpha = .2) +
+  # annotate("text", x = 3, y = 1.8, label = paste0(round((avgscenpct$mean[3])*100, digits=0),"%"), size=2, vjust=0.5) +
+  # annotate("rect", xmin = 3.6, xmax = 4.4, ymin = 2.7, ymax = 2.9,
+  # alpha = .2) +
+  # annotate("text", x = 4, y = 2.8, label = paste0(round((avgscenpct$mean[4])*100, digits=0),"%"), size=2, vjust=0.5) +
+  # annotate("rect", xmin = 4.6, xmax = 5.4, ymin = 2.3, ymax = 2.5,
+  # alpha = .2) +
+  # annotate("text", x = 5, y = 2.4, label = paste0(round((avgscenpct$mean[5])*100, digits=0),"%"), size=2, vjust=0.5) +
   labs(fill="ITN retention time",
-       y="",
+       y="Percent difference in total ITNs needed over 10 years, vs status quo",
        x="",
        title="",
        # title="Percentage difference in total nets needed over 10 years vs status quo"
@@ -1295,11 +1336,14 @@ scenpct_lifespan %>%
         # legend.key.width = unit(1, 'cm'), #change legend key width
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=8),  #change legend text font size
+        axis.title.y = element_text(size=8),
+        axis.text.x = element_text(size=7),
         plot.margin = unit(c(.3,0,0,0), "cm"),
         rect = element_rect(fill = "white"),
         legend.position="bottom",
         plot.title = element_text(hjust = 0.8))
 
+ggsave("figs/Fig_compareCDbylifespanbig.png", dpi=300)
 
 ggsave("figs/Fig_compareCDbylifespan.png", width=6, height=5, dpi=300)
 ```
@@ -1560,9 +1604,9 @@ pypnet <- pyp %>%
  # pypnet
 ```
 
-Finally, person-years of protection, expressed as person-years of ITN access, can be compared to total nets delivered to assess value for money of different ITN distribution strategies and within them, different quantifiers. Fig. \@ref(fig:pyp) shows the quantification options within each scenario that provided the maximum person-years of protection, against the total nets required, for two countries representing shorter and longer retention times, over a ten year period. While status quo strategies of three-yearly campaigns quantified using population/1.8 with ANC/EPI at 7% require the fewest ITNs, they also provide the fewest person-years of ITN access. Moving rightward along the x-axis in Fig. \@ref(fig:pyp)A, we find options that provide more person-years of ITN access, each with slightly more total nets required. However, in Fig. \@ref(fig:pyp)B, with a nearly three-year retention time, annual CD quantified at population x `r with(pyp, scenario_2[which(iso3=="COG" & bestq==1 & group==2)])-200`% provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=0)` million person-years of ITN access over 10 years, with other options requiring more total nets but providing only minimal, if any, additional protection. Moreover, countries with shorter retention times require far more nets overall in order to provide similar levels of protection compared to countries with longer retention times: a full-scale CD program in country A achieves less than `r round(with(pyp, pyp[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs, compared to country B, where full scale CD provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs. Frontier plots for all countries are included in Supplemental File 2.
+Finally, person-years of protection, expressed as person-years of ITN access, can be compared to total nets delivered to assess value for money of different ITN distribution strategies and within them, different quantifiers. Fig. \@ref(fig:pyp) shows the quantification options within each scenario that provided the maximum person-years of protection, against the total nets required, for two countries representing shorter and longer retention times, over a ten year period. While status quo strategies of three-yearly campaigns quantified using population/1.8 with ANC/EPI at 7% require the fewest ITNs, they also provide the fewest person-years of ITN access. Moving rightward along the x-axis in Fig. \@ref(fig:pyp)A, the options provide more person-years of ITN access, each with slightly more total nets required. However, in Fig. \@ref(fig:pyp)B, with a nearly three-year retention time, annual CD quantified at population x `r with(pyp, scenario_2[which(iso3=="COG" & bestq==1 & group==2)])-200`% provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=0)` million person-years of ITN access over 10 years, with other options requiring more total nets but providing only minimal, if any, additional protection. Moreover, countries with shorter retention times require far more nets overall in order to provide similar levels of protection compared to countries with longer retention times: a full-scale CD program in country A achieves less than `r round(with(pyp, pyp[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="DJI" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs, compared to country B, where full scale CD provides `r round(with(pyp, pyp[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million person-years of ITN access for around `r round(with(pyp, totalnets[which(iso3=="COG" & bestq==1 & group==2)])/1000000, digits=1)` million ITNs. Frontier plots for all countries are included in Supplemental File 2.
 
-```{r pyp, fig.height=4, fig.width=6, fig.cap = "Frontier plots of person-years of ITN access vs total nets delivered, in illustrative populations of 10 million people for comparability"}
+```{r pyp, fig.height=4, fig.width=6, fig.cap = "Frontier plots of person-years of ITN access vs total nets delivered, in illustrative populations of 10 million people for comparability. Results for all countries are included in the Supplemental Material."}
 
 # hjust=-.2, vjust=.5, max.overlaps=10, 
 
@@ -1590,22 +1634,22 @@ pyp %>%
   scale_color_brewer(
     palette = "Dark2",
     labels = c(
-      "Status Quo",
-      "Full scale CD",
-      "Campaigns + CD",
-      "3-year campaigns",
-      "2-year campaigns",
-      "2-year campaigns (pop/1.8)"
+    "1. Status Quo",
+      "2. Full scale CD",
+      "3. Campaigns + CD",
+      "4. 3-year campaigns",
+      "5. 2-year campaigns",
+      "6. 2-year campaigns (pop/1.8)"
     )
   ) +
   scale_shape_manual(values=c(15,16,17,3,4,8),
     labels = c(
-      "Status Quo",
-      "Full scale CD",
-      "Campaigns + CD",
-      "3-year campaigns",
-      "2-year campaigns",
-      "2-year campaigns (pop/1.8)"
+      "1. Status Quo",
+      "2. Full scale CD",
+      "3. Campaigns + CD",
+      "4. 3-year campaigns",
+      "5. 2-year campaigns",
+      "6. 2-year campaigns (pop/1.8)"
     )
   ) +
   labs(x = "",
@@ -1695,19 +1739,19 @@ ggsave("figs/Fig_pyp.png", height=5, width=6, dpi=300)
 
 # Discussion
 
-This analysis shows that the current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve targets of 80% population access to ITNs in the majority of malaria-endemic countries, given overall retention times are estimated at below three years. 
+This analysis shows that the current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve targets of 80% population access to ITNs in the majority of malaria-endemic countries, given ITN retention times are estimated to be less than three years in many settings. 
 
-Second, the impulse to conduct mass campaigns every two years in places where nets have an estimated retention time or durability of two years, however intuitive, ultimately requires far more ITNs to maintain 80% population ITN access than under a strategy of continuous distribution. Compared to the current status quo, full scale continuous distribution of nets could provide continuous ITN access at 80% or higher, for `r round((avgscenpct$mean[2]-1)*100, digits=0)`% more nets, while a strategy of two-year mass campaigns using a quantifier tailored for net retention rates would require `r round((avgscenpct$mean[5]-1)*100, digits=0)`% more nets than status quo with similar coverage outcomes. 
+Second, the impulse to conduct mass campaigns every two years in places where nets have an estimated retention time or durability of two years, however intuitive, ultimately requires far more ITNs to maintain 80% population ITN access than under a strategy of continuous distribution. Compared to the current status quo, full scale continuous distribution of nets could provide continuous ITN access at 80% or higher, with fewer nets compared to current mass campaign approaches in settings where ITN retention times are at least two years. In these countries, between `r round(100-with(scenpct_lifespan, mean[which(scenario=="2" & as.numeric(glife)==3)])*100, digits=0)`%-`r round(100-with(scenpct_lifespan, mean[which(scenario=="2" & as.numeric(glife)==5)])*100, digits=0)`% fewer ITNs would result in better ITN access compared to current mass campaigns. A strategy of two-year mass campaigns using a quantifier tailored for net retention rates would require `r round((avgscenpct$mean[5]-1)*100, digits=0)`% more nets than status quo with similar coverage outcomes. 
 
-Third, after examining whether population/1.8 is appropriate in all settings, we find that in order to maintain population ITN access at target levels of 80%, tailoring of the quantifier to the demographic profile and net durability profile of each country is necessary. As described in Bertozzi-Villa et al. and shown here, the relationship between nets-per-capita and population ITN access is sensitive to average household size, with countries with average household size below five getting less ITN access for the same number of nets-per-capita than countries with average household size of five or more. Net retention time is however the major driving factor behind the calculations for the optimal quantifier. Countries with retention times of less than two years could not maintain ITN access at 80% between campaigns even when one ITN per person was delivered in the model, and countries with retention time of around 2.5 years required population/1.5 or population/1.2 to offset the rapid loss of nets post-campaign and still maintain sufficient ITN coverage. However, even these approaches would introduce what most planners and donors would consider a vast "oversupply" of ITNs at each campaign. 
+Third, after examining whether population/1.8 is appropriate in all settings, these findings indicate that in order to maintain population ITN access at target levels of 80%, tailoring of the quantifier to the demographic profile and net durability profile of each country is necessary. As described in Bertozzi-Villa et al. and shown here, the relationship between nets-per-capita and population ITN access is sensitive to average household size. Countries with an average household size below five achieve less ITN access for the same number of nets-per-capita than countries with average household size of five or more. Net retention time is however the major driving factor behind the calculations for the optimal quantifier. Countries with retention times of less than two years could not maintain ITN access at 80% between campaigns even when one ITN per person was delivered in the model, and countries with retention time of around 2.5 years required population/1.5 or population/1.2 to offset the rapid loss of nets post-campaign and still maintain high ITN coverage. However, even these approaches would introduce what most planners and donors would consider a vast "oversupply" of ITNs at each campaign. 
 
-It is worth noting that the model assumes that all distributed nets decay at the same rates; that is, nets are not stored for later use. There are few, if any, studies on what households do with their nets when they are oversupplied. Should households retain extra nets for later use, this would greatly improve rates of ITN access in the model. Conversely, if all oversupplied households immediately diverted extra nets, for example to misuse, net lifetimes would be further reduced and ITN access much lower than the estimates presented here. Given that "saving for later" is a key reason why nets go unused in households that own "too many" [@10.1186/s12936-023-04490-w], the reality may be closer to the former case, but results are likely between these two extremes. 
+It is worth noting that the model assumes that all distributed nets decay at the same rates; that is, nets are not stored for later use. There are few studies reporting what households do with their nets when they are oversupplied. Should households retain extra nets for later use, this would greatly improve rates of ITN access in the model. Conversely, if all oversupplied households immediately diverted extra nets, for example to misuse, net lifetimes would be further reduced and ITN access much lower than the estimates presented here. Given that "saving for later" is a key reason why nets go unused in households that own "too many" [@10.1186/s12936-023-04490-w], the reality may be closer to the former case, but results are likely between these two extremes. 
 
-Fourthly, optimal quantifiers are presented here for a variety of ITN distribution strategies, along with the total number of nets that would be required, in an effort to facilitate decision making for national programmes and their partners. 
+Fourthly, optimal quantifiers are presented here for a variety of ITN distribution strategies, along with the relative number of nets that would be required, in an effort to facilitate decision making for national programmes and their partners.
 
-The global malaria community faces significant challenges, with limited funding to implement life-saving interventions potentially the greatest immediate threat to malaria control efforts. Countries are advised to generate subnational strategies to tailor intervention packages to specific settings, but resources are inadequate to implement the desired combinations of interventions that would have the greatest impact. National programmes thus face difficult choices about which population segments to cover fully, and which to leave with suboptimal protection. These recommendations to "do more with less" are not tenable. Insufficient vector control coverage is a key driver of malaria transmission; malaria cases have been shown to decrease for only a year or two between campaigns before rising again in several observational studies [@Girond:2018bc; @10.1136/bmjgh-2021-005447; @Zhou:2016do; @Wotodjo:2017bl] and in modeling [@sherrard2022deploymentvc]. The challenges of delivering more ITNs are clear - funding for both the nets and their distribution costs; donor appetite; not to mention the additional cost of new types of ITNs recommended for areas with insecticide resistance. The implementation of each of these types of distribution strategies also comes with unique challenges, which are beyond the scope of this paper. However, the costs of continuing to deliver insufficient quantities of ITNs and providing only intermittent protection are also clear - continued loss of life and disability, school and work absenteeism, and decreased quality of life. 
+The global malaria community faces significant challenges, with limited funding to implement life-saving interventions potentially the greatest immediate threat to malaria control efforts. Countries are advised to generate subnational strategies to tailor intervention packages to specific settings, but resources are inadequate to implement the desired combinations of interventions that would have the greatest impact. National programmes thus face difficult choices about which population segments to cover fully, and which to leave with suboptimal protection. These recommendations to "do more with less" are not tenable. Insufficient vector control coverage is a key driver of malaria transmission; malaria cases have been shown to decrease for only a year or two between campaigns before rising again in several observational studies [@Girond:2018bc; @10.1136/bmjgh-2021-005447; @Zhou:2016do; @Wotodjo:2017bl] and in model outputs [@sherrard2022deploymentvc]. The challenges of delivering more ITNs are clear: limited funding for both the nets and their distribution costs; diminishing donor appetite; and the additional cost of new types of ITNs recommended for areas with insecticide resistance. The implementation of each of these types of distribution strategies also comes with unique challenges, which are beyond the scope of this paper. However, the costs of continuing to deliver insufficient quantities of ITNs and providing only intermittent protection are also clear: continued loss of life and disability, school and work absenteeism, and decreased quality of life. 
 
-There is a growing call to improve the retention time and/or durability of ITNs through improved physical specifications for ITNs and through improvements in household-level behaviors related to net care. Improvements in both areas would contribute substantially towards increasing retention times, but it is unlikely that this would offset the general and continued challenges of keeping nets in good condition for long periods of time across settings in malaria-endemic areas. Net durability is driven by behavioral factors in part, but these relatively fragile products are subject to numerous stresses on a daily basis in most household environments [@10.1186/s12936-020-03567-0]. This is particularly true for people living through humanitarian emergencies, and this population is projected to increase due to climate change and climate-related emergencies, among other factors. 
+There is a growing call to improve the retention time and/or durability of ITNs through improved physical specifications for ITNs and through improvements in household-level behaviors related to net care. Improvements in both areas would undoubtedly contribute towards increasing retention times, but it is unlikely that this would fully offset the general and continued challenges of keeping nets in good condition for long periods of time across settings in malaria-endemic areas. Net durability is driven by behavioral factors in part, but these relatively fragile products are subject to numerous daily stresses in most household environments [@10.1186/s12936-020-03567-0]. This is particularly true for people living through humanitarian emergencies, and this population is projected to increase due to climate change and climate-related emergencies, among other factors. 
 
 All of these results hinge on the estimated retention times. It is important to highlight that ITN durability studies typically observe longer median lifespans compared to the MAP-estimated ITN retention times. In several cases, the divergence is striking. Most notably, Liberia's retention time was estimated at 1.0 years, but an ITN durability study completed in 2021 in two counties observed a median survival in serviceable condition of four years [@poyerliberia21]. Countries like Liberia with divergent data for net lifespans need to weigh these results carefully. Likewise, net retention times and durability have been demonstrated to vary subnationally; durability monitoring of ITNs in northern Nigeria showed median lifespans of over five years, while the same product monitored simultaneously in southern zones of Nigeria had a lifespan of just over three years [@Obi:2020eza], consistent with findings from an earlier cross-sectional durability study in similar areas of Nigeria [@Kilian:2015hk]. Programmes must consider potential differences in net retention behavior and net durability as they weigh their quantification decisions, and plan for additional data collection where information is not available or insufficient.
 
@@ -1718,7 +1762,7 @@ School distribution, conducted annually to all or selected primary school classe
 This analysis uses a target of 80% population ITN access, but it must be noted that for ITN use levels to reach 80%, ITN access must be at least 90%, given the persistent yet small gap between ITN access and ITN use [@Koenker:2014gb;@10.1038/s41467-021-23707-7;@Bhatt:2015gn]. Targeting ITN access at 80% means that ITN use will rarely, if ever, exceed 70%. Donors and programmes must therefore evaluate what target levels of ITN use are necessary for success, and adjust ITN access targets upwards accordingly.
 
 ## Limitations
-The analysis is faced with several limitations. First, the estimated retention times for certain countries are based on a limited number of surveys, described further in Bertozzi-Villa et al. [@10.1038/s41467-021-23707-7]. The uncertainty of these estimates is accounted for in the calculations of ITN access. Second, localized durability monitoring studies sometimes find significantly longer median survival of ITNs than the retention time estimates, which could indicate subnational differences in ITN longevity or be evidence of analytical challenges in the ITN retention times or conversely, Hawthorne effect in the durability monitoring studies, leading households to retain their nets longer when they expect to be visited by study teams. Third, the relationship between nets-per-capita and ITN access is assumed to be consistent regardless of ITN distribution strategy, but it is likely that it would be influenced by oversaturation of ITNs in certain types of households, as occurs with school distribution of ITNs. It will be important to explore this relationship further as additional data become available. Fourth, retention behavior is influenced by net availability (or lack thereof); with increasing availability of nets, households could be disincentivized to take care of their nets for longer. Programmes must be mindful of these types of perverse incentives that may drive up the number of nets required unnecessarily.
+The analysis is faced with several limitations. First, the estimated retention times for certain countries are based on a limited number of surveys, described further in Bertozzi-Villa et al. [@10.1038/s41467-021-23707-7]. The uncertainty of these estimates is accounted for in the calculations of ITN access. Second, localized durability monitoring studies sometimes find significantly longer median survival of ITNs than the retention time estimates, which could indicate subnational differences in ITN longevity or be evidence of analytical challenges in the ITN retention times or conversely, Hawthorne effect in the durability monitoring studies, leading households to retain their nets longer when they expect to be visited by study teams. Third, the relationship between nets-per-capita and ITN access is assumed to be consistent regardless of ITN distribution strategy, but it is likely that it would be influenced by oversaturation of ITNs in certain types of households, as occurs with school distribution of ITNs. It will be important to explore this relationship further as additional data become available. Fourth, the performance of ANC and EPI channels in the models presented here (reaching 6% of the estimated 8-9% of targeted populations) reflect relatively robust health systems with high ANC1 and vaccination attendance and reasonable efficiency at reaching these populations with ITNs. Many countries may not currently reach this level of performance, particularly countries with challenging supply chain and reordering systems, and the few remaining countries that deliver ITNs to pregnant women but not to infants. Finally, retention behavior is influenced by net availability (or lack thereof); with increasing availability of nets, households could be disincentivized to take care of their nets for longer. Programmes must be mindful of these types of perverse incentives that may drive up the number of nets required unnecessarily.
 
 ```{r}
 # This is due essentially to a larger fraction of nets being unavailable for use where household size is smaller: e.g. 2 nets for 3 people leaves "half a net" unable to be used, whereas 6 nets for 10 people leaves 
@@ -1728,7 +1772,7 @@ The analysis is faced with several limitations. First, the estimated retention t
 
 # Conclusion
 
-Given variation in ITN retention times across countries, tailored quantification approaches for mass campaigns and continuous distribution strategies are warranted. To reach target levels of ITN use of 80% of the population, ITN access must be maintained near 90% in most settings. The quantity of ITNs required to meet these goals is substantially larger than current plans, but strategies with continuous/annual distributions are likely to provide higher ITN access with fewer nets than tailored universal coverage campaigns. Strategies with continuous/annual distributions may also provide better ITN access with only `r round((avgscenpct$mean[2]-1)*100, digits=1)` more ITNs needed than current status quo of three-year campaigns quantified using population/1.8. National programmes and their funding partners should work to increase the number of ITNs distributed to those vulnerable to malaria, while at the same time working to extend the useful life of these critical commodities.
+Given variation in ITN retention times across countries, tailored quantification approaches for mass campaigns and continuous distribution strategies are warranted. To reach target levels of ITN use of 80% of the population, ITN access must be maintained near 90% in most settings. The quantity of ITNs required to meet these goals is substantially larger than current plans, but these findings indicate that full-scale continuous/annual distributions are likely to provide the most efficient mechanism to maintain higher ITN access, as they require fewer ITNs than tailored campaign strategies that maintain similar levels of ITN access. Moreover, in countries with ITN retention times of at least two years, full scale continuous distribution strategies are estimated to require up to `r round(100-with(scenpct_lifespan, mean[which(scenario=="2" & as.numeric(glife)==3)])*100, digits=0)`%-`r round(100-with(scenpct_lifespan, mean[which(scenario=="2" & as.numeric(glife)==5)])*100, digits=0)`% fewer ITNs to achieve better ITN access compared to current mass campaigns. These findings are especially pertinent in the context of new, more expensive ITNs, requiring careful consideration of ITN needs in light of varied products and prices. National programmes and their funding partners should work to increase the availability of ITNs to those vulnerable to malaria, while at the same time working to extend the useful life of these critical commodities.
 
 # Declarations
 
@@ -1789,7 +1833,7 @@ invisible(save_as_image(s5tablelong, path="figs/Scenario_5.png"))
 
 ```
 
-```{r recctablelong, tab.cap="Summary of recommended quantifiers for all countries and scenarios, to maintain ITN access at or above 80%. The quantifiers are for only the continuous distribution channel or mass campaign; annual ANC/EPI distribution equivalent to 6% of the population is assumed in each scenario, but is not part of the listed quantifiers"}
+```{r recctablelong, tab.cap="Summary of recommended quantifiers for all countries and scenarios, to maintain ITN access at or above 80%. The quantifiers are for only the continuous distribution channel or mass campaign; annual ANC/EPI distribution equivalent to 6% of the population is assumed in each scenario, but is not part of the listed quantifiers. Countries are listed by ISO3 code."}
 recclong <- recctablefunction(table80rtlong)
 recclong
 
