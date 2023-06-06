@@ -46,12 +46,14 @@ s2 <- c(200:250)
 s3 <- c(300:340)
 s4 <- c(401:420)
 s5 <- c(505:520)
+s6 <- c(605:607)
 
 s1title <- "3-year mass campaigns with ANC/EPI at "
 s2title <- "ANC/EPI at 6% and annual school/community \ndistribution at "
 s3title <- "3-year mass campaigns with ANC/EPI at 6% \nand between-campaign school/community distribution \nat "
 s4title <- "3-year mass campaigns with ANC/EPI, \nat population / "
 s5title <- "2-year mass campaigns with ANC/EPI, \nat population / "
+s6title <- "2-year mass campaigns with ANC/EPI at "
 ```
 
 ```{r read, warning = FALSE}
@@ -264,5 +266,20 @@ df %>%
     panel.grid.major.x = element_line(color = "darkgrey", size =
                                         0.25)
   )
+```
+
+# Scenario 6 - Two-year mass campaigns with varying ANC/EPI distribution
+
+```{r scen6, warning = FALSE, message=FALSE, results="asis"}
+for(i in seq_along(s6)) {
+  # create the path and filename from the scenario number
+  filename = paste("output/runs/", s6[[i]], ".dta", sep = "")
+  
+  # extract the quantifier from scenario number (last two digits) to put into the titles
+  X <- s6[[i]]-round(s6[[i]],digits=-2)
+
+    geofuncd(scen = s6[[i]], title = s6title)
+  cat("\n\n\\pagebreak\n")
+}
 ```
 
