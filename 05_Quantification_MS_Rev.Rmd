@@ -1141,12 +1141,15 @@ tnets <- table80rtlong %>%
   mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
   left_join(afpop, by=c("iso3"= "country_code")) %>% 
   mutate(routine=.06,
+         # status quo - campaigns / 1.8 every three years starting in y1, routine all the time
          tot0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         # tot2=x2022/1.8+x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
-         # tot3=x2022/1.8+x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100),
-        tot2=x2022/1.8+x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100)+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
+         #scenario 2 - campaign in y1, routine all the time, CD starts in Y3
+        tot2=x2022/1.8+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100)+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
+        # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
          tot3=x2022/1.8+x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100)+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
+        # scenario 4 - campaign every three years starting y1, routine all the time
          tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
+        # scenario 5 - campaign every two years starting y1, routine all the time
          tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
          s0vs2=tot2/tot0,
          s0vs3=tot3/tot0,
@@ -1158,17 +1161,25 @@ tnets <- table80rtlong %>%
          # s2vs5=tot5/tot2)
 
 
-## Over 15-year time period - no huge differences, but it's common denominator for 3 and 2y campaigns.
-# tnets15 <- table80rt %>% 
-#   left_join(afpop) %>% 
-#   mutate(routine=.06,
-#          tot2=x2022/1.8+x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100)+x2033*(scenario_2/100)+x2034*(scenario_2/100)+x2035*(scenario_2/100)+x2036*(scenario_2/100)+x2037*(scenario_2/100),
-#          tot3=x2022/1.8+x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100)+x2033*(scenario_3/100)+x2034/1.8+x2035*(scenario_3/100)+x2036*(scenario_3/100)+x2037/1.8,
-#          tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+x2034/scenario_4+x2037/scenario_4+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine+x2033*routine+x2034*routine+x2035*routine+x2036*routine+x2037*routine,
-#          tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+x2022+x2034/scenario_5+x2036/scenario_5+routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine+x2033*routine+x2034*routine+x2035*routine+x2036*routine+x2037*routine,
-#          s2vs3=tot3/tot2,
-#          s2vs4=tot4/tot2,
-#          s2vs5=tot5/tot2)
+# Over 15-year time period - no huge differences, but it's common denominator for 3 and 2y campaigns.
+tnets15 <- table80rtlong %>%
+  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
+  left_join(afpop, by=c("iso3"= "country_code")) %>% 
+  mutate(routine=.06,
+        # status quo - campaigns / 1.8 every three years starting in y1, routine all the time (6 campaigns in 15 years)
+         tot0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8+x2034/1.8+x2037/1.8+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine+x2033*routine+x2034*routine+x2035*routine+x2036*routine+x2037*routine,
+         #scenario 2 - campaign in y1, routine all the time, CD starts in Y3
+         tot2=x2022/1.8+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100)+x2033*(scenario_2/100)+x2034*(scenario_2/100)+x2035*(scenario_2/100)+x2036*(scenario_2/100)+x2037*(scenario_2/100)+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine+x2033*routine+x2034*routine+x2035*routine+x2036*routine+x2037*routine,
+        # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
+         tot3=x2022/1.8+x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100)+x2033*(scenario_3/100)+x2034/1.8+x2035*(scenario_3/100)+x2036*(scenario_3/100)+x2037/1.8+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine+x2033*routine+x2034*routine+x2035*routine+x2036*routine+x2037*routine,
+        # scenario 4 - campaign every three years starting y1, routine all the time
+         tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+x2034/scenario_4+x2037/scenario_4+x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine+x2033*routine+x2034*routine+x2035*routine+x2036*routine+x2037*routine,
+        # scenario 5 - campaign every two years starting y1, routine all the time
+         tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+x2022+x2034/scenario_5+x2036/scenario_5+routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine+x2033*routine+x2034*routine+x2035*routine+x2036*routine+x2037*routine,
+         s0vs2=tot2/tot0,
+         s0vs3=tot3/tot0,
+         s0vs4=tot4/tot0,
+         s0vs5=tot5/tot0)
 
 totalnets <- tnets %>% 
   select(iso3, lifespan, tot0, tot2, tot3, tot4, tot5) %>% 
@@ -1197,9 +1208,27 @@ scenpct_lifespan <- scenpct %>%
   
 write_csv(avgscenpct, "output/avgscenpct.csv", col_names = TRUE) ## write to CSV for pulling into the ppt version
 
+scenpct15 <- tnets15 %>% 
+  select(iso_a2, iso3, lifespan, contains("s0vs")) %>% # s2vs0, s2vs3, s2vs4, s2vs5
+  mutate(iso3=case_when(iso_a2=="ER" ~ "ERI",
+                                TRUE ~ as.character(iso3))) %>% 
+  mutate(s0vs0=1,
+         code=iso3) %>% 
+  pivot_longer(contains("s0"), names_to="scenario", names_prefix = "s0vs", values_to = "pct") %>% 
+  mutate(iso2=countrycode(code, origin="iso3c", destination="iso2c")) %>% 
+  mutate(name=countrycode(code, origin="iso3c", destination="country.name"))
+
+avgscenpct15 <- scenpct15 %>% 
+  group_by(scenario) %>% 
+  summarize(mean=mean(pct, na.rm = TRUE)) 
+
+scenpct_lifespan15 <- scenpct15 %>% 
+  mutate(glife=cut(lifespan, breaks = c(0,1.5, 2.0, 2.5, 3.0, 4) )) %>% 
+  group_by(scenario, glife) %>% 
+    summarize(mean=mean(pct, na.rm=TRUE))
 ```
 
-The total number of nets needed under each recommended scenario in Table \@ref(tab:recctable80) to maintain 80% ITN access is presented in Fig. \@ref(fig:totalnets), summarized by ITN retention times grouped in half-year intervals. For comparability, results are presented as a percentage difference compared to a status quo scenario of three-yearly campaigns quantified with population/1.8 plus routine distribution of ITNs to pregnant women and infants through ANC and EPI channels. Continuous distribution required fewer nets to maintain ITN access at 80% for countries with ITN retention times of at least two and a half years (`r tnets %>% filter(tot2<tot0) %>% count() %>% pull()` of the `r length(unique(table80rtlong$iso3))` study countries). The full scale CD scenario required `r round(100-(scenpct_lifespan %>% filter(scenario==2 & glife=="(2.5,3]") %>% pull(mean)*100), digits=0)`% fewer nets for retention times of 2.5-2.9 years, and `r round(100-(scenpct_lifespan %>% filter(scenario==2 & glife=="(3,4]") %>% pull(mean)*100), digits=0)`% fewer nets where median retention times were at least three years. Across all countries, full-scale continuous distribution was expected to maintain ITN access at 80% with `r round((avgscenpct$mean[2]-1)*100, digits=1)`% more ITNs than status quo. Strategies deploying continuous distribution between mass campaigns required `r round((avgscenpct$mean[3]-1)*100, digits=0)`% more ITNs than status quo across all countries. For countries with ITN retention times of less than two and a half years, 80% ITN access was maintained but required more nets than currently being procured, while for countries with median retention times of 2.5-2.9 years the relative number of nets required was `r round(scenpct_lifespan %>% filter(scenario == 3 & glife == "(2.5,3]") %>% pull(mean)* 100  - 100, digits = 0)`% higher, and `r round(scenpct_lifespan %>% filter(scenario == 3 & glife == "(3,4]") %>% pull(mean)* 100  - 100, digits = 0)`% higher where median retention times were at least three years. Three-yearly mass campaign strategies with tailored quantifiers required nearly two and a half times as many ITNs compared to status quo, although for countries with ITN retention times of at least 2.5 years, only 9% (2.5-2.9 years) and 5% (3.0-2.6 years) more nets would be needed. Overall, `r round((avgscenpct$mean[5]-1)*100, digits=1)`% more ITNs would be required for tailored two-yearly campaigns to maintain 80% access, compared to status quo, and `r round(scenpct_lifespan %>% filter(scenario == 5 & glife == "(3,4]") %>% pull(mean)* 100  - 100, digits = 0)`% more nets were required under this scenario even for countries with at least two-year ITN retention times. Comparing the full-scale CD results to the tailored three- and two-year campaign results provides a direct comparison of nets required for each strategy to achieve similar ITN access, and demonstrates that 80% ITN access is more efficiently achieved by continuous strategies than by tailored mass campaign strategies. 
+The total number of nets needed under each recommended scenario in Table \@ref(tab:recctable80) to maintain 80% ITN access is presented in Fig. \@ref(fig:totalnets), summarized by ITN retention times grouped in half-year intervals. For comparability, results are presented as a percentage difference compared to a status quo scenario of three-yearly campaigns quantified with population/1.8 plus routine distribution of ITNs to pregnant women and infants through ANC and EPI channels. Continuous distribution required fewer nets to maintain ITN access at 80% for countries with ITN retention times of at least two and a half years (`r tnets %>% filter(tot2<tot0) %>% count() %>% pull()` of the `r length(unique(table80rtlong$iso3))` study countries). The full scale CD scenario required `r round(100-(scenpct_lifespan %>% filter(scenario==2 & glife=="(2.5,3]") %>% pull(mean)*100), digits=0)`% fewer nets for retention times of 2.5-2.9 years, and `r round(100-(scenpct_lifespan %>% filter(scenario==2 & glife=="(3,4]") %>% pull(mean)*100), digits=0)`% fewer nets where median retention times were at least three years. Across all countries, full-scale continuous distribution was expected to maintain ITN access at 80% with `r round((avgscenpct$mean[2]-1)*100, digits=0)`% more ITNs than status quo. Strategies deploying continuous distribution between mass campaigns required `r round((avgscenpct$mean[3]-1)*100, digits=0)`% more ITNs than status quo across all countries. For countries with ITN retention times of less than two and a half years, 80% ITN access was maintained but required more nets than currently being procured, while for countries with median retention times of 2.5-2.9 years the relative number of nets required was `r round(scenpct_lifespan %>% filter(scenario == 3 & glife == "(2.5,3]") %>% pull(mean)* 100  - 100, digits = 0)`% higher, and `r round(scenpct_lifespan %>% filter(scenario == 3 & glife == "(3,4]") %>% pull(mean)* 100  - 100, digits = 0)`% higher where median retention times were at least three years. Three-yearly mass campaign strategies with tailored quantifiers required nearly two and a half times as many ITNs compared to status quo, although for countries with ITN retention times of at least 2.5 years, only 9% (2.5-2.9 years) and 5% (3.0-2.6 years) more nets would be needed. Overall, `r round((avgscenpct$mean[5]-1)*100, digits=1)`% more ITNs would be required for tailored two-yearly campaigns to maintain 80% access, compared to status quo, and `r round(scenpct_lifespan %>% filter(scenario == 5 & glife == "(3,4]") %>% pull(mean)* 100  - 100, digits = 0)`% more nets were required under this scenario even for countries with at least two-year ITN retention times. Comparing the full-scale CD results to the tailored three- and two-year campaign results provides a direct comparison of nets required for each strategy to achieve similar ITN access, and demonstrates that 80% ITN access is more efficiently achieved by continuous strategies than by tailored mass campaign strategies. 
 
 ```{r totalnets, dpi=300, fig.width=6, fig.height=6, fig.cap="Relative proportions of total ITNs needed over 10 years, compared to status quo (three-yearly campaigns at population/1.8), by scenario and ITN retention time. Grey labels show group average for each scenario."}
 pal <- "Purples"
@@ -1317,21 +1346,6 @@ scenpct_lifespan %>%
   geom_bracket(inherit.aes = FALSE, type="text",y.position=2.8, xmin=3.6, xmax=4.4, label=paste0(round((avgscenpct$mean[4])*100, digits=0),"%")) +
   geom_bracket(inherit.aes = FALSE, type="text",y.position=2.4, xmin=4.6, xmax=5.4, label=paste0(round((avgscenpct$mean[5])*100, digits=0),"%")) +
    geom_bracket(inherit.aes = FALSE, type="text",y.position=4.5, xmin=1.6, xmax=5.4, label="Strategies maintaining 80% ITN access") +
-  # annotate("rect", xmin = .6, xmax = 1.4, ymin = 1.1, ymax = 1.3,
-  # alpha = .2) +
-  # annotate("text", x = 1, y = 1.2, label = "100%", size=2, vjust=.5) +
-  # annotate("rect", xmin = 1.6, xmax = 2.4, ymin = 1.5, ymax = 1.7,
-  # alpha = .2) +
-  # annotate("text", x = 2, y = 1.6, label = paste0(round((avgscenpct$mean[2])*100, digits=0),"%"), size=2, vjust=0.5) +
-  # annotate("rect", xmin = 2.6, xmax = 3.4, ymin = 1.7, ymax = 1.9,
-  # alpha = .2) +
-  # annotate("text", x = 3, y = 1.8, label = paste0(round((avgscenpct$mean[3])*100, digits=0),"%"), size=2, vjust=0.5) +
-  # annotate("rect", xmin = 3.6, xmax = 4.4, ymin = 2.7, ymax = 2.9,
-  # alpha = .2) +
-  # annotate("text", x = 4, y = 2.8, label = paste0(round((avgscenpct$mean[4])*100, digits=0),"%"), size=2, vjust=0.5) +
-  # annotate("rect", xmin = 4.6, xmax = 5.4, ymin = 2.3, ymax = 2.5,
-  # alpha = .2) +
-  # annotate("text", x = 5, y = 2.4, label = paste0(round((avgscenpct$mean[5])*100, digits=0),"%"), size=2, vjust=0.5) +
   labs(fill="ITN retention time",
        y="Percent difference in total ITNs needed over 10 years, vs status quo",
        x="",
@@ -1340,8 +1354,6 @@ scenpct_lifespan %>%
        ) +
   theme(axis.ticks.x = element_blank(),
         legend.key.size = unit(.25, 'cm'), #change legend key size
-        # legend.key.height = unit(1, 'cm'), #change legend key height
-        # legend.key.width = unit(1, 'cm'), #change legend key width
         legend.title = element_text(size=8), #change legend title font size
         legend.text = element_text(size=8),  #change legend text font size
         axis.title.y = element_text(size=8),
@@ -1354,6 +1366,42 @@ scenpct_lifespan %>%
 ggsave("figs/Fig_compareCDbylifespanbig.png", dpi=300)
 
 ggsave("figs/Fig_compareCDbylifespan.png", width=6, height=5, dpi=300)
+
+# scenpct_lifespan15 %>% 
+#   ggplot(aes(x=scenario, y=mean, fill=glife, label=ifelse(scenario==0, "", scales::percent(round(mean, digits=2))))) +
+#   geom_col(color="black", size=lw, position = position_dodge(width = .9))  +
+#  scale_fill_brewer(
+#     palette=pal,
+#     labels=c("1-1.4 yrs", "1.5-1.9 yrs", "2.0-2.4 yrs", "2.5-2.9 yrs", "3-3.6 yrs")) +  
+#   geom_text(position = position_dodge(width = .9), hjust=.5, vjust=-.75, size=2) +
+#     scale_y_continuous(labels = scales::percent, breaks=c(0,1,2,3,4), limits=c(0,4.5)) +
+#   scale_x_discrete(labels=c("1. Status Quo",
+#       "2. Full scale CD",
+#       "3. Campaigns + CD",
+#       "4. 3-year campaigns",
+#       "5. 2-year campaigns")) +
+#   geom_bracket(inherit.aes = FALSE, type="text",y.position=1.2, xmin=.6, xmax=1.4, label="100%") +
+#   geom_bracket(inherit.aes = FALSE, type="text",y.position=1.9, xmin=1.6, xmax=2.4, label=paste0(round((avgscenpct15$mean[2])*100, digits=0),"%")) +
+#   geom_bracket(inherit.aes = FALSE, type="text",y.position=2.1, xmin=2.6, xmax=3.4, label=paste0(round((avgscenpct15$mean[3])*100, digits=0),"%")) +
+#   geom_bracket(inherit.aes = FALSE, type="text",y.position=2.8, xmin=3.6, xmax=4.4, label=paste0(round((avgscenpct15$mean[4])*100, digits=0),"%")) +
+#   geom_bracket(inherit.aes = FALSE, type="text",y.position=2.4, xmin=4.6, xmax=5.4, label=paste0(round((avgscenpct15$mean[5])*100, digits=0),"%")) +
+#    geom_bracket(inherit.aes = FALSE, type="text",y.position=4.5, xmin=1.6, xmax=5.4, label="Strategies maintaining 80% ITN access") +
+#   labs(fill="ITN retention time",
+#        y="Percent difference in total ITNs needed over 10 years, vs status quo",
+#        x="",
+#        title="",
+#        # title="Percentage difference in total nets needed over 10 years vs status quo"
+#        ) +
+#   theme(axis.ticks.x = element_blank(),
+#         legend.key.size = unit(.25, 'cm'), #change legend key size
+#         legend.title = element_text(size=8), #change legend title font size
+#         legend.text = element_text(size=8),  #change legend text font size
+#         axis.title.y = element_text(size=8),
+#         axis.text.x = element_text(size=7),
+#         plot.margin = unit(c(.3,0,0,0), "cm"),
+#         rect = element_rect(fill = "white"),
+#         legend.position="bottom",
+#         plot.title = element_text(hjust = 0.8))
 ```
 
 
