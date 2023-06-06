@@ -15,7 +15,7 @@
 **** This code has been commented out as R is now used to produce the full suite of the same plots. 
 
 ****************************************************************************************************
-
+clear
 cd "/Users/hannahkoenker/Dropbox/R Directory/Quantification"
 
 grstyle init
@@ -278,13 +278,13 @@ set graphics off // toggle if you need to check graphs are looking ok
 			
 		preserve 
 		
-		** distribute nets = MRC in 2022 2025 2028 2031
+		** distribute nets = start with an MRC in the start year, then wait two years. 
 			include locals.do 
 
-		replace totalnets=pop/1.8 if year==`starty' // do a mass campaign in 2020, then wait two years before organizing the school/community channels. 
+		replace totalnets=pop*0.06 if year>=`starty' // just do RCH at 6% in 2020 and forward, while waiting for school/community to start. Start with this to fill in all the years with something (not NA)
 		
-		replace totalnets=pop*0.06 if year>=`starty' // just do RCH at 6% in 2020 and forward, while waiting for school/community to start.
-			
+		replace totalnets=totalnets+(pop/1.8) if year==`starty' // do a mass campaign in 2020, then wait two years before organizing the school/community channels. 
+		
 		local thirdy = `secondy'+1
 		
 		replace totalnets=totalnets+(pop*`x') if year>=`thirdy' // ADD ON the school/community nets to the RCH nets
