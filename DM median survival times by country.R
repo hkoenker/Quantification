@@ -4,6 +4,8 @@ library(tidyverse)
 library(haven)
 library(janitor)
 library(readxl)
+library(countrycode)
+library(stringi)
 
 ## Read in MAP retention times 
 ls <- read_excel("data/MAP_retentiontime_DM_medianlifespan.xlsx", sheet="Sheet1") %>%
@@ -45,6 +47,15 @@ rettimes <- lsdm %>%
 
 a2levels <- rettimes$iso_a2 # make a list of the isoa2 countries included in retention times for later
 
+medls <- ls %>% 
+  summarize(median=median(lifespan, na.rm=TRUE)) %>% 
+  pull()
+medls <- 1.9
+
+meddm <- dm %>% 
+  summarize(median=median(lifespan, na.rm=TRUE)) %>% 
+  pull()
+
 lsdm %>%
   ggplot() +
   geom_point(aes(
@@ -63,6 +74,9 @@ lsdm %>%
     # alpha = both
   ),
   alpha=0.8) +
+  geom_hline(yintercept=medls, color="#00BFC4") +
+  geom_hline(yintercept=meddm, color="#F8766D") +
+  annotate("text", x=c(39, 39), y=c(2.05, 2.85), label=c(paste("median",medls,"years"), paste("median",meddm,"years")), fontface=2, size=3) +
   theme_classic() +
   scale_alpha_discrete(range=c(1,0), guide="none") +
   # scale_alpha_continuous(range = c(0.25, 1), guide = "none") +
@@ -97,7 +111,7 @@ lsdm %>%
   scale_y_continuous(breaks=seq(0,6, by=1))
 
 
-ggsave("figs/MAP_vs_DM_lifespans.png", width=6, height=5, dpi=300)
+ggsave("figs/MAP_vs_DM_lifespans_medians.png", width=6, height=5, dpi=300)
 
 
 #---- Mozambique only ----
