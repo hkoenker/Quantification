@@ -1,13 +1,13 @@
 ---
-title: "Supplementary File 2: Frontier plots for each country showing person-years of ITN access vs total nets required"
+title: "Additional File 3: Frontier plots for each country showing person-years of ITN access vs total nets required"
 author: "Hannah Koenker"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  # pdf_document:
-  html_document:
+  pdf_document:
+  # html_document:
     toc: yes
     toc_depth: 2
-    toc_float: yes
+    # toc_float: yes
     fig_width: 7
     fig_height: 6
     fig_caption: yes
