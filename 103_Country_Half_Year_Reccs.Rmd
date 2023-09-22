@@ -1,0 +1,375 @@
+---
+title: "Quantifiers for Continuous Distribution by country for indicative ITN retention times"
+author: "Hannah Koenker"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+  # html_document:
+    toc: yes
+    toc_depth: 2
+    # toc_float: yes
+    fig_width: 7
+    fig_height: 6
+    fig_caption: yes
+    df_print: kable
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(haven)
+library(tidyverse)
+library(broom)
+library(readxl)
+library(janitor)
+library(flextable)
+library(officer) # for setting color of vlines in flextable
+library(xlsx)
+
+# ![](images/TH_logo.jpg){width=1.0"}
+
+######################
+# Set figure theme and colors
+######################
+
+theme_set(theme_classic())
+
+```
+
+```{r readmins}
+## Read in the full output appended dataset for checking things
+
+# all <- read_dta("data/gruns_all.dta") %>% 
+#   clean_names()
+
+## Read in the recommended quantifiers
+s2ming <- read_dta("data/s2_min_npp_gruns_all.dta") %>% 
+  clean_names()
+
+s3ming <- read_dta("data/s3_min_npp_gruns_all.dta") %>% 
+  clean_names()
+
+t80s2 <- s2ming %>% 
+  filter(target==80)
+
+t80s3 <- s3ming %>% 
+  filter(target==80)
+
+t90s2 <- s2ming %>% 
+  filter(target==90)
+
+t90s3 <- s3ming %>% 
+  filter(target==90)
+```
+
+```{r graph-check, include=FALSE}
+t80s2 %>% 
+  mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_jitter(aes(x=retention, y=q, color=retention), alpha=.5, height=0)
+
+t80s3 %>% 
+  mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_jitter(aes(x=retention, y=q, color=retention), alpha=.5, height=0)
+
+t90s2 %>% 
+  mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_jitter(aes(x=retention, y=q, color=retention), alpha=.5, height=0)
+
+t90s3 %>% 
+ mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_jitter(aes(x=retention, y=q, color=retention), alpha=.5, height=0)
+
+
+
+
+## Check for BF:
+# all %>% 
+#   filter(iso_a2=="BF" & retention==2.5 & group==3) %>% 
+#   ggplot() +
+#   geom_line(aes(x=year, y=accrk)) +
+#   facet_wrap(~scenario)
+```
+
+```{r medians}
+## Medians
+
+t80s2med <- t80s2 %>% 
+  group_by(retention) %>% 
+  summarize(median=median(q)) %>% 
+  mutate(retention=as.factor(retention))
+
+t90s2med <- t90s2 %>% 
+  group_by(retention) %>% 
+  summarize(median=median(q)) %>% 
+  mutate(retention=as.factor(retention))
+
+t80s3med <- t80s3 %>% 
+  group_by(retention) %>% 
+  summarize(median=median(q)) %>% 
+  mutate(retention=as.factor(retention))
+
+t90s3med <- t90s3 %>% 
+  group_by(retention) %>% 
+  summarize(median=median(q)) %>% 
+  mutate(retention=as.factor(retention))
+```
+
+
+```{r table-prep}
+s280wide <- t80s2 %>% 
+  select(-target) %>% 
+  pivot_wider(id_cols=iso_a2, names_from=retention, values_from=q)
+
+s380wide <- t80s3 %>% 
+  select(-target) %>% 
+  pivot_wider(id_cols=iso_a2, names_from=retention, values_from=q) %>% 
+  mutate(`3.5`=case_when(`3`==0 & `3.5`==1 ~ 0,
+                         TRUE ~ as.numeric(`3.5`))) # replace odd 1%s at 3.5y with zero, when 3y is zero.
+
+s290wide <- t90s2 %>% 
+  select(-target) %>% 
+  pivot_wider(id_cols=iso_a2, names_from=retention, values_from=q)
+
+s390wide <- t90s3 %>% 
+  select(-target) %>% 
+  pivot_wider(id_cols=iso_a2, names_from=retention, values_from=q)
+
+## Export all Tables for use in other projects 
+
+# Ghana
+gh <- bind_rows(s280wide, s290wide, s380wide, s390wide,.id = "id") %>% 
+  filter(iso_a2=="GH") %>% 
+  mutate(id=case_when(id==1 ~ "Full CD: 80% target",
+                      id==2 ~ "Full CD: 90% target",
+                      id==3 ~ "CD between campaigns: 80% target",
+                      id==4 ~ "CD between campaigns: 90% target"))
+
+write.xlsx (gh, file = "../Ghana_SBD/data/ghana_halfyear_quants.xlsx")
+```
+
+\newpage
+
+# Indicative quantifiers for CD as a replacement for mass campaigns
+
+## 80% ITN access target
+
+```{r betweenCD80-violin, fig.cap="Median recommended quantifer for continuous distribution between ITN campaigns, by ITN retention time (80% target for ITN access)", height=4, width=5}
+t80s2 %>% 
+  mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_violin(aes(x=retention, y=q, color=retention), alpha=.5, width=1) + # , draw_quantiles = c(0.5)
+  geom_text(data=t80s2med, aes(x=retention, y=median, color=retention, label=median)) +
+  labs(x="ITN retention time in years",
+       y="Recommended quantifier (% of population)",
+       color="",
+       title="Median recommended quantifier for annual large-scale CD, by ITN retention time") +
+  theme(legend.position="none")
+
+```
+
+\newpage
+
+```{r table-s280}
+set_flextable_defaults(
+  border.color = "#AAAAAA", font.family = "Arial", fonts_ignore=TRUE,
+  font.size = 10, padding = 2, line_spacing = 1.5)
+
+# std_border = fp_border(color="white") ## set the color of the border needed later down
+
+
+s280wide %>% 
+  flextable() %>% 
+  set_header_labels(
+   iso_a2 = "Country (ISO2 code)"
+  ) %>%
+  add_header_row(colwidths = c(1,6),
+                 values = c("Country (ISO2 code)", "ITN retention time (years)")) %>%
+     add_header_row(
+       colwidths = c(7),
+       values=c("Minimum quantifier (population x quantifier, annually) to sustain ITN access at or above 80%")
+     ) %>% 
+  fontsize(size = 9, part = "body") %>%
+  fontsize(size=10, part="header") %>% 
+  colformat_double(
+    j=2:7,
+    big.mark = ",",
+    digits = 0,
+    na_str = "",
+    suffix="%"
+  ) %>% 
+  theme_vanilla %>%
+  align(align = "center", part = "all") %>% 
+  # vline(j=5, border=std_border, part="all") %>%
+  # vline(j=1, border=std_border, part="all") %>%
+  set_table_properties(width=.5) %>%
+    # autofit(part = "all") %>%
+    align(align = "center", part = "all")%>% 
+    merge_h(part = "header") %>%
+    merge_v(part = "header")
+
+
+```
+
+\newpage
+
+## 90% ITN access target 
+
+```{r betweenCD90-violin, fig.cap="Median recommended quantifer for annual large-scale continuous distribution, by ITN retention time (90% target for ITN access)", height=4, width=5}
+t90s2 %>% 
+  mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_violin(aes(x=retention, y=q, color=retention), alpha=.5, width=1) + # , draw_quantiles = c(0.5)
+  geom_text(data=t90s2med, aes(x=retention, y=median, color=retention, label=median)) +
+  labs(x="ITN retention time in years",
+       y="Recommended quantifier (% of population)",
+       color="",
+       title="Median recommended quantifier for annual large-scale CD, by ITN retention time") +
+  theme(legend.position="none")
+
+```
+
+\newpage
+
+```{r table-s290}
+s290wide %>% 
+  flextable() %>% 
+  set_header_labels(
+   iso_a2 = "Country (ISO2 code)"
+  ) %>%
+  add_header_row(colwidths = c(1,6),
+                 values = c("Country (ISO2 code)", "ITN retention time (years)")) %>%
+     add_header_row(
+       colwidths = c(7),
+       values=c("Minimum quantifier (population x quantifier, annually) to sustain ITN access at or above 90%")
+     ) %>% 
+  fontsize(size = 9, part = "body") %>%
+  fontsize(size=10, part="header") %>% 
+  colformat_double(
+    j=2:7,
+    big.mark = ",",
+    digits = 0,
+    na_str = "",
+    suffix="%"
+  ) %>% 
+  theme_vanilla %>%
+  align(align = "center", part = "all") %>% 
+  # vline(j=5, border=std_border, part="all") %>%
+  # vline(j=1, border=std_border, part="all") %>%
+  set_table_properties(width=.5) %>%
+    # autofit(part = "all") %>%
+    align(align = "center", part = "all")%>% 
+    merge_h(part = "header") %>%
+    merge_v(part = "header")
+```
+
+\newpage
+
+# Indicative quantifiers for CD between mass campaigns
+
+
+## 80% ITN access target
+
+```{r betweencampaign-violin, fig.cap="Median recommended quantifer for continuous distribution between ITN campaigns, by ITN retention time (80% target for ITN access)", height=4, width=5}
+t80s3 %>% 
+  mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_violin(aes(x=retention, y=q, color=retention), alpha=.5, width=1) + # , draw_quantiles = c(0.5)
+  geom_text(data=t80s3med, aes(x=retention, y=median, color=retention, label=median)) +
+  labs(x="ITN retention time in years",
+       y="Recommended quantifier (% of population)",
+       color="",
+       title="Median recommended quantifier for annual large-scale CD, by ITN retention time") +
+  theme(legend.position="none")
+
+```
+
+\newpage
+
+
+```{r table-s380}
+s380wide %>% 
+  flextable() %>% 
+  set_header_labels(
+   iso_a2 = "Country (ISO2 code)"
+  ) %>%
+  add_header_row(colwidths = c(1,6),
+                 values = c("Country (ISO2 code)", "ITN retention time (years)")) %>%
+     add_header_row(
+       colwidths = c(7),
+       values=c("Minimum quantifier (population x quantifier, each year between campaigns) to sustain ITN access at or above 80%")
+     ) %>% 
+  fontsize(size = 9, part = "body") %>%
+  fontsize(size=10, part="header") %>% 
+  colformat_double(
+    j=2:7,
+    big.mark = ",",
+    digits = 0,
+    na_str = "",
+    suffix="%"
+  ) %>% 
+  theme_vanilla %>%
+  align(align = "center", part = "all") %>% 
+  # vline(j=5, border=std_border, part="all") %>%
+  # vline(j=1, border=std_border, part="all") %>%
+  set_table_properties(width=.5) %>%
+    # autofit(part = "all") %>%
+    align(align = "center", part = "all")%>% 
+    merge_h(part = "header") %>%
+    merge_v(part = "header")
+```
+
+## 90% ITN access target 
+
+```{r betweencampaign90-violin, warning=FALSE, fig.cap="Median recommended quantifer for continuous distribution between ITN campaigns, by ITN retention time (90% target for ITN access)", height=4, width=5}
+t90s3 %>% 
+  mutate(retention=as.factor(retention)) %>% 
+  ggplot() +
+  geom_violin(aes(x=retention, y=q, color=retention), alpha=.5, width=1) + # , draw_quantiles = c(0.5)
+  geom_text(data=t90s3med, aes(x=retention, y=median, color=retention, label=median)) +
+  labs(x="ITN retention time in years",
+       y="Recommended quantifier (% of population)",
+       color="",
+       title="Median recommended quantifier for annual large-scale CD, by ITN retention time") +
+  theme(legend.position="none")
+
+```
+
+\newpage
+
+```{r table-s390}
+s390wide %>% 
+  flextable() %>% 
+  set_header_labels(
+   iso_a2 = "Country (ISO2 code)"
+  ) %>%
+  add_header_row(colwidths = c(1,6),
+                 values = c("Country (ISO2 code)", "ITN retention time (years)")) %>%
+     add_header_row(
+       colwidths = c(7),
+       values=c("Minimum quantifier (population x quantifier, each year between campaigns) to sustain ITN access at or above 90%")
+     ) %>% 
+  fontsize(size = 9, part = "body") %>%
+  fontsize(size=10, part="header") %>% 
+  colformat_double(
+    j=2:7,
+    big.mark = ",",
+    digits = 0,
+    na_str = "",
+    suffix="%"
+  ) %>% 
+  theme_vanilla %>%
+  align(align = "center", part = "all") %>% 
+  # vline(j=5, border=std_border, part="all") %>%
+  # vline(j=1, border=std_border, part="all") %>%
+  set_table_properties(width=.5) %>%
+    # autofit(part = "all") %>%
+    align(align = "center", part = "all")%>% 
+    merge_h(part = "header") %>%
+    merge_v(part = "header")
+```
+
