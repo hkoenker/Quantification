@@ -402,7 +402,11 @@ npc <- ggplot() +
        color="")
 
 npchh <- fithhsize %>% 
-  mutate(npcd=npc/100) %>% 
+  mutate(npcd=npc/100) 
+write_csv(npchh, "output/npchh.csv", col_names = TRUE)
+write_csv(B, "output/B.csv", col_names = TRUE)
+
+npchh %>% 
   ggplot() +
   geom_point(data=B, aes(x, y), color="lightgray", alpha=0.8, shape=1, size=1) +
   geom_line(aes(npcd, V2, color=as.factor(hhsize), linetype=as.factor(hhsize), group=hhsize)) +
@@ -597,6 +601,7 @@ table_q_s2s3long <- t2 %>%
          iso3=countrycode(iso_a2, origin="iso2c", destination="iso3c")) %>% 
   dplyr::select(iso3, lifespan, s270, s280, s290, s370, s380, s390) %>% 
   arrange(lifespan)
+
 
 table_q_s2s3short <- table_q_s2s3long %>% 
   filter(iso3 %in% shortlist3)
