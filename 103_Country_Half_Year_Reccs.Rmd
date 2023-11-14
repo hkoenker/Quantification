@@ -25,7 +25,8 @@ library(readxl)
 library(janitor)
 library(flextable)
 library(officer) # for setting color of vlines in flextable
-library(xlsx)
+library(readxl)
+library(writexl)
 
 # ![](images/TH_logo.jpg){width=1.0"}
 
@@ -87,9 +88,10 @@ t90s3 %>%
 
 
 
-## Check for BF:
-# all %>% 
-#   filter(iso_a2=="BF" & retention==2.5 & group==3) %>% 
+# Check for BF:
+
+# all %>%
+#   filter(iso_a2=="BF" & retention==2.5 & group==3) %>%
 #   ggplot() +
 #   geom_line(aes(x=year, y=accrk)) +
 #   facet_wrap(~scenario)
@@ -149,7 +151,19 @@ gh <- bind_rows(s280wide, s290wide, s380wide, s390wide,.id = "id") %>%
                       id==3 ~ "CD between campaigns: 80% target",
                       id==4 ~ "CD between campaigns: 90% target"))
 
-write.xlsx (gh, file = "../Ghana_SBD/data/ghana_halfyear_quants.xlsx")
+write_xlsx (gh, path = "../Ghana_SBD/data/ghana_halfyear_quants.xlsx")
+
+# DRC
+drc <- bind_rows(s280wide, s290wide, s380wide, s390wide,.id = "id") %>% 
+  filter(iso_a2=="CD") %>% 
+  mutate(id=case_when(id==1 ~ "Full CD: 80% target",
+                      id==2 ~ "Full CD: 90% target",
+                      id==3 ~ "CD between campaigns: 80% target",
+                      id==4 ~ "CD between campaigns: 90% target"))
+
+write_xlsx (drc, path = "output/drc_halfyear_quants.xlsx")
+
+
 ```
 
 \newpage
