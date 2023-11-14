@@ -1,0 +1,186 @@
+---
+title: "DRC: ITNs needed for 2024-2026 under different ITN distribution strategies"
+author: "Hannah Koenker"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+  # html_document:
+    toc: yes
+    toc_depth: 2
+    # toc_float: yes
+    fig_width: 7
+    fig_height: 6
+    fig_caption: yes
+    df_print: kable
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(haven)
+library(tidyverse)
+library(broom)
+library(readxl)
+library(janitor)
+library(flextable)
+library(officer) # for setting color of vlines in flextable
+library(xlsx)
+library(countrycode)
+library(stringi)
+library(ggrepel)
+library(scales) # pretty_breaks
+
+# ![](images/TH_logo.jpg){width=1.0"}
+
+######################
+# Set figure theme and colors
+######################
+
+theme_set(theme_classic())
+
+```
+
+# ITN Scenarios
+
+# ITN Retention time in DRC
+Amelia's paper retention time is X. DM data indicates median ITN survival in serviceable condition of Y. 
+
+# ITN needs under different scenarios for modeled retention time in DRC
+
+```{r retentiontimes}
+ls <- read_excel("data/MAP_retentiontime_DM_medianlifespan.xlsx", sheet="Sheet1") %>%
+  clean_names() %>%
+  drop_na(country) %>%
+  rename(lifespan=median_retention_years) %>%
+  separate(x95_percent_ci, into = c("lb", "ub"),
+           sep = "\\s*(–|-)\\s*", convert = TRUE)
+
+
+levels <- ls$country[ls$type=='MAP'][rev(order(ls$lifespan[ls$type=='MAP']))]
+ls$country_ord <- factor(ls$country, levels = levels)
+
+# save a small version of retention times for joining into results tables:
+rettimes <- ls %>% 
+  filter(type=="MAP") %>% 
+  mutate(name=case_when(country=="Burkina" ~ "Burkina Faso",
+                        # country=="Cote d'Ivoire" ~ "Côte d'Ivoire",
+                        country=="Congo (Republic of)" ~ "Rep. Congo",
+                        TRUE~as.character(country))) %>% 
+  dplyr::select(-type, -country, -lb, -ub, -site, -both, -country_ord) %>% 
+  mutate(name=stri_trans_general(name,"Latin-ASCII")) %>% # remove o-hat from Cote d'Ivoire
+mutate(iso_a2 = countrycode(name, origin = "country.name", destination = "iso2c"))
+
+# a3levels <- ssa_grid$code # make a list of the isoa2 countries included in retention times for later
+```
+
+
+
+## Person years of protection
+- s1, s280, s290, s380, s390, s6
+```{r pyp}
+tnets <- read_dta("output/totalnetspyp.dta") %>% 
+  clean_names() %>% 
+  mutate(bestlabel=case_when(group==4 ~ paste0("pop/",round((scenario-400)/10, digits=1), " \nevery 3 years"),
+                             group==5 ~ paste0("pop/",round((scenario-500)/10, digits=1), " \nevery 2 years"),
+                             group==6 ~ "pop/1.8 \nevery 2 years",
+                             group==1 ~ paste0("pop/1.8\nevery 3 years"),
+                             group==2 ~ paste0("annual CD \nat pop x ",(scenario-200),"%"),
+                             group==3 ~ paste0("CD between campaigns \nat pop x ",(scenario-300),"%"),
+                             TRUE ~ "")) %>% 
+  mutate(bestlabel=case_when(bestlabel=="pop/1 every 2 years" ~ "pop/1.0 \nevery 2 years",
+                             bestlabel=="pop/2 every 2 years" ~ "pop/2.0 \nevery 2 years",
+                             bestlabel=="pop/1 every 3 years" ~ "pop/1.0 \nevery 3 years",
+                             bestlabel=="pop/2 every 3 years" ~ "pop/2.0 \nevery 3 years",
+                             TRUE ~ as.character(bestlabel)),
+         wrap_lbl = stringr::str_wrap(bestlabel, width = 25),
+         iso_a2=countrycode(iso3, origin = "iso3c", destination="iso2c")) %>% 
+  left_join(rettimes)
+
+table80t <- read_csv("output/table80.csv", show_col_types = FALSE) %>% 
+  mutate(iso3=countrycode(name, origin="country.name", destination="iso3c"))
+
+## merge in the recommended quantifiers from the 80% target table into the PYP df:
+pyp <- tnets %>% 
+  left_join(table80t, by="iso3") %>% 
+  mutate(scenario_2=200+scenario_2,
+         scenario_3=300+scenario_3,
+         scenario_4=400+10*scenario_4,
+         scenario_5=500+10*scenario_5,
+         bestq=case_when(scenario==107 ~ 1,
+                         scenario==scenario_2 ~ 1,
+                         scenario==scenario_3 ~ 1,
+                         scenario==scenario_4 ~ 1,
+                         scenario==scenario_5 ~ 1,
+                         scenario==607 ~ 1,
+                         TRUE ~ 0))
+
+pyp %>%
+  filter(iso3=="COD" & bestq==1) %>%
+  ggplot(aes(
+    x = pyp / 1000000,
+    y = totalnets / 1000000,
+    color = as.factor(group),
+    # alpha = as.factor(best)
+  )) +
+  geom_point() +
+  # theme(legend.position = c(1.25, 0.8),
+    # theme(legend.position = c(.3, .8)) +
+        # plot.margin = unit(c(0.1, 5, 0.1, 0.1), "cm")) +
+  geom_text_repel(aes(label = ifelse(bestq == 1, bestlabel, "")), max.overlaps=10, hjust=0, size=2.5) + #  force=3, xlim = c(0, 300)
+    # geom_text(aes(label = ifelse(best == 1, bestlabel, "")), size=2.5, fontface="bold", hjust=-.1, vjust=-.2) +
+  scale_color_brewer(
+    palette = "Dark2",
+    labels = c(
+      "Status Quo",
+      "Full scale CD",
+      "Campaigns + CD",
+      "3-year campaigns",
+      "2-year campaigns",
+      "2-year campaigns (pop/1.8)"
+    )
+  ) +
+  labs(x = "Person-years of ITN access (millions)",
+       y = "Total nets delivered (millions)",
+       color = "Scenario",
+       title = paste0("DRC",": 1.4 years median retention time")) +
+  scale_alpha_manual(values = c(.3, 1)) +
+    # scale_x_continuous(limits=c(100,250)) +
+  # coord_cartesian(clip = 'off') +
+    theme(legend.position = "bottom") +
+  guides(alpha = "none",
+         color = guide_legend(override.aes = aes(label = ""), nrow=2,byrow=TRUE))  ## remove the "a" from the marker in legend
+
+```
+
+## Number of nets needed for each scenario
+- s1, s280, s290, s380, s390, s6
+```{r totalnets}
+pyp %>% 
+  filter(iso3=="COD" & bestq==1) %>%
+  ggplot() +
+  geom_col(aes(x=group, y=totalnets, fill=as.factor(group))) +
+  geom_text(aes(x=group, y=2000000, label=bestlabel, hjust=0), color="white") +
+  scale_y_continuous(breaks=pretty_breaks(), labels = unit_format(unit = "M", scale = 1e-6)) +
+  coord_flip() +
+  theme(legend.position="none")+
+  labs(y="Total ITNs needed over 10 years",
+       x="Distribution Scenario",
+       title="DRC: Total nets needed over 10 years")
+
+```
+
+## Quantifiers for CD at 80 and 90
+```{r}
+half <- read_excel("output/drc_halfyear_quants.xlsx") %>% 
+  clean_names() %>% 
+  select(-x1, -iso_a2) 
+
+flextable(half) %>% 
+  set_header_labels(id="CD Strategy and Target Level of ITN access", x1_2="1.0", x1_5="1.5", x2="2.0", x2_5="2.5", x3="3.0", x3_5="3.5") %>% 
+  add_header_row(top = TRUE, values = c("","ITN Retention Time in Years"), colwidths = c(1,5)) %>% 
+  theme_booktabs() %>% 
+  autofit() %>% 
+  align(align = "center", part = "header") 
+```
+
