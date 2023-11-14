@@ -21,6 +21,39 @@ labs(x="",
        title="Full scale CD at population x 29% annually")
 ggsave("figs/moz/moz_229.png")
 
+read_dta("output/runs/218.dta") %>% 
+  filter(iso3=="TZA") %>% 
+  select(iso3, accrk, accub_npcub, acclb_npclb, year, retention, scenario) %>% 
+  ggplot(aes(y=accrk, x=year, color=iso3, fill=iso3)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=acclb_npclb, ymax=accub_npcub), alpha=.2, color="white") +
+  theme_minimal() +
+  scale_color_brewer(palette="Set2") +
+  scale_fill_brewer(palette="Set2") +
+  theme(legend.position = "none") +
+  scale_y_continuous(breaks=seq(0,100, by=20), limits=c(0,100)) +
+  labs(x="",
+       y="Estimated population ITN access",
+       title="Full scale CD at population x 18% annually")
+ggsave("figs/moz/tza_218.png")
+
+read_dta("output/runs/106.dta") %>% 
+  filter(iso3=="TZA") %>% 
+  select(iso3, accrk, accub_npcub, acclb_npclb, year, retention, scenario) %>% 
+  ggplot(aes(y=accrk, x=year, color=iso3, fill=iso3)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=acclb_npclb, ymax=accub_npcub), alpha=.2, color="white") +
+  theme_minimal() +
+  scale_color_brewer(palette="Set2") +
+  scale_fill_brewer(palette="Set2") +
+  theme(legend.position = "none") +
+  scale_y_continuous(breaks=seq(0,100, by=20), limits=c(0,100)) +
+  labs(x="",
+       y="Estimated population ITN access",
+       title="Mass campaigns every three years plus routine ANC/EPI")
+ggsave("figs/moz/tza_106.png")
+
+
 read_dta("output/runs/217.dta") %>% 
   filter(iso3=="TGO") %>% 
   select(iso3, accrk, accub_npcub, acclb_npclb, year, retention, scenario) %>% 
@@ -156,17 +189,23 @@ pypmulti80 <- pypmulti %>%
                          TRUE ~ 0),
          pyppitn=pyp/totalnets) %>% 
   filter(bestq==1) %>% 
-  filter(group<3)
+  filter(group==1 | group==2 | group==6)
+
+mill <-  scales::unit_format(unit = "M", scale = 1e-6, accuracy=1)
+
 
 pypmulti80 %>% 
   mutate(group=case_when(group==1 ~ "3-year campaigns",
-                         group==2 ~ "Full-scale CD to maintain 80% ITN access",
+                         group==2 ~ "Full-scale CD to\nmaintain 80% ITN access",
+                         group==6 ~ "2-year campaigns",
                          TRUE ~ as.character(group))) %>% 
   ggplot() +
   geom_col(aes(x=as.factor(lifespan), y=totalnets, fill=iso3), position=position_dodge()) +
   theme_minimal() +
   scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6)) +
+  geom_text(aes(x=as.factor(lifespan), y=totalnets, label=mill(totalnets)),  position=position_dodge(), vjust=-.5) +
   facet_wrap(~group) +
+  theme(legend.position="none") +
   labs(x="ITN retention time (years)",
        y="Total nets required in pop of 10m",
        fill="")
