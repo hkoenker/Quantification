@@ -8,7 +8,7 @@ output:
   #   theme: "boxes"
   #   colortheme: "dove"
   #   fonttheme: "structurebold"
-date: 21 Oct 2022
+date: 28 March 2023
 bibliography: quant_paper/quantbibfile.bib
 biblio-style: quant_paper/model6-num-names
 csl: https://www.zotero.org/styles/biomed-central
@@ -115,7 +115,7 @@ options(knitr.kable.NA = "")
 ## Background (1)
 :::::::::::::: {.columns}
 ::: {.column}
-- ITNs are not lasting as long as expected - most countries have an estimated retention time of less than 3 years [@10.1038/s41467-021-23707-7]. 
+- ITNs are not lasting as long as expected - most countries have an estimated retention time of less than 3 years. 
 :::
 ::: {.column}
 ![Bertozzi-Villa et al, 2021](/Users/hannahkoenker/Dropbox/ITN Cube Paper/main_figures/figure_5_v1.pdf) 
@@ -128,10 +128,14 @@ odd <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Caps/h
   select(percentodd)
 ```
 
+```{r}
+avgscenpctx <- read_csv("output/avgscenpct.csv", show_col_types = FALSE) %>% 
+  mutate(scenario=as.character(scenario))
+```
 
 ## Background (2)
 
-- The quantifier 1.8 was initially selected to account for the `r round(min(odd)*100, digits=0)`-`r round(max(odd)*100, digits=0)`% of households who have an odd number of household members, reflecting the need to round up in these cases [@Kilian:2010im]. 
+- The quantifier 1.8 was initially selected to account for the `r round(min(odd)*100, digits=0)`-`r round(max(odd)*100, digits=0)`% of households who have an odd number of household members, reflecting the need to round up in these cases. 
 
 - Kilian et al originally recommended dividing by 1.6, in order to accommodate distribution challenges including outdated census information and the need to preposition full bales of nets rather than precisely subdividing them. 
 
@@ -152,34 +156,28 @@ odd <- read_dta("/Users/hannahkoenker/Dropbox/A DHS MIS Datasets/Analysis/Caps/h
 
 - Quantification for continuous ITN distribution lacks a "population divided by X" quantifier. 
 
-- Routine distribution to pregnant women and infants is already "easy", as these populations are a) relatively consistent at around 4% and 3% of the population, respectively, and b) attendance rates at antenatal care visits (ANC) and immunization visits (EPI) are generally well-monitored through HMIS. 
+- Routine distribution to pregnant women and infants is already "easy", as these populations are a) relatively consistent at around 4-5% and 4% of the population, respectively, and b) attendance rates at antenatal care visits (ANC) and immunization visits (EPI) are generally well-monitored through HMIS. 
 
 - Lack of an "easy" and serviceable quantification approach for CD has contributed in part to the limited scale-up of continuous distribution channels across malaria-endemic countries.
 
 ## Objective 
 
-We will explore the above questions using an existing stock and flow model [@10.1186/s12936-022-04272-w] to project population ITN access for countries in sub-Saharan Africa over five different distribution scenarios, using estimated ITN retention times from Bertozzi-Villa et al [@10.1038/s41467-021-23707-7] and varying quantification approaches within each distribution scenario. Recommended quantifiers for each country are presented for each scenario and at different target levels of population ITN access.
+- What does ITN access look like under five different distribution scenarios, using country-specific estimated ITN retention times? 
+- What can we recommended as a good quantifier for each country to achieve ITN access targets?
 
 # Methods
 
 ## Projections of future coverage
 
-- Each country was assigned an indicative population of 10 million people in the database, starting in 2020, and an annual population growth rate of 3%, as the model outputs are adjusted for population and thus do not require specific population estimates.
-
-## Scenarios
-
+![Distribution Scenarios and their ITN inputs](figs/Tab_ScenariosTable.png)
 ```{r table1, tab.cap = "Distribution Scenarios and their ITN inputs", fig.width=10}
 scentable <- read_excel("data/scenario_table_text.xlsx", sheet = "pop times")
-ftscen <- flextable(scentable) %>% 
-  fontsize(size=10, part="all") %>% 
-  set_table_properties(layout = "autofit") %>% 
-  theme_vanilla
-plot(ftscen)
+
 
 ## Pull the total number of scenarios/iterations:
 totalscenarios <- scentable %>% 
-  select(`Number of different iterations per scenario`) %>% 
-  slice_max(`Number of different iterations per scenario`) %>% 
+  select(`Number of different models per scenario`) %>% 
+  slice_max(`Number of different models per scenario`) %>% 
   pull()
 ```
 
@@ -190,8 +188,8 @@ totalscenarios <- scentable %>%
 ![](figs/Fig_Retention_Decay_NPC.png)
 :::
 ::: {.column}
-- Panel A: Country-specific estimated median lifespan from Malaria Atlas Project (MAP) [@10.1038/s41467-021-23707-7], compared to estimated median lifespans from ITN durability monitoring (DM) activities [@Abilio:2020fl; @Kilian:2020dj; @Mansiangi:2020cv; @Haji:2020de; @Obi:2020eza; @Kilian:2015hk; @10.1371/journal.pmed.1003248; @Randriamaherijaona:2017fo]. 
-- Panel B shows net decay functions rely on smooth-compact loss function developed by Nakul Chitnis [@Koenker:2013ed; @Bhatt:2015gn; @10.1186/s12936-022-04272-w]
+- Panel A: Country-specific estimated median lifespan from Malaria Atlas Project (MAP), compared to estimated median lifespans from ITN durability monitoring (DM) activities. 
+- Panel B shows net decay functions rely on smooth-compact loss function developed by Nakul Chitnis
 - Panel C shows the fitted monotonic curves for the relationship between ITNs per capita and ITN access, stratified by average household size.
 
 :::
@@ -199,18 +197,16 @@ totalscenarios <- scentable %>%
 
 ## Estimating ITN access from net distributions and population (2)
 
-- The total net crop (consisting of all surviving nets from various channels to date) was summed for each year and country. This was then divided by the population projected to calculate nets-per-capita (NPC). To estimate ITN access from NPC, a nonparametric conditional quartile function for ITN access as a function of NPC was estimated from 151 Demographic and Health Surveys (DHS) and malaria indicator surveys (MIS). 
-
-- Confidence intervals for both estimated median lifespan and the function of ITN access vs NPC were used to generate an overall confidence interval around the estimate of ITN access.
-
-- Recommended quantifiers were obtained by identifying the scenario that provided the greatest number of years of ITN access at or above the target level; if multiple scenarios provided the same number of years, the scenario requiring the fewest nets was selected.
-
+1. Deliver nets within the model based on the specific scenario
+1. Each year's "crop" of nets are then decayed according to their country-specific lifespan
+1. We then can calculate total nets per capita each year (any delivered + remaining ITNs from previous years)
+1. From there we can convert nets per capita into ITN access
 
 # Results
 
 ## ITN access for Scenario 1 - status quo
 
-![ITN access estimated for 3-year mass campaign strategy, with ANC/EPI distribution at 6% of the population annually](figs/geofacet_3ucc.png)
+![ITN access estimated for three-year mass campaign strategy, with ANC/EPI distribution at 6% of the population annually](figs/geofacet_3ucc.png)
 
 ## ITN access for Scenario 2 - full scale CD
 
@@ -246,13 +242,6 @@ The complete set of graphs for all `r totalscenarios` scenarios is included as [
 :::
 ::::::::::::::
 
-## Tailored quantification factors for 3-year campaigns 
-
-![](figs/Tab_Scen4.png)
-
-## Tailored quantification factors for 2-year campaigns 
-
-![](figs/Tab_Scen5.png) 
 
 ## Recommended quantification factors for countries and scenarios
 
@@ -262,29 +251,10 @@ The complete set of graphs for all `r totalscenarios` scenarios is included as [
 
 ## How many nets are needed under the recommended scenarios?
 
-:::::::::::::: {.columns}
-::: {.column}
-![Percent difference in total nets needed by scenario](figs/Fig_avgtotalnets.png)
 
-:::
-::: {.column}
-![](figs/Fig_facettotalnets.png)
-:::
-::::::::::::::
+![Percent difference in total nets needed over 10 years, by scenario and ITN retention time](figs/Fig_compareCDbylifespanbig.png)
 
-## Are there enough primary school children to make school distribution feasible?
 
-:::::::::::::: {.columns}
-::: {.column}
-![](figs/Fig_reg_schoolfeasibility.png)
-
-:::
-::: {.column}
-- Plot indicates the extent within a country where annual school distribution would be feasible. 
-- Assumes that only one ITN is given per pupil; for the countries with a limited proportion of regions where the primary-school-attending population is large enough, giving more than 1 ITN per pupil could provide a solution. 
-- Alternately, additional community-based channels could be designed to distribute ITNs alongside school-based distribution. 
-:::
-::::::::::::::
 
 ## Which strategies offer the most value for money?
 
@@ -302,67 +272,58 @@ The complete set of graphs for all `r totalscenarios` scenarios is included as [
 # Discussion
 
 ## Takeaways (1)
-```{r}
-avgscenpctx <- read_csv("output/avgscenpct.csv", show_col_types = FALSE)
-```
 
 1. Current status quo of conducting mass campaigns every three years using a population/1.8 quantifier is insufficient to achieve targets of 80% population access to ITNs in the majority of malaria-endemic countries, given overall retention times are estimated at below three years. 
 
-1. Two year campaigns, however intuitive, ultimately require far more ITNs to maintain 80% population ITN access than under a strategy of continuous distribution. 
-     a. Compared to the current status quo, full scale continuous distribution of nets could provide continuous ITN access at 80% or higher, for `r round((avgscenpctx$mean[2]-1)*100, digits=0)`% more nets, while a strategy of 2-year mass campaigns using a quantification factor tailored for net retention rates would require `r round((avgscenpctx$mean[5]-1)*100, digits=0)`% more nets than status quo with similar coverage outcomes. 
+1. Two year campaigns require far more ITNs to maintain 80% population ITN access, compared to continuous distribution. 
+
+1. Compared to the current status quo, full scale continuous distribution of nets could provide continuous ITN access at 80% or higher, with fewer nets compared to status quo campaigns, for countries with ITN retention times of at least 2 years 
+1. Tailored two-year campaigns would require 67% more nets than status quo with similar coverage outcomes.
 
 ## Takeaways (2)
 
-1. Population/1.8 does not fit all settings
+1. Population/1.8 for mass campaigns does not fit all settings
     a. Net retention time is the major driving factor behind the calculations for the optimal quantification factor. 
     a. Countries with retention times of less than 2 years could not maintain ITN access at 80% between campaigns even when one ITN per person was delivered in the model, and countries with retention time of around 2.5 years required population/1.5 or population/1.2 to offset the rapid loss of nets post-campaign and still maintain sufficient ITN coverage. 
     a. However, even these approaches would introduce what most planners and donors would consider a vast "oversupply" of ITNs at each campaign.
 
-1. Optimal quantification factors and the total number of nets that would be required can facilitate decision making for national programmes and their partners. 
+## Takeaways (3)
 
-## Implications
-
-- The challenges of delivering more ITNs are clear - funding for both the nets and their distribution costs; donor appetite; not to mention the additional cost of new types of ITNs recommended for areas with insecticide resistance. 
-- The costs of continuing to deliver insufficient quantities of ITNs and provide only intermittent protection are also clear - continued loss of life, educational achievement, quality of life due to malaria. 
+- CD likely to be more efficient than current pop/1.8 three-yearly campaigns in countries where net retention time is at least 2.0 years
+- The "best option" for countries with <2.0 year retention times always involves more nets than we're currently ordering
 
 ## What about making nets last longer?
 
-- Improvements in both areas would contribute substantially towards increasing retention times, but it is unlikely that this would offset the general and continued challenges of keeping nets in good condition for long periods of time across settings in malaria-endemic areas. Net durability is driven by behavioral factors in part, but also the household environment, which in many settings is simply a difficult place for nets to survive. 
+- More durable nets and improved net care behaviors would contribute substantially towards increasing retention times, but it is unlikely that this would offset the general and continued challenges of keeping nets in good condition for long periods of time across settings in malaria-endemic areas. Net durability is driven by behavioral factors in part, but also the household environment, which in many settings is simply a difficult place for nets to survive. 
 - This is particularly true for people living through humanitarian emergencies, and this population is projected to increase due to climate change and climate-related emergencies. 
 
 ## How accurate are the retention times used in the analysis?
 
 - All of these results hinge on the estimated retention times. 
-- It's important to highlight that ITN durability studies, while largely in line with retention times used in this paper, do diverge in several cases. 
+- It's important to highlight that ITN durability studies are typically longer median net lifespans compared to the MAP retention times, and there are some important differences in some countries. 
     - Most notably, Liberia's retention time was estimated at 1.0 years, but an ITN durability study completed in 2021 in two counties observed a median survival in serviceable condition of 4 years. 
-    - Durability have been demonstrated to vary subnationally; durability monitoring of ITNs in northern Nigeria showed they median lifespans of over five years, while the same product monitored simultaneously in southern zones of Nigeria had a lifespan of just over three years [@Obi:2020eza], consistent with findings from an earlier cross-sectional durability study in similar areas of Nigeria [@Kilian:2015hk]. 
+    - Durability have been demonstrated to vary subnationally; durability monitoring of ITNs in northern Nigeria showed they median lifespans of over five years, while the same product monitored simultaneously in southern zones of Nigeria had a lifespan of just over three years, consistent with findings from an earlier cross-sectional durability study in similar areas of Nigeria. 
     - Programmes must consider potential differences in net retention behavior and net durability as they weigh their quantification decisions.
+- Working on a matrix for each country showing quantifier needed at different net lifespans (e.g. for Zimbabwe, at 2, 2.5, 3 years)
 
-## Are countries currently doing CD doing enough?
-```{r}
-table80x <- read_csv("output/table80.csv", show_col_types = FALSE)
-```
-
-1. Ghana distributes ITNs to school children in grades 2 and 6 between 3-year campaigns, while Tanzania has implemented full scale school distribution in 14 mainland regions since 2016, and expanded the programme to 5 additional regions in 2022. 
-2. The quantities of ITNs distributed to school children in Ghana amount to 4.4% of the population (1.4 million ITNs in the [2020 school distribution](https://allianceformalariaprevention.com/wp-content/uploads/2021/06/CD_Ghana_SBD_Case_Study_0620201.pdf)) - far from the `r with(table80x, scenario_3[which(name == "Ghana")])`% estimated to be needed to maintain ITN access at levels of 80%. 
-3. Tanzania's school net programme has delivered ITNs equivalent to 12-16% of the population in SNP zones over recent years, but they may require quantification of population x `r with(table80x, scenario_2[which(name == "Tanzania")])`% to maintain ITN access at 80%, discussed in more detail elsewhere [@10.1186/s12936-022-04272-w].
 
 ## Is school distribution the best option for full scale CD?
 
-- School distribution, conducted annually to all or selected primary school classes, is a promising approach to delivering ITNs [@Koenker:2013ed; @10.1093/heapol/czab140; @Yukich:2020km; @10.1186/s12936-022-04272-w]. 
-- Studies estimate that school-age children drive at least 60% of malaria transmission [@10.1186/s12936-018-2295-4; @10.4269/ajtmh.21-1263], due in part to their lower rates of ITN use, especially when households don't own enough nets [@Olapeju:2018bc; @10.4269/ajtmh.21-1263]. 
+- Studies estimate that school-age children drive at least 60% of malaria transmission, due in part to their lower rates of ITN use, especially when households don't own enough nets. 
+- Need more results from Tanzania on burden reductions from SNP - complicated by conducting SNP in higher-burden zones, and not in lower-burden zones - but work is underway
 - Ensuring that these children - and their family members - are prioritized for protection with ITNs, along with vulnerable pregnant women and children, is a hallmark of the school distribution strategy. 
-- Annualized distributions also facilitate planning, avoiding the 3-yearly overload of mass campaign planning among national malaria programmes and their implementing partners, and the platform leverages Ministry of Education personnel, providing opportunities for additional integration of other school health interventions.
+- Annualized distributions also facilitate planning, avoiding the three-yearly overload of mass campaign planning among national malaria programmes and their implementing partners, and the platform leverages Ministry of Education personnel, providing opportunities for additional integration of other school health interventions.
+- Many cost questions about CD remain - including how to budget, whether lack of household registration offsets annual transport costs, etc.
 
 ## What about ITN use?
 
-- This analysis uses a target of 80% population ITN access, but it must be noted that for ITN use levels to reach 80%, ITN access must be at least 90%, given the persistent (yet happily quite small) gap between ITN access and ITN use [@Koenker:2014gb;@10.1038/s41467-021-23707-7;@Bhatt:2015gn]. 
+- This analysis uses a target of 80% population ITN access, but for ITN use levels to reach 80%, ITN access must be at least 90% 
 - Targeting ITN access at 80% will max out ITN use around 70% or lower. 
 - Donors and programmes must therefore evaluate what target levels of ITN use are necessary for success, and adjust ITN access targets upwards accordingly.
 
 ## Limitations
 
-1. Retention times for certain countries are based on a limited number of surveys, described further in [@10.1038/s41467-021-23707-7]. We account for the uncertainty of these estimates in the calculations of ITN access. 
+1. Retention times for certain countries are based on a limited number of surveys. We account for the uncertainty of these estimates in the calculations of ITN access. 
 2. Localized durability monitoring studies sometimes find significantly longer median survival of ITNs than the retention times estimates, which could indicate subnational differences in ITN longevity or be evidence of analytical challenges in the ITN retention times or conversely, Hawthorne effect in the durability monitoring studies. 
 3. The relationship between nets-per-capita and ITN access is assumed to be consistent regardless of ITN distribution strategy, but it could be influenced by oversaturation of ITNs in certain types of households, as occurs with school distribution of ITNs. 
 4. Retention behavior is influenced by net availability (or lack thereof); with increasing availability of nets, households could be disincentivized to take care of their nets for longer, if new nets are readily available. 
@@ -372,9 +333,8 @@ table80x <- read_csv("output/table80.csv", show_col_types = FALSE)
 ## Conclusion
 
 - Given variation in ITN retention times across countries, tailored quantification approaches for mass campaigns and continuous distribution strategies are warranted. 
+- Continuous distribution strategies are projected to provide better ITN access with fewer ITNs than currently procured for mass campaigns, in countries where ITN retention time is at least 2 years
 - To reach target levels of ITN use of 80% of the population, ITN access must be maintained near 90% in most settings. 
-- The quantity of ITNs required to meet these goals are substantially larger than current plans, but strategies with continuous/annual distributions are likely to provide higher ITN access with fewer nets than tailored universal coverage campaigns. 
-- Strategies with continuous/annual distributions may also provide better ITN access with only 8% more ITNs needed than current status quo of 3-year campaigns quantified using population/1.8. 
 - National programmes and their funding partners should work to increase the number of ITNs distributed to those vulnerable to malaria, while at the same time working to extend the useful life of these critical commodities.
 
 
@@ -385,6 +345,8 @@ table80x <- read_csv("output/table80.csv", show_col_types = FALSE)
 
 
 # Supplementary information
+
+
 
 ## Full table for continuous distribution scenarios and their quantifiers 
 
@@ -437,10 +399,34 @@ table80x <- read_csv("output/table80.csv", show_col_types = FALSE)
 
 ## Additional slides
 
+## Are countries currently doing CD doing enough?
+```{r}
+table80x <- read_csv("output/table80.csv", show_col_types = FALSE)
+```
+
+1. Ghana distributes ITNs to school children in grades 2 and 6 between 3-year campaigns, while Tanzania has implemented full scale school distribution in 14 mainland regions since 2016, and expanded the programme to 5 additional regions in 2022. 
+2. The quantities of ITNs distributed to school children in Ghana amount to 4.4% of the population (1.4 million ITNs in the [2020 school distribution](https://allianceformalariaprevention.com/wp-content/uploads/2021/06/CD_Ghana_SBD_Case_Study_0620201.pdf)) - far from the `r with(table80x, scenario_3[which(name == "Ghana")])`% estimated to be needed to maintain ITN access at levels of 80%. 
+3. Tanzania's school net programme has delivered ITNs equivalent to 12-16% of the population in SNP zones over recent years, but they may require quantification of population x `r with(table80x, scenario_2[which(name == "Tanzania")])`% to maintain ITN access at 80%, discussed in more detail elsewhere.
+
+
+## Are there enough primary school children to make school distribution feasible?
+
+:::::::::::::: {.columns}
+::: {.column}
+![](figs/Fig_reg_schoolfeasibility.png)
+
+:::
+::: {.column}
+- Plot indicates the extent within a country where annual school distribution would be feasible. 
+- Assumes that only one ITN is given per pupil; for the countries with a limited proportion of regions where the primary-school-attending population is large enough, giving more than 1 ITN per pupil could provide a solution. 
+- Alternately, additional community-based channels could be designed to distribute ITNs alongside school-based distribution. 
+:::
+::::::::::::::
+
+
 ![A) Percent of households with a child attending primary school; B) Percent of households with a pregnant woman, child under 12 months, or child attending primary school. Data from most recent Demographic and Health Survey](figs/Fig_CD_reach.png)
 
 
 
-## References
 
 
