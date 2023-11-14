@@ -241,8 +241,38 @@
 						save data/s4q, replace
 				restore 
 				
+				*** For 70% ACCESS
+			preserve 
+					collapse (min) accrk if group==4 & year>2021, by(iso_a2 scenario)
+					reshape wide accrk, i(i) j(scenario)
+					
 			
-		
+					** grab the q for keeping ITN access at or above 80
+					
+						reshape long accrk,  i(iso_a2) j(q) 
+						drop if accrk<70
+						bysort iso_a2: egen best=max(q)
+						
+						collapse best, by(iso_a2)
+						
+						save data/s4q70, replace
+				restore 
+				*** For 90% ACCESS
+			preserve 
+					collapse (min) accrk if group==4 & year>2021, by(iso_a2 scenario)
+					reshape wide accrk, i(i) j(scenario)
+					
+			
+					** grab the q for keeping ITN access at or above 80
+					
+						reshape long accrk,  i(iso_a2) j(q) 
+						drop if accrk<90
+						bysort iso_a2: egen best=max(q)
+						
+						collapse best, by(iso_a2)
+						
+						save data/s4q90, replace
+				restore 
 		
 		*** SCENARIO 5 - 2y UCC - how far should ITN access drop between campaigns?
 	
@@ -266,5 +296,36 @@
 						
 						save data/s5q, replace
 				restore 
-		
-		
+		* FOR 70% ACCESS
+		preserve 
+					collapse (min) accrk if group==5 & year>2021, by(iso_a2 scenario)
+					reshape wide accrk, i(i) j(scenario)
+					
+							
+					** grab the q for keeping ITN access at or above 80
+					
+						reshape long accrk,  i(iso_a2) j(q) 
+						drop if accrk<70
+						bysort iso_a2: egen best=max(q)
+						
+						collapse best, by(iso_a2)
+						
+						save data/s5q70, replace
+				restore 
+				
+				* FOR 90% ACCESS
+		preserve 
+					collapse (min) accrk if group==5 & year>2021, by(iso_a2 scenario)
+					reshape wide accrk, i(i) j(scenario)
+					
+							
+					** grab the q for keeping ITN access at or above 80
+					
+						reshape long accrk,  i(iso_a2) j(q) 
+						drop if accrk<90
+						bysort iso_a2: egen best=max(q)
+						
+						collapse best, by(iso_a2)
+						
+						save data/s5q90, replace
+				restore 
