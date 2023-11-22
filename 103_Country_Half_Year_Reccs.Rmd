@@ -177,7 +177,8 @@ t80s2 %>%
   mutate(retention=as.factor(retention)) %>% 
   ggplot() +
   geom_violin(aes(x=retention, y=q, color=retention), alpha=.5, width=1) + # , draw_quantiles = c(0.5)
-  geom_text(data=t80s2med, aes(x=retention, y=median, color=retention, label=median)) +
+  geom_jitter(aes(x=retention, y=q, color=retention), alpha=.10, width=.15) +
+  geom_text(data=t80s2med, aes(x=retention, y=median, color=retention, label=median), fontface="bold") +
   labs(x="ITN retention time in years",
        y="Recommended quantifier (% of population)",
        color="",
@@ -196,7 +197,7 @@ set_flextable_defaults(
 # std_border = fp_border(color="white") ## set the color of the border needed later down
 
 
-s280wide %>% 
+tables280 <- s280wide %>% 
   flextable() %>% 
   set_header_labels(
    iso_a2 = "Country (ISO2 code)"
@@ -226,6 +227,7 @@ s280wide %>%
     merge_h(part = "header") %>%
     merge_v(part = "header")
 
+invisible(save_as_image(tables280, path="figs/Table_S280_halfyears_long.png"))
 
 ```
 
@@ -293,11 +295,12 @@ t80s3 %>%
   mutate(retention=as.factor(retention)) %>% 
   ggplot() +
   geom_violin(aes(x=retention, y=q, color=retention), alpha=.5, width=1) + # , draw_quantiles = c(0.5)
-  geom_text(data=t80s3med, aes(x=retention, y=median, color=retention, label=median)) +
+    geom_jitter(aes(x=retention, y=q, color=retention), alpha=.10, width=.15) +
+  geom_text(data=t80s3med, aes(x=retention, y=median, color=retention, label=median), fontface="bold") +
   labs(x="ITN retention time in years",
        y="Recommended quantifier (% of population)",
        color="",
-       title="Median recommended quantifier for annual large-scale CD, by ITN retention time") +
+       title="Median recommended quantifier for between-campaign CD, by ITN retention time") +
   theme(legend.position="none")
 
 ```
@@ -306,7 +309,7 @@ t80s3 %>%
 
 
 ```{r table-s380}
-s380wide %>% 
+tables380 <- s380wide %>% 
   flextable() %>% 
   set_header_labels(
    iso_a2 = "Country (ISO2 code)"
@@ -335,6 +338,8 @@ s380wide %>%
     align(align = "center", part = "all")%>% 
     merge_h(part = "header") %>%
     merge_v(part = "header")
+
+invisible(save_as_image(tables380, path="figs/Table_S380_halfyears_long.png"))
 ```
 
 ## 90% ITN access target 
