@@ -340,7 +340,7 @@ set graphics off // toggle if you need to check graphs are looking ok
 	
 	** we can go to 40% in Scenario 3; maxes out at 39 
 	
-	foreach x of numlist .000001 .01(0.01).40 {
+	foreach x of numlist .000001 .01(0.01).50 {
 		preserve 
 		
 		** distribute nets = MRC in 2022 2025 2028 2031
