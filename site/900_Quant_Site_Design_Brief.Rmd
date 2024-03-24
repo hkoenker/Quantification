@@ -1,0 +1,365 @@
+---
+title: "ITN Quantification Website Design Brief"
+author: "Hannah Koenker"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  # pdf_document:
+  html_document:
+    toc: yes
+    toc_depth: 2
+    # toc_float: yes
+    fig_width: 7
+    fig_height: 6
+    fig_caption: yes
+    df_print: kable
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+library(haven)
+library(tidyverse)
+library(broom)
+library(readxl)
+library(janitor)
+library(flextable)
+library(officer) # for setting color of vlines in flextable
+library(xlsx)
+library(countrycode)
+library(stringi)
+library(ggrepel)
+library(scales) # pretty_breaks
+library(here)
+
+here("site")
+# ![](images/TH_logo.jpg){width=1.0"}
+
+######################
+# Set figure theme and colors
+######################
+
+theme_set(theme_classic())
+
+```
+
+#	Background 
+
+The Alliance for Malaria Prevention provides practical implementation recommendations and best practices for countries conducting insecticide-treated net (ITN) mass campaigns, routine distribution, and school-based or community continuous distribution. One of AMP’s roles is to provide recommendations for quantifying the number of ITNs needed to achieve targeted levels of ITN coverage, under different combinations of channels. In 2023 AMP published a paper summarizing recommended quantification approaches for countries in sub-Saharan Africa, taking into account the median lifespan of ITNs in each country.
+
+This work evolves from earlier Excel-based tools that calculated ITN access based on ITN inputs and population structure (NetCALC and NetCALC Lite). These tools are retired, as the conversion formula from nets-per-capita to ITN access was upgraded in the 2023 paper, but useful context for the current assignment is available at https://continuousdistribution.org/wp-content/uploads/2022/03/NetCALC-Lite.zip 
+
+This work will be funded by Tropical Health under a grant from the Bill & Melinda Gates Foundation awarded October 13, 2023. 
+
+# Purpose and Scope 
+
+While the paper is an important step forward for integrating quantification recommendations into World Health Organization malaria guidelines, it does not provide a user-friendly way to look up recommended quantifier per country, or to compare the numbers of ITNs needed and estimated ITN access achieved under typical scenarios. AMP seeks a website designer familiar with Rshiny and R to translate the publication’s findings into a website accessible by national malaria programmes and their partners. The website will be linked from or housed within www.allianceformalariaprevention.com. This activity is a component of a revision of the www.cdtoolkit.org website, which is also part of AMP’s web resources.
+
+# Branding and Design
+
+-	Website will be part of www.allianceformalariaprevention.com and should reflect colors, look and feel, and have the AMP logo prominently
+-	Tropical Health logo will also be used e.g. in credits
+-	R for the Rest of Us logo ok to include in credits
+
+## Hosting
+
+-	How to manage this long term (access? Handover?)
+
+# Previous iterations of the tool
+
+NetCALC was an Excel-based tool that used several variables (country population, ITN median lifespan, average household size, population age structure, reach of prenatal visits and 9-month measles vaccinations, school attendance rates, and more) to calculate how many ITNs were needed to achieve a targeted level of ITN access (proportion of the population that could use an ITN). Different ITN distribution channels (mass campaigns, primary school distribution, community-level distribution, prenatal care visits, vaccination visits) could be clicked on and off and start in different years to develop a plan for an overall ITN distribution strategy. Outputs were shown in graphs of ITN access over time as well as tables for the numbers of ITNs required for that specific population.
+
+This tool was simplified in NetCALC Lite (which hid many of the variables and used rule of thumb assumptions for them), shown below. The first page inputs basic demographic information, the second page allows the user to select which channels are to be used for ITN distribution, and the final page presents the results (ITN access as well as table for the ITNs needed). 
+
+![NetCALC Lite Page 1](netcalclitepage1.png)
+![NetCALC Lite Page 1](netcalclitepage2.png) 
+
+
+![NetCALC Lite Page 1](netcalclitepage3.png)
+
+# Current Iteration
+
+In the 2023 ITN Quantification paper, Koenker et al refined the function that converted ITNs-per-capita into population ITN access, and used country-specific ITN retention times (how long nets last in households) to model what ITN access looks like at varying inputs of ITNs, and then to identify the input level (described in terms of ITNs as a percent of total population) that achieves and maintains population ITN access at 70%, 80%, or 90% levels. Most countries aim for at least 80% ITN access in their national strategic plans. 
+
+The goal is to provide a website that makes it easy for countries to:
+a)	Compare the performance of different ITN distribution strategies in terms of ITN access achieved, and numbers of ITNs required, given an estimated ITN retention time, to allow them to select a strategy best suited for their context.
+b)	For countries that do not trust the ITN retention time that was estimated for them, to pick a different retention time (between 1.0 and 3.5 in 0.5 year increments) and to compare the ITNs required and ITN access achieved.
+c)	Select the population-based quantification factor relevant for their ITN strategy, to use going forward.
+
+The paper uses a 10-year timeframe to allow for comparisons across multiple mass campaigns, which typically occur every three years. However, many countries will be more interested in having a three-year output option, as their Global Fund grants are three years long. For example, most countries will implement their Global Fund Grant Cycle 7 (GC7) from January 2024 to December 2026. 
+
+
+
+# Website Structure Mockup
+
+The website will likely need to take a several step process for the majority of users:
+
+1.	Select the country of interest
+2.	Select the target level of ITN access (70/80/90)
+3. Select a 3-year or 10-year time horizon?
+4.	View the bar chart of number of ITNs needed over 3/10 years – each bar represents a different distribution scenario
+- could be tabbed, or faceted by target level of ITN access
+5.	View a line graph of ITN access trends over the 10 years for each of the different distribution scenarios (could be faceted rather than overlaid)
+6.	Option to view ITN access at different quantification levels. There are 131 total scenarios (3x group 1, 51 x group 2, 41 x group 3, 3 x group 6. We can ignore groups 4 and 5). 
+7. View the cost/benefit plot (frontier plot of total nets vs total person-years-of-protection) for 10 years timeframe. 
+8. Find their recommended quantifier for continuous distribution? At different lifespans including the one used in my paper. (table)
+9. Total numbers of nets at different lifespans
+
+# Illustrative Examples for DRC
+
+## 4. Bar Charts ITNs needed over 3/10 years
+
+```{r nets-needed-over-ten-years}
+tnets_all <- read_csv("totalnetsall.csv")
+
+tnets_all %>% 
+  filter(iso3=="COD" & target==80) %>% 
+  ggplot() +
+  geom_col(aes(x=scenlabel, y=totalnets)) +
+  # geom_text(aes(x=scenlabel, y=totalnets, label=scenlabel)) +
+  coord_flip() +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6))
+  # labs(x="",
+  #      title=paste0(iso3,":",lifespan,"years retention time")) # include the retention time in the title
+```
+
+```{r nets-needed-over-three-years}
+tnets_3y <- read_csv("totalnets_3y_all.csv")
+
+tnets_3y %>% 
+  filter(iso3=="COD" & target==80) %>% 
+  ggplot() +
+  geom_col(aes(x=scenlabel, y=totalnets)) +
+  # geom_text(aes(x=scenlabel, y=totalnets, label=scenlabel)) +
+  coord_flip() +
+  scale_y_continuous(labels = unit_format(unit = "M", scale = 1e-6))  
+# labs(x="",
+  #      title=paste0(iso3,":",lifespan,"years retention time")) # include the country and retention time in the title
+
+# 
+```
+
+Note that the two plots above could be combined / faceted, whatever seems appropriate design-wise.
+
+
+## 5. Line Graphs of ITN Access over time
+
+```{r itn-access-trends}
+accessb <- read_csv("access_over_time_best.csv")
+
+accessb %>% 
+  filter(iso3=="COD" & best==80) %>% 
+  ggplot(aes(x=year, y=accrk, color=as.factor(group), group=group)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=acclb_npclb, ymax=accub_npcub, fill=as.factor(group)), alpha=.2) +
+  geom_hline(yintercept=100) +
+  labs(x="",
+       y="Population ITN access")
+```
+
+
+## 6.	Option to view ITN access at different quantification levels. 
+
+```{r itn-access-all-scenarios}
+accessa <- read_csv("access_over_time_all.csv")
+
+# these could maybe be limited to e.g. 0, 5, 10, 15, 20% etc etc rather than all 41?
+# Number in the facet box is intended to be the "population x X%", but it's not labeled well here.
+
+accessa %>% 
+  filter(iso3=="COD" & group==2) %>% 
+  mutate(scen=scenario-200) %>% 
+  ggplot(aes(x=year, y=accrk)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=acclb_npclb, ymax=accub_npcub), fill="dimgrey", alpha=.5) +
+  geom_hline(yintercept=c(70, 80, 90), color="red") +
+  labs(x="",
+       y="Population ITN access",
+       title="ITN access at various quantification factors for annual school/community distribution for DRC") +
+  facet_wrap(~scen)
+
+accessa %>% 
+  filter(iso3=="COD" & group==1) %>% 
+  mutate(scen=scenario-100) %>% 
+  ggplot(aes(x=year, y=accrk)) +
+  geom_line() +
+  geom_ribbon(aes(ymin=acclb_npclb, ymax=accub_npcub), fill="dimgrey", alpha=.5) +
+  geom_hline(yintercept=c(70, 80, 90), color="red") +
+  labs(x="",
+       y="Population ITN access",
+       title="ITN access at 5%, 6%, and 7% ANC/EPI reach, plus mass campaigns at pop/1.8 for DRC") +
+  facet_wrap(~scen)
+```
+
+
+## 7. View the cost/benefit plot (frontier plot) for 10 years. 
+
+Is facet useful here? Probably not. Could just show 80% target and note similar findings (relative channel performance) at other target levels. 
+
+```{r person-years-protection-ten-years}
+pyp <- read_csv("pyp_all.csv")
+
+# probably best if we drop scenario 4 and 5 from these:
+
+pyp %>%
+  filter(iso3=="COD" & group %in% c(1, 2, 3, 6)) %>%
+  ggplot(aes(
+    x = pyp / 1000000,
+    y = totalnets / 1000000,
+    color = as.factor(group),
+    # alpha = as.factor(best)
+  )) +
+  geom_point() +
+  geom_text_repel(aes(label = bestlabel), max.overlaps=10, hjust=0, size=2.5) + #  force=3, xlim = c(0, 300)
+  scale_color_brewer(
+    palette = "Dark2",
+    labels = c(
+      "Status Quo",
+      "Full scale CD",
+      "Campaigns + CD",
+      # "3-year campaigns",
+      # "2-year campaigns",
+      "2-year campaigns (pop/1.8)"
+    )
+  ) +
+  labs(x = "Person-years of ITN access (millions)",
+       y = "Total nets delivered (millions)",
+       color = "Scenario",
+       title = paste0("DRC",": 1.4 years median retention time")) + # ideally pull the retention time and country from the data vs hardcode
+  scale_alpha_manual(values = c(.3, 1)) +
+    theme(legend.position = "bottom") +
+  guides(alpha = "none",
+         color = guide_legend(override.aes = aes(label = ""), nrow=2,byrow=TRUE)) +  ## remove the "a" from the marker in legend
+  facet_wrap(~target)
+
+```
+
+
+## 8. What quantifier should be used for continuous distribution?
+
+
+```{r}
+recc23 <- read_csv("table_q_s2s3long.csv") %>% 
+  mutate(country=countrycode(iso3, origin="iso3c", destination="country.name"))
+
+recc2pivot <- recc23 %>% 
+  filter(iso3=="COD") %>% 
+  pivot_longer(cols=starts_with("s"), names_to = "id") %>% 
+  mutate(id=case_when(id=="s270" ~ "Full CD: 70% target",
+                      id=="s280" ~ "Full CD: 80% target",
+                      id=="s290" ~ "Full CD: 90% target",
+                      id=="s370" ~ "CD between campaigns: 70% target",
+                      id=="s380" ~ "CD between campaigns: 80% target",
+                      id=="s390" ~ "CD between campaigns: 90% target")) %>% 
+  rename(xreal=value) 
+
+
+```
+
+```{r}
+half <- read_csv("half_year_quantifiers.csv") %>% 
+  clean_names() 
+
+half_real <- half %>% 
+  filter(iso_a2=="CD") %>% 
+  left_join(recc2pivot) %>% 
+  select(id, country, contains("x"), lifespan) # not sure how to sort on the x1, x1_4, x2 etc. but just leaving x1_4 at the end for now
+
+# pull the lifespan value for the title
+ls <- half_real %>% 
+  slice_head() %>% 
+  pull(lifespan)
+
+# pull the lifespan value for the title
+nation <- half_real %>% 
+  slice_head() %>% 
+  pull(country)
+
+half_real %>% 
+  select(id, x1, xreal, x1_5, x2, x2_5, x3, x3_5) %>% # not sure how to sort these automatically so it's manual for now, sorry!
+flextable() %>% 
+  set_header_labels(id="CD Strategy and Target Level of ITN access", country="Country Code", x1="1.0", x1_5="1.5", x2="2.0", x2_5="2.5", x3="3.0", x3_5="3.5", xreal=ls) %>% 
+  add_header_row(top = TRUE, values = c("","ITN Retention Time in Years"), colwidths = c(1,7)) %>% 
+  theme_booktabs() %>% 
+  autofit() %>% 
+  bg(j="xreal", bg="green", part="all") %>% # highlight the modeled retention time somehow
+  align(align = "center", part = "header") 
+```
+
+
+## 9. Total numbers of nets at different lifespans
+
+The resulting number of nets required under each of the scenarios can also be shown. I have not joined in the 'real' numbers here but similar process could be done as for the above table. 
+
+```{r}
+gall_tnets <- read_csv("gall_tnets.csv") %>% 
+  select(id, lifespan, country_code, country_name, totalnets, x2024, x2025, x2026)
+mill <-  scales::unit_format(unit = "M", scale = 1e-6, accuracy=1)
+# Test Plot DRC G runs total nets 
+pop2026 <- gall_tnets %>% 
+  filter(country_code=="COD") %>% 
+  slice_head() %>% 
+  pull(x2026)
+
+onecampaign <- round(pop2026/1.8, digits=0)
+
+# TODO: Probably better to compare the 'onecampaign' amount of nets within the bar charts in each facet, otherwise it gets lost.
+
+gall_tnets %>% 
+  filter(country_code=="COD") %>% 
+  ggplot() +
+  geom_col(aes(x=id, y=totalnets, fill=id)) +
+  geom_text(aes(x=id, y=totalnets, label=mill(totalnets)), size=2, vjust=-.5) +
+  facet_wrap(~lifespan) +
+    scale_y_continuous(breaks=pretty_breaks(), labels = unit_format(unit = "M", scale = 1e-6)) +
+  # scale_fill_brewer(palette="Paired") +
+  scale_fill_manual(values=c("powderblue", "skyblue", "steelblue","thistle", "plum", "orchid")) + # something like this colors...triplets per scenario
+  labs(x="",
+       title="DRC ITN needs over three years at different ITN lifespans",
+       fill="Distribution Strategy and Target",
+       caption=paste0("For comparison, 1 mass campaign at population/1.8 in 2026 \nwould require ",format(onecampaign, big.mark=",")," ITNs. Routine ITNs through ANC and EPI \nare not included in these calculations, but would be additional for all scenarios.")) +
+  theme(axis.text.x=element_blank())
+
+
+```
+
+# Challenges/Limitations
+
+- the population figures we use are not necessarily aligned with population estimates the countries use; further, some countries have areas where people are not at risk of malaria and so our national-population figures are less relevant. So we need to include some info caveating this and emphasizing that the figures are for comparison purposes between distribution strategies, and not necessarily suitable for directly copying into ITN procurement plans.
+- it's a lot of info/visualizations and could be overwhelming
+- I haven't done a full reanalysis yet of the frontier plot (pyp.csv) data to see in how many countries the CD option provides more PYP with fewer ITNs. I'm not expecting it to be a ton, but....only in Somalia and Togo does this occur (at 80% target). At 70% - Gambia. At 90% - Eritrea, Gabon, Eq Guinea, Niger, Sudan. Hm.  
+
+```{r pyp-check, eval=FALSE}
+
+pyp %>% 
+  filter(group<3 & target==80) %>% 
+  ggplot() +
+  geom_point(aes(x=pyp, y=totalnets, color=as.factor(group))) +
+  scale_color_hue(labels=c("3y campaign", "Full scale CD")) +
+      scale_y_continuous(breaks=pretty_breaks(), labels = unit_format(unit = "M", scale = 1e-6)) +
+  # geom_text(aes(x=pyp, y=totalnets, label=iso3), size=1) +
+  labs(color="") +
+  facet_wrap(~iso3)
+
+pyp %>% 
+  filter(group<3 & target==70) %>% 
+  ggplot() +
+  geom_point(aes(x=pyp, y=totalnets, color=as.factor(group))) +
+  scale_color_hue(labels=c("3y campaign", "Full scale CD")) +
+      scale_y_continuous(breaks=pretty_breaks(), labels = unit_format(unit = "M", scale = 1e-6)) +
+  # geom_text(aes(x=pyp, y=totalnets, label=iso3), size=1) +
+  labs(color="") +
+  facet_wrap(~iso3)
+
+pyp %>% 
+  filter(group<3 & target==90) %>% 
+  ggplot() +
+  geom_point(aes(x=pyp, y=totalnets, color=as.factor(group))) +
+  scale_color_hue(labels=c("3y campaign", "Full scale CD")) +
+      scale_y_continuous(breaks=pretty_breaks(), labels = unit_format(unit = "M", scale = 1e-6)) +
+  # geom_text(aes(x=pyp, y=totalnets, label=iso3), size=1) +
+  labs(color="") +
+  facet_wrap(~iso3)
+
+```
+

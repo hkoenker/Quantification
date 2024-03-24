@@ -1,0 +1,121 @@
+iso3,lifespan,scenario_2,scenario_3,scenario_4,scenario_5,target,country
+AGO,1.1,27,25,0.1,1.3,70,Angola
+BDI,1.3,25,19,0.4,1.6,70,Burundi
+BEN,1.1,29,27,0.1,1.2,70,Benin
+BFA,1.6,22,14,0.7,1.9,70,Burkina Faso
+CAF,1.9,18,9,1.1,2,70,Central African Republic
+CIV,1.7,22,12,0.8,2,70,Côte d’Ivoire
+CMR,3.5,8,0,2,2,70,Cameroon
+COD,1.4,24,18,0.5,1.7,70,Congo - Kinshasa
+COG,2.9,10,0,2,2,70,Congo - Brazzaville
+COM,2.1,15,6,1.3,2,70,Comoros
+DJI,1,29,27,0.1,1.1,70,Djibouti
+ERI,3,7,0,2,2,70,Eritrea
+ETH,1.3,26,20,0.4,1.5,70,Ethiopia
+GAB,3.3,8,0,2,2,70,Gabon
+GHA,1.8,23,13,0.8,2,70,Ghana
+GIN,1.5,18,11,0.8,2,70,Guinea
+GMB,1.6,16,8,1,2,70,Gambia
+GNB,1.4,22,13,0.6,2,70,Guinea-Bissau
+GNQ,3.6,8,0,2,2,70,Equatorial Guinea
+KEN,2.3,16,6,1.3,2,70,Kenya
+LBR,1,28,27,0.1,1.2,70,Liberia
+MDG,1.6,21,12,0.8,2,70,Madagascar
+MLI,2.8,8,0,2,2,70,Mali
+MOZ,1.3,24,18,0.4,1.6,70,Mozambique
+MRT,1.1,23,21,0.1,1.5,70,Mauritania
+MWI,1.3,24,19,0.4,1.6,70,Malawi
+NER,3.5,8,0,2,2,70,Niger
+NGA,2.2,14,4,1.4,2,70,Nigeria
+RWA,1.6,23,13,0.7,2,70,Rwanda
+SDN,2.9,10,0,2,2,70,Sudan
+SEN,1.4,23,14,0.5,2,70,Senegal
+SLE,1.5,24,17,0.6,1.7,70,Sierra Leone
+SOM,2.4,10,0,2,2,70,Somalia
+SSD,1,30,28,0.1,1.1,70,South Sudan
+TCD,1,30,28,0.1,1.1,70,Chad
+TGO,2.4,12,1,1.7,2,70,Togo
+TZA,2.1,14,4,1.4,2,70,Tanzania
+UGA,1.7,21,12,0.8,2,70,Uganda
+ZMB,1.3,28,23,0.3,1.4,70,Zambia
+ZWE,2.8,10,0,2,2,70,Zimbabwe
+AGO,1.1,35,32,0.1,1,80,Angola
+BDI,1.3,32,26,0.3,1.2,80,Burundi
+BEN,1.1,36,34,0.1,0.9,80,Benin
+BFA,1.6,28,21,0.5,1.5,80,Burkina Faso
+CAF,1.9,24,15,0.8,1.8,80,Central African Republic
+CIV,1.7,27,18,0.6,1.6,80,Côte d’Ivoire
+CMR,3.5,11,1,1.7,2,80,Cameroon
+COD,1.4,31,24,0.4,1.3,80,Congo - Kinshasa
+COG,2.9,13,4,1.5,2,80,Congo - Brazzaville
+COM,2.1,22,10,1,2,80,Comoros
+DJI,1,37,35,0.1,0.9,80,Djibouti
+ERI,3,10,0,2,2,80,Eritrea
+ETH,1.3,32,27,0.3,1.2,80,Ethiopia
+GAB,3.3,12,1,1.7,2,80,Gabon
+GHA,1.8,28,20,0.6,1.6,80,Ghana
+GIN,1.5,28,16,0.6,1.8,80,Guinea
+GMB,1.6,25,14,0.7,1.9,80,Gambia
+GNB,1.4,32,19,0.4,1.6,80,Guinea-Bissau
+GNQ,3.6,11,1,1.7,2,80,Equatorial Guinea
+KEN,2.3,22,13,1,2,80,Kenya
+LBR,1,36,35,NA,0.9,80,Liberia
+MDG,1.6,27,19,0.6,1.6,80,Madagascar
+MLI,2.8,11,0,1.8,2,80,Mali
+MOZ,1.3,31,26,0.3,1.3,80,Mozambique
+MRT,1.1,30,27,0.1,1.1,80,Mauritania
+MWI,1.3,32,26,0.3,1.2,80,Malawi
+NER,3.5,11,1,1.7,2,80,Niger
+NGA,2.2,21,9,1.1,2,80,Nigeria
+RWA,1.6,28,20,0.6,1.5,80,Rwanda
+SDN,2.9,14,1,1.5,2,80,Sudan
+SEN,1.4,33,20,0.4,1.5,80,Senegal
+SLE,1.5,30,23,0.4,1.4,80,Sierra Leone
+SOM,2.4,14,4,1.5,2,80,Somalia
+SSD,1,37,36,NA,0.9,80,South Sudan
+TCD,1,37,35,NA,0.9,80,Chad
+TGO,2.4,17,8,1.2,2,80,Togo
+TZA,2.1,21,11,1,2,80,Tanzania
+UGA,1.7,27,18,0.6,1.6,80,Uganda
+ZMB,1.3,35,30,0.3,1.1,80,Zambia
+ZWE,2.8,14,5,1.4,2,80,Zimbabwe
+AGO,1.1,45,39,0.1,0.8,90,Angola
+BDI,1.3,41,36,0.2,0.9,90,Burundi
+BEN,1.1,43,40,0.1,0.8,90,Benin
+BFA,1.6,34,39,0.4,1.2,90,Burkina Faso
+CAF,1.9,29,34,0.7,1.5,90,Central African Republic
+CIV,1.7,32,38,0.5,1.3,90,Côte d’Ivoire
+CMR,3.5,14,9,1.4,2,90,Cameroon
+COD,1.4,37,25,0.3,1.1,90,Congo - Kinshasa
+COG,2.9,20,15,1.1,2,90,Congo - Brazzaville
+COM,2.1,26,38,0.8,1.7,90,Comoros
+DJI,1,43,37,NA,0.7,90,Djibouti
+ERI,3,18,10,1.2,2,90,Eritrea
+ETH,1.3,38,27,0.2,1,90,Ethiopia
+GAB,3.3,16,10,1.2,2,90,Gabon
+GHA,1.8,32,28,0.5,1.3,90,Ghana
+GIN,1.5,36,29,0.4,1.1,90,Guinea
+GMB,1.6,35,27,0.5,1.2,90,Gambia
+GNB,1.4,39,32,0.3,1,90,Guinea-Bissau
+GNQ,3.6,14,8,1.4,2,90,Equatorial Guinea
+KEN,2.3,26,20,0.8,1.6,90,Kenya
+LBR,1,46,NA,NA,0.7,90,Liberia
+MDG,1.6,35,27,0.5,1.2,90,Madagascar
+MLI,2.8,19,11,1.1,2,90,Mali
+MOZ,1.3,40,35,0.2,1,90,Mozambique
+MRT,1.1,44,38,NA,0.7,90,Mauritania
+MWI,1.3,41,35,0.2,1,90,Malawi
+NER,3.5,14,9,1.4,2,90,Niger
+NGA,2.2,25,37,0.9,1.8,90,Nigeria
+RWA,1.6,36,28,0.4,1.2,90,Rwanda
+SDN,2.9,17,32,1.2,2,90,Sudan
+SEN,1.4,39,33,0.2,1,90,Senegal
+SLE,1.5,36,24,0.4,1.1,90,Sierra Leone
+SOM,2.4,24,15,0.9,1.9,90,Somalia
+SSD,1,44,38,NA,0.7,90,South Sudan
+TCD,1,44,38,NA,0.7,90,Chad
+TGO,2.4,24,16,0.9,1.8,90,Togo
+TZA,2.1,28,20,0.8,1.6,90,Tanzania
+UGA,1.7,35,27,0.5,1.2,90,Uganda
+ZMB,1.3,43,38,0.2,0.9,90,Zambia
+ZWE,2.8,21,12,1.1,2,90,Zimbabwe
