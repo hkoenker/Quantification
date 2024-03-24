@@ -272,13 +272,13 @@ set graphics off // toggle if you need to check graphs are looking ok
 	
 	** numlist indicates CD quantification, SEPARATE FROM the RCH quantification, which is assumed at 6% in line 263
 	
-	*foreach x of numlist .000001 .01 .02 .03 .04 .05 .06 .07 .08 .09 .10 .11 .12 .13 .14 .15 .16 .17 .18 .19 .20 .21 .22 .23 .24 .25 .26 .27 .28 .29 .30 .31 .32 .33 .34 .35 .36 .37 .38 .39 .40 {
+	* go through pop x X% quantifiers ranging from 0.01 to 0.50. Could expand this to avoid any NAs for low retention time countries. 
 		
 		foreach x of numlist .000001 .01(0.01).50 {
 			
 		preserve 
 		
-		** distribute nets = start with an MRC in the start year, then wait two years. 
+		** distribute nets = start with an MRC in the start year, then wait two years. Since most countries will need some time after last mass campaign to get organized.
 			include locals.do 
 
 		replace totalnets=pop*0.06 if year>=`starty' // just do RCH at 6% in 2020 and forward, while waiting for school/community to start. Start with this to fill in all the years with something (not NA)
