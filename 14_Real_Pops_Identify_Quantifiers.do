@@ -16,7 +16,7 @@
 	foreach x of numlist 200/250 {
 		append using "output/realpop/`x'"
 	}
-	foreach x of numlist 300/340 {
+	foreach x of numlist 300/350 {
 		append using "output/realpop/`x'"
 	}
 	foreach x of numlist 401/420 {
