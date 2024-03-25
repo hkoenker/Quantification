@@ -463,7 +463,10 @@ totalnets70 <- tnets70 %>%
 
 
 #---- Total Nets Needed 90% ----
-mutate(routine=.06,
+tnets90 <- table90rtlong %>% 
+  # mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
+  left_join(afpop, by=c("iso3"= "country_code")) %>% 
+  mutate(routine=.06,
        basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
        baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
        basescen2=x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
@@ -985,3 +988,4 @@ gall_tnets <- gall_pop %>%
                              TRUE ~ 0))
 
 write_csv(gall_tnets, "site/gall_tnets.csv", col_names = TRUE)
+
