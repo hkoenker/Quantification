@@ -79,19 +79,19 @@ TZA,2.1,18,11,1,2,80,Tanzania
 UGA,1.7,24,18,0.6,1.6,80,Uganda
 ZMB,1.3,32,30,0.3,1.1,80,Zambia
 ZWE,2.8,14,5,1.4,2,80,Zimbabwe
-AGO,1.1,43,39,0.1,0.8,90,Angola
+AGO,1.1,43,42,0.1,0.8,90,Angola
 BDI,1.3,37,36,0.2,0.9,90,Burundi
 BEN,1.1,41,40,0.1,0.8,90,Benin
 BFA,1.6,31,28,0.4,1.2,90,Burkina Faso
-CAF,1.9,25,34,0.7,1.5,90,Central African Republic
+CAF,1.9,25,41,0.7,1.5,90,Central African Republic
 CIV,1.7,30,26,0.5,1.3,90,Côte d’Ivoire
 CMR,3.5,15,9,1.3,2,90,Cameroon
-COD,1.4,33,25,0.3,1.1,90,Congo - Kinshasa
+COD,1.4,33,50,0.3,1.1,90,Congo - Kinshasa
 COG,2.9,18,15,1.1,2,90,Congo - Brazzaville
 COM,2.1,23,38,0.8,1.7,90,Comoros
-DJI,1,42,37,NA,0.7,90,Djibouti
+DJI,1,42,41,NA,0.7,90,Djibouti
 ERI,3,17,10,1.2,2,90,Eritrea
-ETH,1.3,35,27,0.2,1,90,Ethiopia
+ETH,1.3,35,48,0.2,1,90,Ethiopia
 GAB,3.3,17,13,1.2,2,90,Gabon
 GHA,1.8,30,28,0.5,1.3,90,Ghana
 GIN,1.5,32,29,0.4,1.1,90,Guinea
@@ -99,21 +99,21 @@ GMB,1.6,30,27,0.5,1.2,90,Gambia
 GNB,1.4,35,32,0.3,1,90,Guinea-Bissau
 GNQ,3.6,13,8,1.4,2,90,Equatorial Guinea
 KEN,2.3,24,20,0.8,1.6,90,Kenya
-LBR,1,42,38,NA,0.7,90,Liberia
+LBR,1,42,42,NA,0.7,90,Liberia
 MDG,1.6,31,27,0.5,1.2,90,Madagascar
 MLI,2.8,18,11,1.1,2,90,Mali
 MOZ,1.3,37,35,0.2,1,90,Mozambique
-MRT,1.1,42,38,NA,0.7,90,Mauritania
+MRT,1.1,42,42,NA,0.7,90,Mauritania
 MWI,1.3,37,35,0.2,1,90,Malawi
 NER,3.5,14,7,1.3,2,90,Niger
 NGA,2.2,22,37,0.9,1.8,90,Nigeria
 RWA,1.6,32,28,0.4,1.2,90,Rwanda
 SDN,2.9,17,32,1.2,2,90,Sudan
 SEN,1.4,35,33,0.2,1,90,Senegal
-SLE,1.5,32,24,0.4,1.1,90,Sierra Leone
+SLE,1.5,32,49,0.4,1.1,90,Sierra Leone
 SOM,2.4,21,15,0.9,1.9,90,Somalia
-SSD,1,43,38,NA,0.7,90,South Sudan
-TCD,1,42,38,NA,0.7,90,Chad
+SSD,1,43,42,NA,0.7,90,South Sudan
+TCD,1,42,42,NA,0.7,90,Chad
 TGO,2.4,21,16,0.9,1.8,90,Togo
 TZA,2.1,24,20,0.8,1.6,90,Tanzania
 UGA,1.7,30,27,0.5,1.2,90,Uganda

@@ -1921,7 +1921,7 @@ ZWE,2.8,6_mass,19306618.333333332,80,NA,Zimbabwe
 ZWE,2.8,6_cd,0,80,NA,Zimbabwe
 AGO,1.1,0,28645701.564444445,90,Mass campaigns: Every 3 years using pop/1.8,Angola
 AGO,1.1,2,57255006.480000004,90,CD: Annual distributions,Angola
-AGO,1.1,3,59028323.96444444,90,CD: Between mass campaigns,Angola
+AGO,1.1,3,61365448.76444444,90,CD: Between mass campaigns,Angola
 AGO,1.1,4,396438737.12,90,Mass campaigns: Every 3 years using tailored approach,Angola
 AGO,1.1,5,104391017.12,90,Mass campaigns: Every 2 years using tailored approach,Angola
 AGO,1.1,6,50290906.008888885,90,Mass campaigns: Every 2 years using pop/1.8,Angola
@@ -1933,7 +1933,7 @@ AGO,1.1,2_mass,0,90,NA,Angola
 AGO,1.1,2_cd,50244189.36,90,NA,Angola
 AGO,1.1,3_routine,7010817.120000001,90,NA,Angola
 AGO,1.1,3_mass,21634884.444444444,90,NA,Angola
-AGO,1.1,3_cd,30382622.4,90,NA,Angola
+AGO,1.1,3_cd,32719747.199999996,90,NA,Angola
 AGO,1.1,4_routine,7010817.120000001,90,NA,Angola
 AGO,1.1,4_mass,389427920,90,NA,Angola
 AGO,1.1,4_cd,0,90,NA,Angola
@@ -2017,7 +2017,7 @@ BFA,1.6,6_mass,27155909.444444444,90,NA,Burkina Faso
 BFA,1.6,6_cd,0,90,NA,Burkina Faso
 CAF,1.9,0,4485473.226666667,90,Mass campaigns: Every 3 years using pop/1.8,Central African Republic
 CAF,1.9,2,5673008.0600000005,90,CD: Annual distributions,Central African Republic
-CAF,1.9,3,8634349.406666666,90,CD: Between mass campaigns,Central African Republic
+CAF,1.9,3,9488529.796666667,90,CD: Between mass campaigns,Central African Republic
 CAF,1.9,4,9808642.98857143,90,Mass campaigns: Every 3 years using tailored approach,Central African Republic
 CAF,1.9,5,9233052.893333334,90,Mass campaigns: Every 2 years using tailored approach,Central African Republic
 CAF,1.9,6,7877211.004444445,90,Mass campaigns: Every 2 years using pop/1.8,Central African Republic
@@ -2029,7 +2029,7 @@ CAF,1.9,2_mass,0,90,NA,Central African Republic
 CAF,1.9,2_cd,4575006.5,90,NA,Central African Republic
 CAF,1.9,3_routine,1098001.56,90,NA,Central African Republic
 CAF,1.9,3_mass,3387471.6666666665,90,NA,Central African Republic
-CAF,1.9,3_cd,4148876.18,90,NA,Central African Republic
+CAF,1.9,3_cd,5003056.57,90,NA,Central African Republic
 CAF,1.9,4_routine,1098001.56,90,NA,Central African Republic
 CAF,1.9,4_mass,8710641.42857143,90,NA,Central African Republic
 CAF,1.9,4_cd,0,90,NA,Central African Republic
@@ -2089,7 +2089,7 @@ CMR,3.5,6_mass,33504952.777777776,90,NA,Cameroon
 CMR,3.5,6_cd,0,90,NA,Cameroon
 COD,1.4,0,80236033.37333333,90,Mass campaigns: Every 3 years using pop/1.8,Congo - Kinshasa
 COD,1.4,2,127650250.26000002,90,CD: Annual distributions,Congo - Kinshasa
-COD,1.4,3,134794226.87333333,90,CD: Between mass campaigns,Congo - Kinshasa
+COD,1.4,3,189352420.3733333,90,CD: Between mass campaigns,Congo - Kinshasa
 COD,1.4,4,383223700.04,90,Mass campaigns: Every 3 years using tailored approach,Congo - Kinshasa
 COD,1.4,5,218031930.94909087,90,Mass campaigns: Every 2 years using tailored approach,Congo - Kinshasa
 COD,1.4,6,140878930.04,90,Mass campaigns: Every 2 years using pop/1.8,Congo - Kinshasa
@@ -2101,7 +2101,7 @@ COD,1.4,2_mass,0,90,NA,Congo - Kinshasa
 COD,1.4,2_cd,108011750.22000003,90,NA,Congo - Kinshasa
 COD,1.4,3_routine,19638500.04,90,NA,Congo - Kinshasa
 COD,1.4,3_mass,60597533.33333333,90,NA,Congo - Kinshasa
-COD,1.4,3_cd,54558193.5,90,NA,Congo - Kinshasa
+COD,1.4,3_cd,109116387,90,NA,Congo - Kinshasa
 COD,1.4,4_routine,19638500.04,90,NA,Congo - Kinshasa
 COD,1.4,4_mass,363585200,90,NA,Congo - Kinshasa
 COD,1.4,4_cd,0,90,NA,Congo - Kinshasa
@@ -2161,7 +2161,7 @@ COM,2.1,6_mass,981153.8888888888,90,NA,Comoros
 COM,2.1,6_cd,0,90,NA,Comoros
 DJI,1,0,859317.5066666666,90,Mass campaigns: Every 3 years using pop/1.8,Djibouti
 DJI,1,2,1682286.7199999997,90,CD: Annual distributions,Djibouti
-DJI,1,3,1723825.0966666667,90,CD: Between mass campaigns,Djibouti
+DJI,1,3,1817285.3766666665,90,CD: Between mass campaigns,Djibouti
 DJI,1,4,NA,90,Mass campaigns: Every 3 years using tailored approach,Djibouti
 DJI,1,5,3548152.982857143,90,Mass campaigns: Every 2 years using tailored approach,Djibouti
 DJI,1,6,1508345.2844444443,90,Mass campaigns: Every 2 years using pop/1.8,Djibouti
@@ -2173,7 +2173,7 @@ DJI,1,2_mass,0,90,NA,Djibouti
 DJI,1,2_cd,1472000.88,90,NA,Djibouti
 DJI,1,3_routine,210285.83999999997,90,NA,Djibouti
 DJI,1,3_mass,649031.6666666666,90,NA,Djibouti
-DJI,1,3_cd,864507.59,90,NA,Djibouti
+DJI,1,3_cd,957967.8699999999,90,NA,Djibouti
 DJI,1,4_routine,210285.83999999997,90,NA,Djibouti
 DJI,1,4_mass,NA,90,NA,Djibouti
 DJI,1,4_cd,0,90,NA,Djibouti
@@ -2209,7 +2209,7 @@ ERI,3,6_mass,4323101.666666666,90,NA,Eritrea
 ERI,3,6_cd,0,90,NA,Eritrea
 ETH,1.3,0,97785057.67777777,90,Mass campaigns: Every 3 years using pop/1.8,Ethiopia
 ETH,1.3,2,163523750.15,90,CD: Annual distributions,Ethiopia
-ETH,1.3,3,169578019.87777779,90,CD: Between mass campaigns,Ethiopia
+ETH,1.3,3,225416990.47777778,90,CD: Between mass campaigns,Ethiopia
 ETH,1.3,4,688623079.9,90,Mass campaigns: Every 3 years using tailored approach,Ethiopia
 ETH,1.3,5,289830164.9,90,Mass campaigns: Every 2 years using tailored approach,Ethiopia
 ETH,1.3,6,171652449.34444442,90,Mass campaigns: Every 2 years using pop/1.8,Ethiopia
@@ -2221,7 +2221,7 @@ ETH,1.3,2_mass,0,90,NA,Ethiopia
 ETH,1.3,2_cd,139593445.25,90,NA,Ethiopia
 ETH,1.3,3_routine,23930304.9,90,NA,Ethiopia
 ETH,1.3,3_mass,73854752.77777778,90,NA,Ethiopia
-ETH,1.3,3_cd,71792962.2,90,NA,Ethiopia
+ETH,1.3,3_cd,127631932.8,90,NA,Ethiopia
 ETH,1.3,4_routine,23930304.9,90,NA,Ethiopia
 ETH,1.3,4_mass,664692775,90,NA,Ethiopia
 ETH,1.3,4_cd,0,90,NA,Ethiopia
@@ -2401,7 +2401,7 @@ KEN,2.3,6_mass,63700226.66666667,90,NA,Kenya
 KEN,2.3,6_cd,0,90,NA,Kenya
 LBR,1,0,4161313.244444445,90,Mass campaigns: Every 3 years using pop/1.8,Liberia
 LBR,1,2,8147270.399999999,90,CD: Annual distributions,Liberia
-LBR,1,3,8461489.004444445,90,CD: Between mass campaigns,Liberia
+LBR,1,3,8914139.084444445,90,CD: Between mass campaigns,Liberia
 LBR,1,4,NA,90,Mass campaigns: Every 3 years using tailored approach,Liberia
 LBR,1,5,17184483.085714288,90,Mass campaigns: Every 2 years using tailored approach,Liberia
 LBR,1,6,7305215.466666666,90,Mass campaigns: Every 2 years using pop/1.8,Liberia
@@ -2413,7 +2413,7 @@ LBR,1,2_mass,0,90,NA,Liberia
 LBR,1,2_cd,7128861.6,90,NA,Liberia
 LBR,1,3_routine,1018408.8,90,NA,Liberia
 LBR,1,3_mass,3142904.4444444445,90,NA,Liberia
-LBR,1,3_cd,4300175.76,90,NA,Liberia
+LBR,1,3_cd,4752825.84,90,NA,Liberia
 LBR,1,4_routine,1018408.8,90,NA,Liberia
 LBR,1,4_mass,NA,90,NA,Liberia
 LBR,1,4_cd,0,90,NA,Liberia
@@ -2497,7 +2497,7 @@ MOZ,1.3,6_mass,39824501.666666664,90,NA,Mozambique
 MOZ,1.3,6_cd,0,90,NA,Mozambique
 MRT,1.1,0,3772163.1777777774,90,Mass campaigns: Every 3 years using pop/1.8,Mauritania
 MRT,1.1,2,7385563.199999999,90,CD: Annual distributions,Mauritania
-MRT,1.1,3,7670373.417777779,90,CD: Between mass campaigns,Mauritania
+MRT,1.1,3,8080711.3377777785,90,CD: Between mass campaigns,Mauritania
 MRT,1.1,4,NA,90,Mass campaigns: Every 3 years using tailored approach,Mauritania
 MRT,1.1,5,15578121.114285717,90,Mass campaigns: Every 2 years using tailored approach,Mauritania
 MRT,1.1,6,6622333.177777778,90,Mass campaigns: Every 2 years using pop/1.8,Mauritania
@@ -2509,7 +2509,7 @@ MRT,1.1,2_mass,0,90,NA,Mauritania
 MRT,1.1,2_cd,6462367.8,90,NA,Mauritania
 MRT,1.1,3_routine,923195.3999999999,90,NA,Mauritania
 MRT,1.1,3_mass,2848967.7777777775,90,NA,Mauritania
-MRT,1.1,3_cd,3898210.24,90,NA,Mauritania
+MRT,1.1,3_cd,4308548.16,90,NA,Mauritania
 MRT,1.1,4_routine,923195.3999999999,90,NA,Mauritania
 MRT,1.1,4_mass,NA,90,NA,Mauritania
 MRT,1.1,4_cd,0,90,NA,Mauritania
@@ -2665,7 +2665,7 @@ SEN,1.4,6_mass,20768120.555555556,90,NA,Senegal
 SEN,1.4,6_cd,0,90,NA,Senegal
 SLE,1.5,0,6741665.435555555,90,Mass campaigns: Every 3 years using pop/1.8,Sierra Leone
 SLE,1.5,2,10448669.239999998,90,CD: Annual distributions,Sierra Leone
-SLE,1.5,3,11141134.715555552,90,CD: Between mass campaigns,Sierra Leone
+SLE,1.5,3,15723915.215555556,90,CD: Between mass campaigns,Sierra Leone
 SLE,1.5,4,24563229.88,90,Mass campaigns: Every 3 years using tailored approach,Sierra Leone
 SLE,1.5,5,18314446.243636362,90,Mass campaigns: Every 2 years using tailored approach,Sierra Leone
 SLE,1.5,6,11833746.546666667,90,Mass campaigns: Every 2 years using pop/1.8,Sierra Leone
@@ -2677,7 +2677,7 @@ SLE,1.5,2_mass,0,90,NA,Sierra Leone
 SLE,1.5,2_cd,8798879.36,90,NA,Sierra Leone
 SLE,1.5,3_routine,1649789.88,90,NA,Sierra Leone
 SLE,1.5,3_mass,5091875.555555555,90,NA,Sierra Leone
-SLE,1.5,3_cd,4399469.279999999,90,NA,Sierra Leone
+SLE,1.5,3_cd,8982249.780000001,90,NA,Sierra Leone
 SLE,1.5,4_routine,1649789.88,90,NA,Sierra Leone
 SLE,1.5,4_mass,22913440,90,NA,Sierra Leone
 SLE,1.5,4_cd,0,90,NA,Sierra Leone
@@ -2713,7 +2713,7 @@ SOM,2.4,6_mass,21430059.444444444,90,NA,Somalia
 SOM,2.4,6_cd,0,90,NA,Somalia
 SSD,1,0,8439765.797777778,90,Mass campaigns: Every 3 years using pop/1.8,South Sudan
 SSD,1,2,16869336.33,90,CD: Annual distributions,South Sudan
-SSD,1,3,17162201.43777778,90,CD: Between mass campaigns,South Sudan
+SSD,1,3,18080352.557777777,90,CD: Between mass campaigns,South Sudan
 SSD,1,4,NA,90,Mass campaigns: Every 3 years using tailored approach,South Sudan
 SSD,1,5,34856744.448571436,90,Mass campaigns: Every 2 years using tailored approach,South Sudan
 SSD,1,6,14817731.908888888,90,Mass campaigns: Every 2 years using pop/1.8,South Sudan
@@ -2725,7 +2725,7 @@ SSD,1,2_mass,0,90,NA,South Sudan
 SSD,1,2_cd,14803703.309999999,90,NA,South Sudan
 SSD,1,3_routine,2065633.0199999998,90,NA,South Sudan
 SSD,1,3_mass,6374132.777777778,90,NA,South Sudan
-SSD,1,3_cd,8722435.64,90,NA,South Sudan
+SSD,1,3_cd,9640586.76,90,NA,South Sudan
 SSD,1,4_routine,2065633.0199999998,90,NA,South Sudan
 SSD,1,4_mass,NA,90,NA,South Sudan
 SSD,1,4_cd,0,90,NA,South Sudan
@@ -2737,7 +2737,7 @@ SSD,1,6_mass,12752098.888888888,90,NA,South Sudan
 SSD,1,6_cd,0,90,NA,South Sudan
 TCD,1,0,14289379.02,90,Mass campaigns: Every 3 years using pop/1.8,Chad
 TCD,1,2,27977432.16,90,CD: Annual distributions,Chad
-TCD,1,3,29056314.68,90,CD: Between mass campaigns,Chad
+TCD,1,3,30610728.959999997,90,CD: Between mass campaigns,Chad
 TCD,1,4,NA,90,Mass campaigns: Every 3 years using tailored approach,Chad
 TCD,1,5,59011974.73428571,90,Mass campaigns: Every 2 years using tailored approach,Chad
 TCD,1,6,25086266.242222223,90,Mass campaigns: Every 2 years using pop/1.8,Chad
@@ -2749,7 +2749,7 @@ TCD,1,2_mass,0,90,NA,Chad
 TCD,1,2_cd,24480253.14,90,NA,Chad
 TCD,1,3_routine,3497179.0199999996,90,NA,Chad
 TCD,1,3_mass,10792200,90,NA,Chad
-TCD,1,3_cd,14766935.66,90,NA,Chad
+TCD,1,3_cd,16321349.94,90,NA,Chad
 TCD,1,4_routine,3497179.0199999996,90,NA,Chad
 TCD,1,4_mass,NA,90,NA,Chad
 TCD,1,4_cd,0,90,NA,Chad
