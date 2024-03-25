@@ -23,7 +23,7 @@ grstyle set plain, hor compact
 grstyle set legend, nobox
 grstyle set color Set2
 
-set graphics off // toggle if you need to check graphs are looking ok 
+* set graphics off // toggle if you need to check graphs are looking ok 
 
 * STEP 1: LOAD DATA and tidy the retention times. Our dataset has a row for each country and we will build out years from there (wide format) 
 
@@ -283,11 +283,11 @@ set graphics off // toggle if you need to check graphs are looking ok
 
 		replace totalnets=pop*0.06 if year>=`starty' // just do RCH at 6% in 2020 and forward, while waiting for school/community to start. Start with this to fill in all the years with something (not NA)
 		
-		replace totalnets=totalnets+(pop/1.8) if year==`starty' // do a mass campaign in 2020, then start CD in 2021 (for the paper, it was wait two years before organizing the school/community channels.) 
+		replace totalnets=totalnets+(pop/1.8) if year==2022 // do a mass campaign in 2022, then start CD in 2023 (for the paper, it was mass in 2020, then wait two years before organizing the school/community channels.) 
 		
-		local thirdy = `secondy'+1
+		* local thirdy = `secondy'+1 // not used in qsite approach.
 		
-		replace totalnets=totalnets+(pop*`x') if year>=`secondy' // ADD ON the school/community nets to the RCH nets in 2021
+		replace totalnets=totalnets+(pop*`x') if year>=2023 // ADD ON the school/community nets to the RCH nets in 2023 (was 2021 for the paper)
 		
 		replace percpop=totalnets/pop*100 if year>=`starty' // fill in percent pop for the new years - this is now total nets from BOTH SCHOOL AND RCH 
 		
