@@ -256,9 +256,9 @@ set graphics off // toggle if you need to check graphs are looking ok
 		
 		replace totalnets=pop*0.06 if year>=`secondy' // just do RCH at 6% in 2021 and forward, while waiting for school/community to start.
 			
-		local thirdy = `secondy'+1
+		* local thirdy = `secondy'+1
 		
-		replace totalnets=totalnets+(pop*`x') if year>=`thirdy' // ADD ON the school/community nets to the RCH nets
+		replace totalnets=totalnets+(pop*`x') if year>=2023 // ADD ON the school/community nets to the RCH nets
 		
 		replace percpop=totalnets/pop*100 if year>=`starty' // fill in percent pop for the new years - this is now total nets from BOTH SCHOOL AND RCH 
 		
