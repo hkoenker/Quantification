@@ -110,7 +110,7 @@ The website will likely need to take a several step process for the majority of 
 ## 4. Bar Charts ITNs needed over 3/10 years
 
 ```{r nets-needed-over-ten-years}
-tnets_all <- read_csv("totalnetsall.csv")
+tnets_all <- read_csv("site/totalnetsall.csv")
 
 tnets_all %>% 
   filter(iso3=="COD" & target==80) %>% 
@@ -124,7 +124,7 @@ tnets_all %>%
 ```
 
 ```{r nets-needed-over-three-years}
-tnets_3y <- read_csv("totalnets_3y_all.csv")
+tnets_3y <- read_csv("site/totalnets_3y_all.csv")
 
 tnets_3y %>% 
   filter(iso3=="COD" & target==80) %>% 
@@ -145,7 +145,7 @@ Note that the two plots above could be combined / faceted, whatever seems approp
 ## 5. Line Graphs of ITN Access over time
 
 ```{r itn-access-trends}
-accessb <- read_csv("access_over_time_best.csv")
+accessb <- read_csv("site/access_over_time_best.csv")
 
 accessb %>% 
   filter(iso3=="COD" & best==80) %>% 
@@ -161,7 +161,7 @@ accessb %>%
 ## 6.	Option to view ITN access at different quantification levels. 
 
 ```{r itn-access-all-scenarios}
-accessa <- read_csv("access_over_time_all.csv")
+accessa <- read_csv("site/access_over_time_all.csv")
 
 # these could maybe be limited to e.g. 0, 5, 10, 15, 20% etc etc rather than all 41?
 # Number in the facet box is intended to be the "population x X%", but it's not labeled well here.
@@ -197,12 +197,12 @@ accessa %>%
 Is facet useful here? Probably not. Could just show 80% target and note similar findings (relative channel performance) at other target levels. 
 
 ```{r person-years-protection-ten-years}
-pyp <- read_csv("pyp_all.csv")
+pyp <- read_csv("site/pyp_all.csv")
 
 # probably best if we drop scenario 4 and 5 from these:
 
 pyp %>%
-  filter(iso3=="COD" & group %in% c(1, 2, 3, 6)) %>%
+  filter(iso3=="MWI" & group %in% c(1, 2, 3, 6)) %>%
   ggplot(aes(
     x = pyp / 1000000,
     y = totalnets / 1000000,
@@ -239,7 +239,7 @@ pyp %>%
 
 
 ```{r}
-recc23 <- read_csv("table_q_s2s3long.csv") %>% 
+recc23 <- read_csv("site/table_q_s2s3long.csv") %>% 
   mutate(country=countrycode(iso3, origin="iso3c", destination="country.name"))
 
 recc2pivot <- recc23 %>% 
@@ -257,7 +257,7 @@ recc2pivot <- recc23 %>%
 ```
 
 ```{r}
-half <- read_csv("half_year_quantifiers.csv") %>% 
+half <- read_csv("site/half_year_quantifiers.csv") %>% 
   clean_names() 
 
 half_real <- half %>% 
@@ -292,7 +292,7 @@ flextable() %>%
 The resulting number of nets required under each of the scenarios can also be shown. I have not joined in the 'real' numbers here but similar process could be done as for the above table. 
 
 ```{r}
-gall_tnets <- read_csv("gall_tnets.csv") %>% 
+gall_tnets <- read_csv("site/gall_tnets.csv") %>% 
   select(id, lifespan, country_code, country_name, totalnets, x2024, x2025, x2026)
 mill <-  scales::unit_format(unit = "M", scale = 1e-6, accuracy=1)
 # Test Plot DRC G runs total nets 

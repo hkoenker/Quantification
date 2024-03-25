@@ -305,41 +305,19 @@ table_qs <- table70rtlong %>%
 
 write_csv(table_qs, "site/table_qs.csv", col_names = TRUE)
 
-#--- Write a function for totalling up the nets so I don't mess it up copy-pasting
-scenario <- 2
-totalroutine_function <- function(routine, scenario) {
-  var <- paste0("tot",as.character(scenario))
-  mutate(var=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine)
-}
 
-totalcd2_function <- function() {
-  mutate(var=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100))
-}
 
-totalcd3_function <- function() {
-  x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2025/1.8+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2028/1.8+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2031/1.8+x2032*(scenario_3/100)
-}
-
-totalmass0_function <- function() {
-  
-}
-
-testx <- table80rtlong %>% 
-  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
-  left_join(afpop, by=c("iso3" = "country_code")) %>% 
-  mutate(routine=0.06,
-         tot0_routine=baseroutine)
 
 #TODO:  it would be ideal to turn this into a function (to turn tableXXrtlong into tnetsXX) but I don't have time to figure it out.
 
 #---- Total Nets Needed 80% ----
 tnets80 <- table80rtlong %>% 
-  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
+  # mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
   left_join(afpop, by=c("iso3"= "country_code")) %>% 
   mutate(routine=.06,
          basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
          baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
+         basescen2=x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
          basescen3_cd=x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2032*(scenario_3/100),
          basescen3_mass=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
          basescen4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4,
@@ -352,11 +330,11 @@ tnets80 <- table80rtlong %>%
          # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
          tot3=basescen3_mass+basescen3_cd+baseroutine,
          # scenario 4 - campaign every three years starting y1, routine all the time
-         tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+baseroutine,
+         tot4=basescen4+baseroutine,
          # scenario 5 - campaign every two years starting y1, routine all the time
-         tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+baseroutine,
+         tot5=basescen5+baseroutine,
          # scenario 6 - campaign every two years pop/1.8, routine all the time 
-         tot6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8+baseroutine,
+         tot6=basescen6+baseroutine,
          s0vs2=tot2/tot0,
          s0vs3=tot3/tot0,
          s0vs4=tot4/tot0,
@@ -409,12 +387,12 @@ totalnets80 <- tnets80 %>%
 
 #---- Total Nets Needed 70% ----
 tnets70 <- table70rtlong %>% 
-  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
+  # mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
   left_join(afpop, by=c("iso3"= "country_code")) %>% 
   mutate(routine=.06,
          basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
          baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
+         basescen2=x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
          basescen3_cd=x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2032*(scenario_3/100),
          basescen3_mass=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
          basescen4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4,
@@ -427,11 +405,11 @@ tnets70 <- table70rtlong %>%
          # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
          tot3=basescen3_mass+basescen3_cd+baseroutine,
          # scenario 4 - campaign every three years starting y1, routine all the time
-         tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+baseroutine,
+         tot4=basescen4+baseroutine,
          # scenario 5 - campaign every two years starting y1, routine all the time
-         tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+baseroutine,
+         tot5=basescen5+baseroutine,
          # scenario 6 - campaign every two years pop/1.8, routine all the time 
-         tot6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8+baseroutine,
+         tot6=basescen6+baseroutine,
          s0vs2=tot2/tot0,
          s0vs3=tot3/tot0,
          s0vs4=tot4/tot0,
@@ -485,56 +463,52 @@ totalnets70 <- tnets70 %>%
 
 
 #---- Total Nets Needed 90% ----
-tnets90 <- table90rtlong %>% 
-  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
-  left_join(afpop, by=c("iso3"= "country_code")) %>% 
-  mutate(routine=.06,
-         basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
-         basescen3_cd=x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2032*(scenario_3/100),
-         basescen3_mass=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         basescen4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4,
-         basescen5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5,
-         basescen6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8,
-         # status quo - campaigns / 1.8 every three years starting in y1, routine all the time
-         tot0=basescen0+baseroutine,
-         #scenario 2 - campaign in y1, routine all the time, CD starts in Y3
-         tot2=x2022/1.8+basescen2+baseroutine,
-         # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
-         tot3=basescen3_mass+basescen3_cd+baseroutine,
-         # scenario 4 - campaign every three years starting y1, routine all the time
-         tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+baseroutine,
-         # scenario 5 - campaign every two years starting y1, routine all the time
-         tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+baseroutine,
-         # scenario 6 - campaign every two years pop/1.8, routine all the time 
-         tot6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8+baseroutine,
-         s0vs2=tot2/tot0,
-         s0vs3=tot3/tot0,
-         s0vs4=tot4/tot0,
-         s0vs5=tot5/tot0,
-         s0vs6=tot6/tot0,
-         tot0_routine=baseroutine,
-         tot0_mass=basescen0,
-         tot0_cd=0,
-         tot2_routine=baseroutine,
-         tot2_mass=x2022/1.8,
-         tot2_cd=basescen2,
-         tot3_routine=baseroutine,
-         tot3_mass=basescen3_mass,
-         tot3_cd=basescen3_cd,
-         tot4_routine=baseroutine,
-         tot4_mass=basescen4,
-         tot4_cd=0,
-         tot5_routine=baseroutine,
-         tot5_mass=basescen5,
-         tot5_cd=0,
-         tot6_routine=baseroutine,
-         tot6_mass=basescen6,
-         tot6_cd=0
-  ) %>% 
+mutate(routine=.06,
+       basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
+       baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
+       basescen2=x2023*(scenario_2/100)+x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
+       basescen3_cd=x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2032*(scenario_3/100),
+       basescen3_mass=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
+       basescen4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4,
+       basescen5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5,
+       basescen6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8,
+       # status quo - campaigns / 1.8 every three years starting in y1, routine all the time
+       tot0=basescen0+baseroutine,
+       #scenario 2 - campaign in y1, routine all the time, CD starts in Y3
+       tot2=x2022/1.8+basescen2+baseroutine,
+       # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
+       tot3=basescen3_mass+basescen3_cd+baseroutine,
+       # scenario 4 - campaign every three years starting y1, routine all the time
+       tot4=basescen4+baseroutine,
+       # scenario 5 - campaign every two years starting y1, routine all the time
+       tot5=basescen5+baseroutine,
+       # scenario 6 - campaign every two years pop/1.8, routine all the time 
+       tot6=basescen6+baseroutine,
+       s0vs2=tot2/tot0,
+       s0vs3=tot3/tot0,
+       s0vs4=tot4/tot0,
+       s0vs5=tot5/tot0,
+       s0vs6=tot6/tot0,
+       tot0_routine=baseroutine,
+       tot0_mass=basescen0,
+       tot0_cd=0,
+       tot2_routine=baseroutine,
+       tot2_mass=x2022/1.8,
+       tot2_cd=basescen2,
+       tot3_routine=baseroutine,
+       tot3_mass=basescen3_mass,
+       tot3_cd=basescen3_cd,
+       tot4_routine=baseroutine,
+       tot4_mass=basescen4,
+       tot4_cd=0,
+       tot5_routine=baseroutine,
+       tot5_mass=basescen5,
+       tot5_cd=0,
+       tot6_routine=baseroutine,
+       tot6_mass=basescen6,
+       tot6_cd=0
+) %>% 
   select(-contains("base")) ## drop the intermediate variables
-
 
 totalnets90 <- tnets90 %>% 
   select(iso3, lifespan, contains("tot")) %>% 
@@ -576,32 +550,33 @@ write_csv(totalnetsall, "site/totalnetsall.csv", col_names = TRUE)
 
 #--- Three year total nets 80 ----
 # This will be 2024-2026 inclusive, as for Global Fund Grant Cycle 7
-# With one mass campaign per cycle for campaign options 
+# With one mass campaign per cycle for campaign options , in 2025.
+# No mass campaign in the full CD option
 
 tnets_3y_80 <- table80rtlong %>% 
-  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
+  # mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
   left_join(afpop, by=c("iso3"= "country_code")) %>% 
   mutate(routine=.06,
-         basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
-         basescen3_cd=x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2032*(scenario_3/100),
-         basescen3_mass=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         basescen4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4,
-         basescen5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5,
-         basescen6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8,
+         basescen0=x2025/1.8,
+         baseroutine=x2024*routine+x2025*routine+x2026*routine,
+         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100),
+         basescen3_cd=x2024*(scenario_3/100)+x2026*(scenario_3/100),
+         basescen3_mass=x2025/1.8,
+         basescen4=x2025/scenario_4,
+         basescen5=x2024/scenario_5+x2026/scenario_5,
+         basescen6=x2024/1.8+x2026/1.8,
          # status quo - campaigns / 1.8 every three years starting in y1, routine all the time
          tot0=basescen0+baseroutine,
          #scenario 2 - campaign in y1, routine all the time, CD starts in Y3
-         tot2=x2022/1.8+basescen2+baseroutine,
+         tot2=basescen2+baseroutine,
          # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
          tot3=basescen3_mass+basescen3_cd+baseroutine,
          # scenario 4 - campaign every three years starting y1, routine all the time
-         tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+baseroutine,
+         tot4=basescen4+baseroutine,
          # scenario 5 - campaign every two years starting y1, routine all the time
-         tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+baseroutine,
+         tot5=basescen5+baseroutine,
          # scenario 6 - campaign every two years pop/1.8, routine all the time 
-         tot6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8+baseroutine,
+         tot6=basescen6+baseroutine,
          s0vs2=tot2/tot0,
          s0vs3=tot3/tot0,
          s0vs4=tot4/tot0,
@@ -611,7 +586,7 @@ tnets_3y_80 <- table80rtlong %>%
          tot0_mass=basescen0,
          tot0_cd=0,
          tot2_routine=baseroutine,
-         tot2_mass=x2022/1.8,
+         tot2_mass=0,
          tot2_cd=basescen2,
          tot3_routine=baseroutine,
          tot3_mass=basescen3_mass,
@@ -639,29 +614,29 @@ totalnets_3y_80 <- tnets_3y_80 %>%
 # With one mass campaign per cycle for campaign options 
 
 tnets_3y_70 <- table70rtlong %>% 
-  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
+  # mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
   left_join(afpop, by=c("iso3"= "country_code")) %>% 
   mutate(routine=.06,
-         basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
-         basescen3_cd=x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2032*(scenario_3/100),
-         basescen3_mass=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         basescen4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4,
-         basescen5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5,
-         basescen6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8,
+         basescen0=x2025/1.8,
+         baseroutine=x2024*routine+x2025*routine+x2026*routine,
+         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100),
+         basescen3_cd=x2024*(scenario_3/100)+x2026*(scenario_3/100),
+         basescen3_mass=x2025/1.8,
+         basescen4=x2025/scenario_4,
+         basescen5=x2024/scenario_5+x2026/scenario_5,
+         basescen6=x2024/1.8+x2026/1.8,
          # status quo - campaigns / 1.8 every three years starting in y1, routine all the time
          tot0=basescen0+baseroutine,
          #scenario 2 - campaign in y1, routine all the time, CD starts in Y3
-         tot2=x2022/1.8+basescen2+baseroutine,
+         tot2=basescen2+baseroutine,
          # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
          tot3=basescen3_mass+basescen3_cd+baseroutine,
          # scenario 4 - campaign every three years starting y1, routine all the time
-         tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+baseroutine,
+         tot4=basescen4+baseroutine,
          # scenario 5 - campaign every two years starting y1, routine all the time
-         tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+baseroutine,
+         tot5=basescen5+baseroutine,
          # scenario 6 - campaign every two years pop/1.8, routine all the time 
-         tot6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8+baseroutine,
+         tot6=basescen6+baseroutine,
          s0vs2=tot2/tot0,
          s0vs3=tot3/tot0,
          s0vs4=tot4/tot0,
@@ -671,7 +646,7 @@ tnets_3y_70 <- table70rtlong %>%
          tot0_mass=basescen0,
          tot0_cd=0,
          tot2_routine=baseroutine,
-         tot2_mass=x2022/1.8,
+         tot2_mass=0,
          tot2_cd=basescen2,
          tot3_routine=baseroutine,
          tot3_mass=basescen3_mass,
@@ -699,29 +674,29 @@ totalnets_3y_70 <- tnets_3y_70 %>%
 # With one mass campaign per cycle for campaign options 
 
 tnets_3y_90 <- table90rtlong %>% 
-  mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
+  # mutate(scenario_4=na_if(scenario_4,0.1)) %>% 
   left_join(afpop, by=c("iso3"= "country_code")) %>% 
   mutate(routine=.06,
-         basescen0=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         baseroutine=x2022*routine+x2023*routine+x2024*routine+x2025*routine+x2026*routine+x2027*routine+x2028*routine+x2029*routine+x2030*routine+x2031*routine+x2032*routine,
-         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100)+x2027*(scenario_2/100)+x2028*(scenario_2/100)+x2029*(scenario_2/100)+x2030*(scenario_2/100)+x2031*(scenario_2/100)+x2032*(scenario_2/100),
-         basescen3_cd=x2023*(scenario_3/100)+x2024*(scenario_3/100)+x2026*(scenario_3/100)+x2027*(scenario_3/100)+x2029*(scenario_3/100)+x2030*(scenario_3/100)+x2032*(scenario_3/100),
-         basescen3_mass=x2022/1.8+x2025/1.8+x2028/1.8+x2031/1.8,
-         basescen4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4,
-         basescen5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5,
-         basescen6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8,
+         basescen0=x2025/1.8,
+         baseroutine=x2024*routine+x2025*routine+x2026*routine,
+         basescen2=x2024*(scenario_2/100)+x2025*(scenario_2/100)+x2026*(scenario_2/100),
+         basescen3_cd=x2024*(scenario_3/100)+x2026*(scenario_3/100),
+         basescen3_mass=x2025/1.8,
+         basescen4=x2025/scenario_4,
+         basescen5=x2024/scenario_5+x2026/scenario_5,
+         basescen6=x2024/1.8+x2026/1.8,
          # status quo - campaigns / 1.8 every three years starting in y1, routine all the time
          tot0=basescen0+baseroutine,
          #scenario 2 - campaign in y1, routine all the time, CD starts in Y3
-         tot2=x2022/1.8+basescen2+baseroutine,
+         tot2=basescen2+baseroutine,
          # scenario 3 - campaign every three yrs starting y1, routine all the time, CD between campaigns
          tot3=basescen3_mass+basescen3_cd+baseroutine,
          # scenario 4 - campaign every three years starting y1, routine all the time
-         tot4=x2022/scenario_4+x2025/scenario_4+x2028/scenario_4+x2031/scenario_4+baseroutine,
+         tot4=basescen4+baseroutine,
          # scenario 5 - campaign every two years starting y1, routine all the time
-         tot5=x2022/scenario_5+x2024/scenario_5+x2026/scenario_5+x2028/scenario_5+x2030/scenario_5+x2032/scenario_5+baseroutine,
+         tot5=basescen5+baseroutine,
          # scenario 6 - campaign every two years pop/1.8, routine all the time 
-         tot6=x2022/1.8+x2024/1.8+x2026/1.8+x2028/1.8+x2030/1.8+x2032/1.8+baseroutine,
+         tot6=basescen6+baseroutine,
          s0vs2=tot2/tot0,
          s0vs3=tot3/tot0,
          s0vs4=tot4/tot0,
@@ -731,7 +706,7 @@ tnets_3y_90 <- table90rtlong %>%
          tot0_mass=basescen0,
          tot0_cd=0,
          tot2_routine=baseroutine,
-         tot2_mass=x2022/1.8,
+         tot2_mass=0,
          tot2_cd=basescen2,
          tot3_routine=baseroutine,
          tot3_mass=basescen3_mass,
