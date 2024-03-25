@@ -804,7 +804,6 @@ write_csv(runs_best, "site/access_over_time_best.csv", col_names=TRUE)
 #---- Person-years of protection (at 80% only) ---- # this drew from the 10,000,000 indicative population for total nets calculations, which means it won't match the realpop totalnets
 
 pyp <- read_dta("output/totalnetspyp_realpop.dta") %>% 
-  select(-totalnets) %>% ## get rid of the 10,000,000 pop totalnets
   clean_names() %>% 
   mutate(bestlabel=case_when(group==4 ~ paste0("Mass campaign (pop/",round((scenario-400)/10, digits=1), ") \nevery 3 years"),
                              group==5 ~ paste0("Mass campaign (pop/",round((scenario-500)/10, digits=1), ") \nevery 2 years"),
