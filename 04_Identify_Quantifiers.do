@@ -1,7 +1,7 @@
 *** 3. Append all iterations and identify best quantification factor for each of the 6 scenarios
 ***		Calculate total person-years of ITN access for each iteration
 
-
+** Updated: Mar 24 2024 to set runs 300-350 (instead of 340)
 
 	** append data from all the runs -- MAKE SURE NUMBER LISTS BELOW ARE UPDATED TO REFLECT THE SCENARIOS USED IN 01 do file
 	
@@ -16,7 +16,7 @@
 	foreach x of numlist 200/250 {
 		append using "output/runs/`x'"
 	}
-	foreach x of numlist 300/340 {
+	foreach x of numlist 300/350 {
 		append using "output/runs/`x'"
 	}
 	foreach x of numlist 401/420 {
